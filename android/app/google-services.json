@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "840795874057",
+    "firebase_url": "https://e-athlete.firebaseio.com",
+    "project_id": "e-athlete",
+    "storage_bucket": "e-athlete.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:840795874057:android:efdac5aba54b9f192429d8",
+        "android_client_info": {
+          "package_name": "com.eathleteapp.eathlete"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "840795874057-oocjmt7cvkep1g1e9bmecm4a03c0hak1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWjpy1t6K2bwvaySAGX47CC-w2_VaXDtk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "840795874057-oocjmt7cvkep1g1e9bmecm4a03c0hak1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "840795874057-j958u269uu34silcn9jq0h98b9r62ugj.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.e-athleteapp.eathlete"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

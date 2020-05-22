@@ -1,0 +1,88 @@
+import 'dart:async';
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
+
+import 'package:meta/meta.dart';
+
+import '../../user_repository.dart';
+
+
+
+part 'log_in_event.dart';
+
+part 'log_in_state.dart';
+
+class LogInBloc extends Bloc<LogInEvent, LogInState> {
+  final UserRepository _userRepository;
+
+  LogInBloc(@required UserRepository userRepository): assert(userRepository != null),
+  _userRepository = userRepository;
+
+
+
+  @override
+  LogInState get initialState => InitialLoginState();
+
+  String name;
+  String email;
+  String password;
+
+  @override
+  Stream<LogInState> mapEventToState(LogInEvent event) async* {
+    if(event is NameChanged){
+      name = event.name;
+      yield InitialLoginState();
+    }
+    else if(event is EmailChanged){
+      email = event.email;
+      yield InitialLoginState();
+    }
+    else if(event is PasswordChanged){
+      password = event.password;
+      yield InitialLoginState();
+    }
+    else if(event is Submitted){
+      yield IsSubmitting();
+      try {
+        await _userRepository.signInWithCredentials(email, password);
+      } catch (e){
+
+        print(e);
+        yield LoginFailure();
+      }
+//      catch(e){
+//        print(e);
+//        yield LoginFailure();
+//      }
+    }
+    else if(event is SignUp){
+      print(email);
+      try {
+        await _userRepository.signUp(email: email, password: password);
+      } catch (e){
+        print(e);
+        yield LoginFailure();
+      }
+    }
+    else if(event is FacebookLoginAttempt){
+//      try{
+//        await _userRepository.signInWithFacebook();
+//        yield SuccessfulLogin();
+//      } catch (e) {
+//        print(e);
+        yield LoginFailure();
+//      }
+    }
+    else if (event is GoogleLogin){
+
+      try {
+        await _userRepository.signInWithGoogle();
+        yield SuccessfulLogin();
+      } catch (e) {
+        print(e);
+        yield LoginFailure();
+      }
+    }
+  }
+}
