@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 import 'package:meta/meta.dart';
 
@@ -46,6 +47,7 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
       yield IsSubmitting();
       try {
         await _userRepository.signInWithCredentials(email, password);
+        yield SuccessfulLogin();
       } catch (e){
 
         print(e);
@@ -58,29 +60,33 @@ class LogInBloc extends Bloc<LogInEvent, LogInState> {
     }
     else if(event is SignUp){
       print(email);
+      yield IsSubmitting();
       try {
         await _userRepository.signUp(email: email, password: password);
+        print('user created');
+        await _userRepository.signInWithCredentials(email, password);
+        yield SuccessfulLogin();
       } catch (e){
         print(e);
         yield LoginFailure();
       }
     }
     else if(event is FacebookLoginAttempt){
-//      try{
-//        await _userRepository.signInWithFacebook();
-//        yield SuccessfulLogin();
-//      } catch (e) {
-//        print(e);
+      yield IsSubmitting();
+      try{
+        await _userRepository.signInWithFacebook();
+        yield SuccessfulLogin();
+      } catch (e) {
+        print(e);
         yield LoginFailure();
-//      }
+      }
     }
     else if (event is GoogleLogin){
-
+      yield IsSubmitting();
       try {
         await _userRepository.signInWithGoogle();
         yield SuccessfulLogin();
       } catch (e) {
-        print(e);
         yield LoginFailure();
       }
     }

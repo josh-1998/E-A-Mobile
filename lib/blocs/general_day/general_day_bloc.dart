@@ -16,6 +16,7 @@ class GeneralDayBloc extends Bloc<GeneralDayEvent, GeneralDayState> {
   GeneralDay _generalDay;
   UserRepository _userRepository;
 
+
   GeneralDayBloc(this._userRepository):_generalDay = GeneralDay();
 
   @override
@@ -43,9 +44,7 @@ class GeneralDayBloc extends Bloc<GeneralDayEvent, GeneralDayState> {
       yield IsSubmitting();
       try{
         GeneralDay newGeneralDay = await _generalDay.uploadGeneralDay(_userRepository);
-        print(newGeneralDay.date);
         _userRepository.diary.generalDayList.add(newGeneralDay);
-        print(_userRepository.diary.generalDayList.length);
         yield SubmissionSuccessful();
       }catch(e){
         print(e);

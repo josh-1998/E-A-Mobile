@@ -51,6 +51,10 @@ class AppStyledTextField extends StatefulWidget {
   final int minLines;
   final int maxLines;
   final int maxLength;
+  final TextInputType keyboardType;
+  final bool autocorrect;
+  final Color borderColor;
+  final Color helpTextColor;
 
   AppStyledTextField(
       {this.fieldName,
@@ -60,7 +64,11 @@ class AppStyledTextField extends StatefulWidget {
       this.onChanged,
       this.minLines = 1,
       this.maxLines = 1,
-      this.maxLength = 1000});
+      this.maxLength = 1000,
+      this.keyboardType = TextInputType.text,
+      this.autocorrect = true,
+      this.borderColor = const Color(0xff828289),
+      this.helpTextColor = const Color(0xff828289)});
 
   @override
   _AppStyledTextFieldState createState() => _AppStyledTextFieldState();
@@ -73,7 +81,6 @@ class _AppStyledTextFieldState extends State<AppStyledTextField> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     textValue = widget.initialValue;
   }
@@ -87,42 +94,48 @@ class _AppStyledTextFieldState extends State<AppStyledTextField> {
             child: Container(
               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
               decoration: BoxDecoration(
-                  border: Border.all(width: 1.0, color: Color(0xff828289)),
+                  border: Border.all(width: 1.0, color: widget.borderColor),
                   borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                children: <Widget>[
-                  widget.icon == null
-                      ? Container()
-                      : Expanded(flex: 1, child: widget.icon),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Expanded(
-                    flex: 10,
-                    child: TextFormField(
-                      minLines: widget.minLines,
-                      maxLines: widget.maxLines,
-                      onChanged: (value){
-                        setState(() {
-                        textValue = value;
-                        });
-                        widget.onChanged(value, context);},
-                      initialValue: widget.initialValue,
-                      decoration:
-                          InputDecoration.collapsed(hintText: widget.fieldName),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: widget.minLines==1?0:8),
+                child: Row(
+                  children: <Widget>[
+                    widget.icon == null
+                        ? Container()
+                        : Expanded(flex: 1, child: widget.icon),
+                    SizedBox(
+                      width: 8,
                     ),
-                  ),
-                  SizedBox(
-                    width: 8,
-                  )
-                ],
+                    Expanded(
+                      flex: 10,
+                      child: TextFormField(
+                        autocorrect: widget.autocorrect,
+                        minLines: widget.minLines,
+                        maxLines: widget.maxLines,
+                        keyboardType: widget.keyboardType,
+                        onChanged: (value){
+                          setState(() {
+                          textValue = value;
+                          });
+                          widget.onChanged(value, context);},
+                        initialValue: widget.initialValue,
+                        decoration:
+                            InputDecoration.collapsed(hintText: widget.fieldName,
+                            hintStyle: TextStyle(color: widget.helpTextColor)),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 8,
+                    )
+                  ],
+                ),
               ),
             ),
           ),
           textValue!=''?Positioned(
             top: 0,
             left: 10,
-            child: Text(' ${widget.fieldName} ', style: TextStyle(backgroundColor: Colors.white, color: Color(0xff828289)),),
+            child: Text(' ${widget.fieldName} ', style: TextStyle(backgroundColor: Colors.white, color: widget.borderColor),),
           ):Container()]
         ),
       );
@@ -135,7 +148,7 @@ class _AppStyledTextFieldState extends State<AppStyledTextField> {
               child: Container(
               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
               decoration: BoxDecoration(
-                  border: Border.all(width: 1.0, color: Color(0xff828289)),
+                  border: Border.all(width: 1.0, color: widget.borderColor),
                   borderRadius: BorderRadius.circular(10)),
               child: Row(
                 children: <Widget>[
@@ -216,7 +229,7 @@ class NotificationButton extends StatefulWidget {
 }
 
 class _NotificationButtonState extends State<NotificationButton> {
-  bool notification = true;
+  bool notification = false;
   @override
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
@@ -404,9 +417,9 @@ class _EAthleteDrawerState extends State<EAthleteDrawer> {
             name: 'Settings',
             onPressed: () {
               setState(() {
-                Provider.of<PageNumber>(context, listen: false).pageNumber = 2;
-                print(
-                    Provider.of<PageNumber>(context, listen: false).pageNumber);
+//                Provider.of<PageNumber>(context, listen: false).pageNumber = 2;
+//                print(
+//                    Provider.of<PageNumber>(context, listen: false).pageNumber);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -550,12 +563,15 @@ class ProfileItem extends StatelessWidget {
 class NumberScale extends StatefulWidget {
   final int maxNumber;
   final Function onChanged;
-  final Color color;
+  final Color selectedColor;
+  final Color borderColor;
+
 
   const NumberScale({
     Key key,
-    this.color = Colors.blue,
+    this.selectedColor = Colors.blue,
     this.onChanged,
+    this.borderColor = Colors.grey,
     @required this.maxNumber,
   }) : super(key: key);
 
@@ -586,7 +602,7 @@ class _NumberScaleState extends State<NumberScale> {
               color: i == numberChosen
                   ? Colors.lightBlue
                   : /*Color(0xfff3f3f3)*/ Colors.transparent,
-              border: Border.all(color: Colors.grey, width: 0.5),
+              border: Border.all(color: widget.borderColor, width: 0.5),
               borderRadius: i == 1
                   ? BorderRadius.only(
                       topLeft: Radius.circular(5),
@@ -681,10 +697,14 @@ class PickerEntryBox extends StatefulWidget {
   final Function onPressed;
   final String name;
   final String value;
+  final Color borderColor;
+  final Color textColor;
   const PickerEntryBox({
+    this.borderColor = const Color(0xff828289),
     this.name,
     this.onPressed,
     this.value,
+    this.textColor = const Color(0xff828289),
     Key key,
   }) : super(key: key);
 
@@ -695,36 +715,43 @@ class PickerEntryBox extends StatefulWidget {
 class _PickerEntryBoxState extends State<PickerEntryBox> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
-      decoration: BoxDecoration(
-          border: Border.all(width: 1.0, color: Color(0xff828289)),
-          borderRadius: BorderRadius.circular(10)),
-      child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: 8,
-          ),
-          Text(
-            widget.name,
-            style: TextStyle(fontWeight: FontWeight.normal),
-          ),
-          Expanded(
-            flex: 10,
-            child: Container(
-              height: 45,
+    return InkWell(
+      borderRadius: BorderRadius.circular(10),
+      onTap: (){
+        widget.onPressed();
+        setState(() {});
+      },
+      child: Container(
+        padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
+        decoration: BoxDecoration(
+            border: Border.all(width: 1.0, color: widget.borderColor),
+            borderRadius: BorderRadius.circular(10)),
+        child: Row(
+          children: <Widget>[
+            SizedBox(
+              width: 8,
             ),
-          ),
-          Text(widget.value),
-          IconButton(
-            icon: Icon(Icons.keyboard_arrow_down),
-            padding: EdgeInsets.all(0),
-            onPressed: () {
-              widget.onPressed();
-              setState(() {});
-            },
-          ),
-        ],
+            Text(
+              widget.name,
+              style: TextStyle(fontWeight: FontWeight.normal, color: widget.textColor),
+            ),
+            Expanded(
+              flex: 10,
+              child: Container(
+                height: 45,
+              ),
+            ),
+            Text(widget.value, style: TextStyle(color: widget.textColor),),
+            IconButton(
+              icon: Icon(Icons.keyboard_arrow_down, color: widget.borderColor,),
+              padding: EdgeInsets.all(0),
+              onPressed: () {
+                widget.onPressed();
+                setState(() {});
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -733,7 +760,8 @@ class _PickerEntryBoxState extends State<PickerEntryBox> {
 class BigBlueButton extends StatelessWidget {
   final String text;
   final Function onPressed;
-  const BigBlueButton({Key key, this.onPressed, this.text}) : super(key: key);
+  final Color color;
+  const BigBlueButton({Key key, this.onPressed, this.text, this.color=const Color(0xff0088ff)}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -743,7 +771,7 @@ class BigBlueButton extends StatelessWidget {
         width: 499,
         height: 60,
         child: MaterialButton(
-          color: Color(0xff0088ff),
+          color: color,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           onPressed: () {
@@ -1144,7 +1172,7 @@ class CompetitionDiaryEntry extends StatelessWidget {
                       ),
                       Text(_competition.startTime == null
                           ? '-'
-                          : '${_competition.startTime}'),
+                          : '${_competition.startTime.substring(0,5)}'),
                     ],
                   ),
                 ),

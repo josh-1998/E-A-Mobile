@@ -47,11 +47,13 @@ class User {
       this.mediumTermGoal,
       this.longTermGoal});
 
-  Future<void> getUserInfo() async {
+  Future<void> getUserInfo(String jwt) async {
+    print(jwt);
     var response = await http.get(
       kAPIAddress + '/api/users/current/',
-      headers: {'Authorization': 'JWT ' + this.jwt},
+      headers: {'Authorization': 'JWT ' + jwt},
     );
+    print(response.body);
     if (response.statusCode == 200) {
       Map body = json.decode(response.body);
       this.firstName = body['first_name'] != null ? body['first_name'] : null;
@@ -74,7 +76,7 @@ class User {
     }
   }
 
-  Future<void> updateUserInfo() async {
+  Future<void> updateUserInfo(String jwt) async {
     Map body = {};
     if (this.firstName != null) body['first_name'] = this.firstName;
     if (this.lastName != null) body['last_name'] = this.lastName;
@@ -99,11 +101,11 @@ class User {
     }
   }
 
-  Future<void> deleteUser(String jwt) async {
+  Future<int> deleteUser(String jwt) async {
     var response = await http.delete(
       kAPIAddress + '/api/users/current/',
       headers: {'Authorization': 'JWT ' + jwt},
     );
-    Map body = json.decode(response.body);
+
   }
 }

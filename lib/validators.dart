@@ -1,0 +1,3 @@
+bool passwordValidator(){
+  return true;
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name">E-Athlete</string>
+    <string name="facebook_app_id">660326394698383</string>
+    <string name="fb_login_protocol_scheme">fb660326394698383</string>
+
+</resources>

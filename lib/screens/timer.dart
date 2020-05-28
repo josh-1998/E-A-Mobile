@@ -183,6 +183,7 @@ class _HomeContentState extends State<HomeContent> {
               RaisedButton(
 
                 onPressed: () {setState(() {
+                  _stopwatch.stop();
                   _stopwatch.reset();
                   _elapsedTime = 0;
                 });
@@ -218,6 +219,13 @@ class _HomeContentState extends State<HomeContent> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+
   }
 }
 

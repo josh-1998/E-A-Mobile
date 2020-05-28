@@ -1,1 +1,1 @@
-const String kAPIAddress = 'http://192.168.1.4:8000';
+const String kAPIAddress = 'https://www.e-athleteapp.com';

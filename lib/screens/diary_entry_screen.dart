@@ -108,7 +108,7 @@ class _SessionPageState extends State<SessionPage> {
       onRefresh: () async {
         Provider.of<UserRepository>(context, listen: false).diary.sessionList =
             await getSessionList(
-                Provider.of<UserRepository>(context, listen: false).user.jwt);
+                await Provider.of<UserRepository>(context, listen: false).refreshIdToken());
         setState(() {
 
         });
@@ -147,7 +147,7 @@ class _GeneralDayPageState extends State<GeneralDayPage> {
       onRefresh: ()async {
         Provider.of<UserRepository>(context, listen: false).diary.generalDayList =
             await getGeneralDayList(
-            Provider.of<UserRepository>(context, listen: false).user.jwt);
+            await Provider.of<UserRepository>(context, listen: false).refreshIdToken());
         setState(() {
 
         });

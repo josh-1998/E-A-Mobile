@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-//import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'database.dart';
 import 'models/diary_model.dart';
@@ -13,7 +13,7 @@ import 'models/user_model.dart';
 class UserRepository extends ChangeNotifier{
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
-//  final FacebookLogin _facebookLogin;
+  final FacebookLogin _facebookLogin;
   User user;
   Diary diary;
 
@@ -21,47 +21,51 @@ class UserRepository extends ChangeNotifier{
   UserRepository({FirebaseAuth firebaseAuth, GoogleSignIn googleSignin})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         _googleSignIn = googleSignin ?? GoogleSignIn(),
-//        _facebookLogin = FacebookLogin(),
+        _facebookLogin = FacebookLogin(),
         user = User(),
         diary = Diary();
 
 
-//  Future<User> signInWithFacebook() async{
-//    final FacebookLoginResult facebookUser = await _facebookLogin.logIn(['email']);
-//    final FacebookAccessToken facebookAccessToken = facebookUser.accessToken;
-//    final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: facebookAccessToken.token);
-//    var _authResult = await _firebaseAuth.signInWithCredential(credential);
-//    FirebaseUser firebaseUser = _authResult.user;
-//    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
-//    assert(firebaseUser.uid == currentUser.uid);
-//    IdTokenResult idToken = await firebaseUser.getIdToken();
-//    String jwt = idToken.token;
-//    user.jwt = jwt;
-//    await setUserOnSignin();
-//    return user;
-//  }
-
-  Future<User> signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
+  Future<User> signInWithFacebook() async{
+    final FacebookLoginResult facebookUser = await _facebookLogin.logIn(['email']);
+    final FacebookAccessToken facebookAccessToken = facebookUser.accessToken;
+    final AuthCredential credential = FacebookAuthProvider.getCredential(accessToken: facebookAccessToken.token);
     var _authResult = await _firebaseAuth.signInWithCredential(credential);
-    FirebaseUser firebaseUser =  _authResult.user;
+    FirebaseUser firebaseUser = _authResult.user;
     final FirebaseUser currentUser = await _firebaseAuth.currentUser();
     assert(firebaseUser.uid == currentUser.uid);
     IdTokenResult idToken = await firebaseUser.getIdToken();
-    String jwt= idToken.token;
+    String jwt = idToken.token;
     user.jwt = jwt;
     await setUserOnSignin();
     return user;
   }
 
+  Future<User> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth =
+      await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      var _authResult = await _firebaseAuth.signInWithCredential(credential);
+      FirebaseUser firebaseUser = _authResult.user;
+      final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+      assert(firebaseUser.uid == currentUser.uid);
+      IdTokenResult idToken = await firebaseUser.getIdToken();
+      String jwt = idToken.token;
+      user.jwt = jwt;
+      await setUserOnSignin();
+      return user;
+    }catch(e){
+      throw e;
+    }
+  }
+
   Future<void> setUserOnSignin ()async {
-    await user.getUserInfo();
+    await user.getUserInfo(await refreshIdToken());
     // create tables in internal database
     DBHelper.initDb();
     DBHelper.createUserTable();
@@ -91,7 +95,7 @@ class UserRepository extends ChangeNotifier{
     IdTokenResult idToken = await currentUser.getIdToken();
     String jwt= idToken.token;
     user.jwt = jwt;
-    await user.getUserInfo();
+    await user.getUserInfo(await refreshIdToken());
     await setUserOnSignin();
 
 
@@ -109,14 +113,22 @@ class UserRepository extends ChangeNotifier{
 
   }
 
+  Future<void> resetPassword(String email)async{
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
+  }
+
   Future<void> signUp({String email, String password}) async {
+    try{
     await _firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
     final FirebaseUser currentUser = await _firebaseAuth.currentUser();
     currentUser.sendEmailVerification();
-    IdTokenResult idToken = await currentUser.getIdToken();
+    IdTokenResult idToken = await currentUser.getIdToken();}
+    catch(e){
+      throw e;
+    }
 //    String jwt= idToken.token;
 //    user.jwt = jwt;
 //    try{
@@ -142,6 +154,12 @@ class UserRepository extends ChangeNotifier{
 
   Future<FirebaseUser> getUser() async {
     return (await _firebaseAuth.currentUser());
+  }
+
+  Future<void> deleteUser() async {
+   FirebaseUser currentUser = await _firebaseAuth.currentUser();
+   user.deleteUser(await refreshIdToken());
+   currentUser.delete();
   }
 
 }

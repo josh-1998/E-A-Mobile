@@ -48,6 +48,7 @@ class CalendarPageContent extends StatelessWidget {
         currentDayWidgetList = convertListToWidgets(state.currentDayList);
 
         return Scaffold(
+          resizeToAvoidBottomInset: true,
         appBar: AppBar(
           leading: IconButton(
             icon: ImageIcon(
@@ -90,24 +91,23 @@ class CalendarPageContent extends StatelessWidget {
                   ),
                   onPressed: () {
                     showMaterialModalBottomSheet(
+                      expand: true,
+                      bounce: true,
                         context: context,
                         builder: (builder, scrollController) {
                           return BlocProvider(
                               create: (context) => CompetitionBloc(
                                   Provider.of<UserRepository>(context,
                                       listen: false)),
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    bottom:
-                                        MediaQuery.of(context).viewInsets.bottom),
-                                child: SafeArea(
-                                    child: SingleChildScrollView(
-                                        child: CompetitionEntry())),
-                              ));
+                              child: SafeArea(
+                                  child: SingleChildScrollView(
+                                      child: CompetitionEntry())));
                         });
+
                   }),
               headerStyle: HeaderStyle(
                 rightChevronPadding: EdgeInsets.symmetric(horizontal: 0),
+                leftChevronPadding: EdgeInsets.symmetric(horizontal: 0),
                 formatButtonVisible: false,
               ),
             events: state.competitionMap,
@@ -117,9 +117,10 @@ class CalendarPageContent extends StatelessWidget {
               availableCalendarFormats: {CalendarFormat.month: 'month'},
               daysOfWeekStyle: DaysOfWeekStyle(
                 weekendStyle: TextStyle(color: Colors.grey),
-//          dowTextBuilder: (date, locale) => DateFormat.E(locale).format(date)[0]
               ),
+
               calendarStyle: CalendarStyle(
+
                 contentPadding: EdgeInsets.all(0),
                 outsideDaysVisible: false,
                 todayColor: Colors.blueGrey,

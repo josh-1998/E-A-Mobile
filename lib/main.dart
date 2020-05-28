@@ -57,7 +57,10 @@ class MyApp extends StatelessWidget {
     // TODO: implement build
   return MaterialApp(
     debugShowCheckedModeBanner: false,
-      theme: ThemeData(buttonColor: Colors.grey, iconTheme: IconThemeData(color: Colors.grey)),
+      theme: ThemeData(buttonColor: Colors.grey,
+          primarySwatch: Colors.grey,
+//          iconTheme: IconThemeData(color: Colors.grey)
+      ),
 
       routes: {
         LoginPage.id: (context) => LoginPage(),

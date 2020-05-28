@@ -46,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: RefreshIndicator(
         onRefresh: ()async{
 
-          await Provider.of<UserRepository>(context, listen: false).user.getUserInfo();},
+          await Provider.of<UserRepository>(context, listen: false).user.getUserInfo(await userRepository.refreshIdToken());},
         child: ListView(
           children: <Widget>[
             Padding(

@@ -15,11 +15,16 @@ import 'main_page.dart';
 
 
 
-class GeneralDayUpdateBody extends StatelessWidget {
+class GeneralDayUpdateBody extends StatefulWidget {
   const GeneralDayUpdateBody({
     Key key,
   }) : super(key: key);
 
+  @override
+  _GeneralDayUpdateBodyState createState() => _GeneralDayUpdateBodyState();
+}
+
+class _GeneralDayUpdateBodyState extends State<GeneralDayUpdateBody> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<GeneralDayBloc, GeneralDayState>(

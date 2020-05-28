@@ -43,7 +43,7 @@ class AuthenticationBloc
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     final isSignedIn = await _userRepository.isSignedIn();
     if (isSignedIn) {
-      /// try getting values from local storage. If that works use jwt to fetch data
+      /// uses refreshidtoken to get new data
       /// If it doesn't work log the user out
       try {
         await _userRepository.getUser();
@@ -51,7 +51,7 @@ class AuthenticationBloc
         await DBHelper.getUser(_userRepository.user);
         //try getting user info with jwt token
         try {
-          await _userRepository.user.getUserInfo();
+          await _userRepository.user.getUserInfo(await _userRepository.refreshIdToken());
           //
           _userRepository.diary.sessionList = await DBHelper.getSessions();
           _userRepository.diary.sessionList = await DBHelper.getSessions();
@@ -70,7 +70,7 @@ class AuthenticationBloc
             var idToken = await currentUser.getIdToken();
             String jwt = idToken.token;
             _userRepository.user.jwt = jwt;
-            await _userRepository.user.getUserInfo();
+            await _userRepository.user.getUserInfo(await _userRepository.refreshIdToken());
             _userRepository.diary.sessionList = await DBHelper.getSessions();
             _userRepository.diary.generalDayList = await DBHelper.getGeneralDay();
             _userRepository.diary.competitionList = await DBHelper.getCompetitions();

@@ -32,7 +32,7 @@ class Session {
     this.id,
   });
 
-  Future<void> uploadSession(UserRepository _userRepository) async {
+  Future<Session> uploadSession(UserRepository _userRepository) async {
     Map body = {};
     if (this.lengthOfSession != null)
       body['time'] = this.lengthOfSession.toString();
@@ -45,14 +45,27 @@ class Session {
     if (this.reflections != null) body['reflections'] = this.reflections;
 
     var response = await http.post(kAPIAddress + '/api/session/',
-        headers: {'Authorization': 'JWT ' + _userRepository.user.jwt},
+        headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()},
         body: body);
-    print(response.statusCode);
-    print(response.body);
+//    print(response.body);
+    Map responseBody = jsonDecode(response.body);
     if (response.statusCode != 201) {
       throw ServerErrorException;
     }
+    Session _newSession = Session()
+      ..title = responseBody['title']
+      ..date = responseBody['date']
+      ..lengthOfSession = responseBody['time']
+      ..intensity = responseBody['intensity']
+      ..performance = responseBody['performance']
+      ..feeling = responseBody['feeling']
+      ..target = responseBody['target']
+      ..reflections = responseBody['reflections']
+      ..id = responseBody['id'];
+    DBHelper.updateSessionsList([_newSession]);
+    return _newSession;
   }
+
 }
 
 Future<List<Session>> getSessionList(String jwt) async {
@@ -76,7 +89,7 @@ Future<List<Session>> getSessionList(String jwt) async {
 
     sessions.add(newSession);
   }
-  print(sessions);
+//  print(sessions);
   return sessions;
 }
 
@@ -184,13 +197,14 @@ class Competition {
     if (response.statusCode != 201) {
       throw ServerErrorException;
     }
-    Competition newCompetition = Competition()
+    Competition _newCompetition = Competition()
       ..name = responseBody['name']
     ..date = responseBody['date']
     ..address = responseBody['address']
     ..startTime = responseBody['start_time']
     ..id = responseBody['id'];
-    return newCompetition;
+    DBHelper.updateCompetitionsList([_newCompetition]);
+    return _newCompetition;
   }
 }
 

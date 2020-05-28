@@ -182,10 +182,46 @@ class _HomePageContentState extends State<HomePageContent> {
                             ],
                           ),
                         ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                IconButton(icon: Icon(Icons.chevron_left,
+                                ),
+                                onPressed: (){
+                                  BlocProvider.of<GraphBloc>(context).add(ChangeTimeViewBack());
+                                },),
+                                Text(state.lengthOfTime),
+                                IconButton(icon: Icon(Icons.chevron_right),
+                                onPressed: (){
+                                  BlocProvider.of<GraphBloc>(context).add(ChangeTimeViewForward());
+                                },),
+
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: MaterialButton(
+                                textColor: Colors.blue,
+
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0),
+                                    side: BorderSide(color: Colors.blue)),
+                                child: Text('${state.timePeriodName}'),
+                                onPressed: (){
+                                  BlocProvider.of<GraphBloc>(context).add(ChangeTimeViewTimeFrame());
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                         Expanded(
                             child: SimpleLineChart(
                           tableData1: state.dataList1,
                           tableData2: state.dataList2,
+                              days: state.days,
                         )),
                       ],
                     ),
@@ -203,10 +239,11 @@ class _HomePageContentState extends State<HomePageContent> {
 class SimpleLineChart extends StatelessWidget {
   final tableData1;
   final tableData2;
+  final List<charts.TickSpec<DateTime>> days;
 
   final bool animate;
 
-  SimpleLineChart({this.animate, this.tableData1, this.tableData2});
+  SimpleLineChart({this.animate, this.tableData1, this.tableData2, this.days});
 
   @override
   Widget build(BuildContext context) {
@@ -232,11 +269,16 @@ class SimpleLineChart extends StatelessWidget {
 
     return charts.TimeSeriesChart(
       myList,
-      animate: true,
+      animate: false,
+        domainAxis: new charts.DateTimeAxisSpec(
+          tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
+              day: new charts.TimeFormatterSpec(
+                  format: 'd', transitionFormat: 'dd/MMM')),
+            tickProviderSpec: charts.StaticDateTimeTickProviderSpec(
+              days,
+            )),
       animationDuration: Duration(seconds: 1),
     );
   }
 }
 
-// TODO: convert data from user repository into graph friendly format
-// TODO: convert x axis to show last 7 days in order (check online, they already did it using datetime

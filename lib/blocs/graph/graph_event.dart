@@ -27,4 +27,8 @@ class MoveWeekForward extends GraphEvent{}
 
 class MoveWeekBack extends GraphEvent{}
 
-class ChangeTimeView extends GraphEvent{}
+class ChangeTimeViewBack extends GraphEvent{}
+
+class ChangeTimeViewForward extends GraphEvent{}
+
+class ChangeTimeViewTimeFrame extends GraphEvent{}

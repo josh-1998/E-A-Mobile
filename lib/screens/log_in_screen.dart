@@ -1,5 +1,8 @@
 import 'package:eathlete/blocs/authentification/authentification_bloc.dart';
 import 'package:eathlete/blocs/log_in/log_in_bloc.dart';
+import 'package:eathlete/models/user_model.dart';
+import 'package:eathlete/screens/forgotten_password.dart';
+import 'package:eathlete/screens/profile_edit_page.dart';
 import 'package:eathlete/screens/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,7 +37,12 @@ class _LoginPageState extends State<LoginPage> {
                 if (state is SuccessfulLogin) {
                   AuthenticationBloc _authentificationBloc = AuthenticationBloc(userRepository: Provider.of<UserRepository>(context, listen: false));
                   _authentificationBloc.add(LoggedIn());
-                  Navigator.popAndPushNamed(context, MainPage.id);
+                  if(Provider.of<UserRepository>(context, listen: false).user.firstName == ''){
+                    Navigator.popAndPushNamed(context, MainPage.id);
+                    Navigator.pushNamed(context, ProfileEditPage.id);
+                  }else {
+                    Navigator.popAndPushNamed(context, MainPage.id);
+                  }
                 }
                 if (state is LoginFailure) {
                   Scaffold.of(context)
@@ -87,7 +95,9 @@ class _LoginPageState extends State<LoginPage> {
                       AppStyledTextField(
                         onChanged: (value, context) => changeEmail(context, value),
                         icon: Icon(Icons.alternate_email, color: Color(0xff828289)),
-                        fieldName: 'Username or Email',
+                        fieldName: 'Email Address',
+                        autocorrect: false,
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       SizedBox(
                         height: 20,
@@ -112,8 +122,10 @@ class _LoginPageState extends State<LoginPage> {
                           color: Color(0xff0088ff),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          onPressed: () => submit(context),
-//                  Navigator.pushNamed(context, MainPage.id),
+                          onPressed: () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            submit(context);
+                          },
                           textColor: Colors.white,
                           padding: const EdgeInsets.all(0.0),
                           child:
@@ -126,6 +138,10 @@ class _LoginPageState extends State<LoginPage> {
                       GestureDetector(
                         onTap: () {
                           print('User pressed forgotten password');
+                          Navigator.push(context,
+                            MaterialPageRoute(
+                              builder: (context) => PasswordReset(),
+                            ),);
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

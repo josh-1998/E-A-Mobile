@@ -82,8 +82,8 @@ class ProfileEditBloc extends Bloc<ProfileEditEvent, ProfileEditState> {
     else if (event is SubmitForm) {
       yield IsSubmitting();
       try {
-        await updatedUser.updateUserInfo();
-        await _userRepository.user.getUserInfo();
+        await updatedUser.updateUserInfo(await _userRepository.refreshIdToken());
+        await _userRepository.user.getUserInfo(await _userRepository.refreshIdToken());
         DBHelper.updateUser(_userRepository.user);
         yield SubmittedSuccessfully();
       } catch (e) {

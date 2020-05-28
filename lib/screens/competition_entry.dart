@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../class_definitions.dart';
 import '../common_widgets.dart';
-import '../main.dart';
 import '../useful_functions.dart';
 import 'main_page.dart';
 
@@ -16,10 +15,19 @@ class CompetitionEntry extends StatefulWidget {
 }
 
 class _CompetitionEntryState extends State<CompetitionEntry> {
+  //validation of form fields, 0: title, 1: Competition Date, 2: start time 3: address
+  List<bool> conditions = [true, true, true, true];
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<CompetitionBloc, CompetitionState>(
       listener: (BuildContext context, CompetitionState state){
+        if(state is InformationIncomplete){
+          conditions = state.conditions;
+          setState(() {
+
+          });
+        }
         if(state is SubmissionSuccessful){
           Provider.of<PageNumber>(context, listen: false).pageNumber = 2;
           Future.delayed(Duration(milliseconds: 1)).then((value) {
@@ -43,7 +51,7 @@ class _CompetitionEntryState extends State<CompetitionEntry> {
         child: Column(
           children: <Widget>[
              TextFormField(
-              decoration: InputDecoration.collapsed(hintText: 'Title'),
+              decoration: InputDecoration.collapsed(hintText: 'Title', hintStyle: TextStyle(color: conditions[0]?Color(0xff828289):Colors.red)),
               onChanged: (value){
                 BlocProvider.of<CompetitionBloc>(context).add(UpdateName(value));
               },
@@ -53,25 +61,33 @@ class _CompetitionEntryState extends State<CompetitionEntry> {
             Padding(
               padding: const EdgeInsets.symmetric( vertical: 12),
               child: PickerEntryBox(
+                borderColor: conditions[1]?Color(0xff828289):Colors.red,
+                textColor: conditions[1]?Colors.black:Colors.red,
                 name: 'Competition Date',
                 value:
                 BlocProvider.of<CompetitionBloc>(context).competition.date==null?'-':'${BlocProvider.of<CompetitionBloc>(context).competition.date}',
                 onPressed: () {
                   showPickerDate(context);
+                  conditions[1]=true;
                 },
               ),
             ),
             Padding(padding: EdgeInsets.symmetric(vertical: 12),
               child: PickerEntryBox(
+                borderColor: conditions[2]?Color(0xff828289):Colors.red,
+                textColor: conditions[2]?Colors.black:Colors.red,
                 name: 'Start Time',
-                value: 'cheese',
+                value: BlocProvider.of<CompetitionBloc>(context).competition.startTime==null?'-':'${BlocProvider.of<CompetitionBloc>(context).competition.startTime}',
                 onPressed: (){
                   showStartTimeArray(context);
+                  conditions[2]=true;
                 },
               ),),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: AppStyledTextField(fieldName: 'Address',
+              borderColor: conditions[3]?Color(0xff828289):Colors.red,
+                helpTextColor: conditions[3]?Color(0xff828289):Colors.red,
               onChanged: (value, context){
                 BlocProvider.of<CompetitionBloc>(context).add(UpdateAddress(value));
               },
@@ -111,6 +127,9 @@ class _CompetitionEntryState extends State<CompetitionEntry> {
           print(value[2]);
           BlocProvider.of<CompetitionBloc>(context).add(UpdateStartTime('${value[0]}:${value[2]}'));
           print(BlocProvider.of<CompetitionBloc>(context).competition.startTime);
+          setState(() {
+
+          });
         }).showDialog(context);
   }
 
@@ -127,6 +146,9 @@ class _CompetitionEntryState extends State<CompetitionEntry> {
           print(date);
 
           BlocProvider.of<CompetitionBloc>(context).add(UpdateDate(date));
+          setState(() {
+
+          });
         }).showDialog(context);
   }
 }

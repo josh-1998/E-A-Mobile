@@ -12,9 +12,11 @@ part 'session_event.dart';
 part 'session_state.dart';
 
 class SessionBloc extends Bloc<SessionEvent, SessionState> {
-  ///initialize
   Session session;
   UserRepository _userRepository;
+  /// stores result from validation
+  ///0:Intensity, 1: performance, 2: feeling
+  List<bool> conditions= [false, false, false,];
 
 
 
@@ -30,6 +32,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   Stream<SessionState> mapEventToState(SessionEvent event) async* {
     if(event is UpdateIntensity){
       session.intensity = event.intensity;
+      conditions[0] = true;
       yield InitialSessionState();
     }
     else if(event is UpdateTitle){
@@ -38,9 +41,11 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     }
     else if(event is UpdatePerformance){
       session.performance = event.performance;
+      conditions[1] = true;
       yield InitialSessionState();
     }
     else if(event is UpdateFeeling){
+      conditions[2] = true;
       session.feeling = event.feeling;
       yield InitialSessionState();
     }
@@ -58,14 +63,24 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     }
     else if(event is Submit){
       yield IsSubmitting();
-      try {
-        await session.uploadSession(_userRepository);
-        yield SuccessfullySubmitted();
-      }catch(e){
-        print(e);
-        yield SubmissionFailed();
+      int numberOfFalse = 0;
+      for(bool value in conditions){
+        if(value == false){
+          numberOfFalse++;
+        }
       }
-
+      if(numberOfFalse == 0) {
+        try {
+          Session _newSession = await session.uploadSession(_userRepository);
+          _userRepository.diary.sessionList.add(_newSession);
+          yield SuccessfullySubmitted();
+        } catch (e) {
+          print(e);
+          yield SubmissionFailed();
+        }
+      }else{
+        yield InformationIncomplete(conditions);
+      }
     }
   }
 }

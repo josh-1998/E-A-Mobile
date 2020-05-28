@@ -13,3 +13,12 @@ class IsSubmitting extends CompetitionState{}
 class SubmissionSuccessful extends CompetitionState{}
 
 class SubmissionFailed extends CompetitionState{}
+
+class InformationIncomplete extends CompetitionState{
+  final List conditions;
+
+  InformationIncomplete(this.conditions);
+
+  @override
+  List<Object> get props => [conditions];
+}

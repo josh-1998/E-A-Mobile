@@ -240,7 +240,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                       BlocProvider.of<ProfileEditBloc>(context);
                       profileEditBloc.add(UpdateShortTermGoal(value));
                     },
-                    fieldName: 'shortTermGoal',
+                    fieldName: 'Short Term Goal',
                     initialValue: profileEditBloc.updatedUser.shortTermGoal != null
                         ? profileEditBloc.updatedUser.shortTermGoal
                         : null,
@@ -255,7 +255,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                       BlocProvider.of<ProfileEditBloc>(context);
                       profileEditBloc.add(UpdateMediumTermGoal(value));
                     },
-                    fieldName: 'mediumTermGoal',
+                    fieldName: 'Medium Term Goal',
                     initialValue: profileEditBloc.updatedUser.mediumTermGoal != null
                         ? profileEditBloc.updatedUser.mediumTermGoal
                         : null,
@@ -270,7 +270,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                       BlocProvider.of<ProfileEditBloc>(context);
                       profileEditBloc.add(UpdateLongTermGoal(value));
                     },
-                    fieldName: 'longTermGoal',
+                    fieldName: 'Long Term Goal',
                     initialValue: profileEditBloc.updatedUser.longTermGoal != null
                         ? profileEditBloc.updatedUser.longTermGoal
                         : null,
