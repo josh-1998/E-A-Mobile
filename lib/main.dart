@@ -10,14 +10,13 @@ import 'package:eathlete/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
-import 'package:table_calendar/table_calendar.dart';
+
 import 'blocs/authentification/authentification_bloc.dart';
 import 'class_definitions.dart';
 import 'simple_bloc_delegate.dart';
-
-
 
 
 void main() async {
@@ -28,40 +27,51 @@ void main() async {
   int pageNumber = 1;
   // TODO: change provider to proxy provider to allow for everything to update
   runApp(ProxyProvider0(
-    update: (a,b)=>PageNumber(),
+    update: (a, b) => PageNumber(),
     child: ListenableProvider<UserRepository>(
-      create: (context) =>UserRepository(),
+      create: (context) => UserRepository(),
       child: BlocProvider(
-          create: (context) =>AuthenticationBloc(userRepository: Provider.of<UserRepository>(context, listen: false))
-          ..add(AppStarted()),
-          child: MyApp(userRepository: userRepository)
-        ),
+          create: (context) => AuthenticationBloc(
+              userRepository:
+                  Provider.of<UserRepository>(context, listen: false))
+            ..add(AppStarted()),
+          child: MyApp(userRepository: userRepository)),
     ),
-  )
-  );
+  ));
 }
 
 class MyApp extends StatelessWidget {
-
-
-
   MyApp({Key key, @required UserRepository userRepository})
       : assert(userRepository != null),
-
         super(key: key);
 
 
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+  Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) {
+    if (message.containsKey('data')) {
+      // Handle data message
+      final dynamic data = message['data'];
+    }
 
-@override
+    if (message.containsKey('notification')) {
+      // Handle notification message
+      final dynamic notification = message['notification'];
+    }
+
+    // Or do other work.
+  }
+
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-  return MaterialApp(
-    debugShowCheckedModeBanner: false,
-      theme: ThemeData(buttonColor: Colors.grey,
-          primarySwatch: Colors.grey,
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        buttonColor: Colors.grey,
+        primarySwatch: Colors.grey,
 //          iconTheme: IconThemeData(color: Colors.grey)
       ),
-
       routes: {
         LoginPage.id: (context) => LoginPage(),
         SignUpPage.id: (context) => SignUpPage(),
@@ -70,29 +80,36 @@ class MyApp extends StatelessWidget {
         TimerPageActual.id: (context) => TimerPageActual(),
         Notifications.id: (context) => Notifications(),
         Settings.id: (context) => Settings(),
-
       },
-    home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-      builder: (context, state) {
-        if(state is Loading){
-          return LoadingScreen();
-        }
-        if(state is Uninitialized){
-          return LoginPage();
-        }
-        if(state is Authenticated){
-          return MainPage(pageNumber: Provider.of<PageNumber>(context).pageNumber,);
-        }
-        if(state is Unauthenticated){
-          return LoginPage();
-        }
-        return Container();
+      home: GestureDetector(
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
 
-      },
-    ),
-  );
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
+            currentFocus.focusedChild.unfocus();
+          }
+        },
+        child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+          builder: (context, state) {
+            if (state is Loading) {
+              return LoadingScreen();
+            }
+            if (state is Uninitialized) {
+              return LoginPage();
+            }
+            if (state is Authenticated) {
+              return MainPage(
+                pageNumber: Provider.of<PageNumber>(context).pageNumber,
+              );
+            }
+            if (state is Unauthenticated) {
+              return LoginPage();
+            }
+            return Container();
+          },
+        ),
+      ),
+    );
   }
-
 }
-
-

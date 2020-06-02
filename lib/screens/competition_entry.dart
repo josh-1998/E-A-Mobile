@@ -88,6 +88,7 @@ class _CompetitionEntryState extends State<CompetitionEntry> {
               child: AppStyledTextField(fieldName: 'Address',
               borderColor: conditions[3]?Color(0xff828289):Colors.red,
                 helpTextColor: conditions[3]?Color(0xff828289):Colors.red,
+              keyboardType: TextInputType.multiline,
               onChanged: (value, context){
                 BlocProvider.of<CompetitionBloc>(context).add(UpdateAddress(value));
               },
@@ -99,6 +100,7 @@ class _CompetitionEntryState extends State<CompetitionEntry> {
             onPressed: (){
               BlocProvider.of<CompetitionBloc>(context).add(Submit());
             },),
+            SizedBox(height: 15,)
           ],
         ),
       ),
@@ -137,7 +139,7 @@ class _CompetitionEntryState extends State<CompetitionEntry> {
     Picker(
         hideHeader: true,
         adapter: DateTimePickerAdapter(),
-        title: Text("Date of Birth"),
+        title: Text("Date of Competition"),
         selectedTextStyle: TextStyle(color: Colors.blue),
         onConfirm: (Picker picker, List value) {
           String date = '${timeToString((picker.adapter as DateTimePickerAdapter).value.year)}-${timeToString((picker.adapter as DateTimePickerAdapter).value.month)}-${timeToString((picker.adapter as DateTimePickerAdapter).value.day)}';

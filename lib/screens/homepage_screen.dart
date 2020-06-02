@@ -169,6 +169,7 @@ class _HomePageContentState extends State<HomePageContent> {
                                 value: _value,
                               ),
                               DropdownButton(
+                                isExpanded: false,
                                 items: dropDownButtons,
                                 onChanged: (value) {
                                   setState(() {
@@ -228,7 +229,8 @@ class _HomePageContentState extends State<HomePageContent> {
                   )
                 ],
               ),
-            )
+            ),
+            SizedBox(height: 100,)
           ],
         ),
       );
@@ -269,7 +271,7 @@ class SimpleLineChart extends StatelessWidget {
 
     return charts.TimeSeriesChart(
       myList,
-      animate: false,
+      animate: true,
         domainAxis: new charts.DateTimeAxisSpec(
           tickFormatterSpec: charts.AutoDateTimeTickFormatterSpec(
               day: new charts.TimeFormatterSpec(

@@ -13,14 +13,9 @@ import '../common_widgets.dart';
 import '../user_repository.dart';
 import 'competition_entry.dart';
 
-class CalendarPage extends StatefulWidget {
+class CalendarPage extends StatelessWidget {
   CalendarPage({Key key}) : super(key: key);
 
-  @override
-  _CalendarPageState createState() => _CalendarPageState();
-}
-
-class _CalendarPageState extends State<CalendarPage> {
 
 
 
@@ -63,8 +58,6 @@ class CalendarPageContent extends StatelessWidget {
           actions: <Widget>[NotificationButton()],
           backgroundColor: Colors.white,
           title: Row(
-//          mainAxisAlignment: MainAxisAlignment.center,
-//          crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Container(
                   height: 50, child: Image.asset('images/placeholder_logo.PNG')),
@@ -76,72 +69,78 @@ class CalendarPageContent extends StatelessWidget {
             ],
           ),
         ),
-        body: Column(
-          children: <Widget>[
-            TableCalendar(
-              calendarActionButton: CalendarActionButton(
-                  child: Row(
-                    children: <Widget>[
+        body: SingleChildScrollView(
+
+          child: Column(
+            children: <Widget>[
+              TableCalendar(
+                calendarActionButton: CalendarActionButton(
+                    child: Row(
+                      children: <Widget>[
 //              Icon(Icons.add, color: Colors.white,),
-                      Text(
-                        'Add Competition',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                  onPressed: () {
-                    showMaterialModalBottomSheet(
-                      expand: true,
-                      bounce: true,
-                        context: context,
-                        builder: (builder, scrollController) {
-                          return BlocProvider(
-                              create: (context) => CompetitionBloc(
-                                  Provider.of<UserRepository>(context,
-                                      listen: false)),
-                              child: SafeArea(
-                                  child: SingleChildScrollView(
-                                      child: CompetitionEntry())));
-                        });
+                        Text(
+                          'Add Competition',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                    onPressed: () {
+                      showMaterialModalBottomSheet(
+                        enableDrag: true,
+                        expand: false,
+                        bounce: true,
+                          context: context,
+                          builder: (builder, scrollController) {
+                            return BlocProvider(
+                                create: (context) => CompetitionBloc(
+                                    Provider.of<UserRepository>(context,
+                                        listen: false)),
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                  child: SafeArea(
+                                    child: SingleChildScrollView(
+                                        child: CompetitionEntry()),
+                                  ),
+                                ));
+                          });
 
-                  }),
-              headerStyle: HeaderStyle(
-                rightChevronPadding: EdgeInsets.symmetric(horizontal: 0),
-                leftChevronPadding: EdgeInsets.symmetric(horizontal: 0),
-                formatButtonVisible: false,
+                    }),
+                headerStyle: HeaderStyle(
+                  rightChevronPadding: EdgeInsets.symmetric(horizontal: 0),
+                  leftChevronPadding: EdgeInsets.symmetric(horizontal: 0),
+                  formatButtonVisible: false,
+                ),
+              events: state.competitionMap,
+                onDaySelected: (DateTime datetime, List events){
+                  BlocProvider.of<CalendarBloc>(context).add(ChangeDay(currentDay: DateTime(datetime.year, datetime.month, datetime.day)));
+                },
+                availableCalendarFormats: {CalendarFormat.month: 'month'},
+                daysOfWeekStyle: DaysOfWeekStyle(
+                  weekendStyle: TextStyle(color: Colors.grey),
+                ),
+              startingDayOfWeek: StartingDayOfWeek.monday,
+                calendarStyle: CalendarStyle(
+                  contentPadding: EdgeInsets.all(0),
+                  outsideDaysVisible: false,
+                  todayColor: Colors.blueGrey,
+                  selectedColor: Colors.blue,
+                  weekendStyle: TextStyle(color: Colors.grey),
+                ),
+                calendarController: Provider.of<PageNumber>(context).calendarController,
               ),
-            events: state.competitionMap,
-              onDaySelected: (DateTime datetime, List events){
-                BlocProvider.of<CalendarBloc>(context).add(ChangeDay(currentDay: DateTime(datetime.year, datetime.month, datetime.day)));
-              },
-              availableCalendarFormats: {CalendarFormat.month: 'month'},
-              daysOfWeekStyle: DaysOfWeekStyle(
-                weekendStyle: TextStyle(color: Colors.grey),
-              ),
-
-              calendarStyle: CalendarStyle(
-
-                contentPadding: EdgeInsets.all(0),
-                outsideDaysVisible: false,
-                todayColor: Colors.blueGrey,
-                selectedColor: Colors.blue,
-                weekendStyle: TextStyle(color: Colors.grey),
-              ),
-              calendarController: Provider.of<PageNumber>(context).calendarController,
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
-              child: Divider(
+              Padding(
+                padding:
+                    const EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
+                child: Divider(
 //            color: Colors.grey,
-                  ),
-            ),
-            Expanded(
-                child: ListView(
-              children: <Widget>[] + currentDayWidgetList,
+                    ),
+              ),
+              Column(
+                children: <Widget>[] + currentDayWidgetList + <Widget>[SizedBox(height: 100,)],
 //                _currentDayList,
-            ))
-          ],
+              )
+            ],
+          ),
         ),
       );}
     );

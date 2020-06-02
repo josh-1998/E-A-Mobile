@@ -25,6 +25,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     return BlocProvider(
       create: (context) => LogInBloc(Provider.of<UserRepository>(context, listen: false)),
       child: Scaffold(
@@ -68,168 +70,171 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   }
 
-                  return Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        child: Container(),
-                      ),
-                      Image(image: AssetImage('images/placeholder_logo.PNG')),
-                      Text(
-                        'Welcome back,',
-                        style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(
-                        height: 3,
-                      ),
-                      Text(
-                        'Login to continue',
-                        style: TextStyle(color: Color(0xffc6c6c6), fontSize: 17),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      AppStyledTextField(
-                        onChanged: (value, context) => changeEmail(context, value),
-                        icon: Icon(Icons.alternate_email, color: Color(0xff828289)),
-                        fieldName: 'Email Address',
-                        autocorrect: false,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      AppStyledTextField(
-                        onChanged: (value, context) =>
-                            changePassword(context, value),
-                        icon: Icon(
-                          Icons.lock_outline,
-                          color: Color(0xff828289),
-                        ),
-                        fieldName: 'Password',
-                        obscured: true,
-                      ),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      Container(
-                        width: 499,
-                        height: 60,
-                        child: MaterialButton(
-                          color: Color(0xff0088ff),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          onPressed: () {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            submit(context);
-                          },
-                          textColor: Colors.white,
-                          padding: const EdgeInsets.all(0.0),
-                          child:
-                              const Text('Sign In', style: TextStyle(fontSize: 16)),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          print('User pressed forgotten password');
-                          Navigator.push(context,
-                            MaterialPageRoute(
-                              builder: (context) => PasswordReset(),
-                            ),);
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Icon(
-                              Icons.vpn_key,
-                              color: Color(0xff828289),
-                            ),
-                            SizedBox(
-                              width: 4,
-                            ),
-                            Text(
-                              'Forgot Password?',
-                              style: TextStyle(color: Color(0xff828289)),
-                            )
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 25,
-                      ),
-                      Stack(
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                      maxHeight: height
+                    ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(30),
+                        child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
-                            child: Divider(
-                              thickness: 2,
-                              color: Color(0xffeeeeef),
-                            ),
-                          ),
-                          Center(
-                              child: Container(
-                            width: 30,
-                            color: Colors.white,
-                            child: Center(
-                              child: Text(
-                                'OR',
-                                style: TextStyle(
-                                    color: Color(0xffc0c0c4),
-                                    backgroundColor: Colors.white),
-                              ),
-                            ),
-                          ))
-                        ],
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Row(
-                        children: <Widget>[
-                          SocialMediaButton(
-                            image: Image.asset('images/facebook_logo.png'),
-                            text: 'Facebook',
-                            onPressed: (context) => facebookLogin(context),
+                          Expanded(child: Container(height: 0,)),
+                          Image(image: AssetImage('images/placeholder_logo.PNG')),
+                          Text(
+                            'Welcome back,',
+                            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                           ),
                           SizedBox(
-                            width: 8,
+                            height: 3,
                           ),
-                          SocialMediaButton(
-                            image: Image.asset('images/google_logo.png'),
-                            text: 'Google',
-                            onPressed: (context) => googleLogin(context),
-                          )
-                        ],
-                      ),
-                      Expanded(
-                        child: Container(),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text('Don\'t have an account?  '),
+                          Text(
+                            'Login to continue',
+                            style: TextStyle(color: Color(0xffc6c6c6), fontSize: 17),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          AppStyledTextField(
+                            onChanged: (value, context) => changeEmail(context, value),
+                            icon: Icon(Icons.alternate_email, color: Color(0xff828289)),
+                            fieldName: 'Email Address',
+                            autocorrect: false,
+                            keyboardType: TextInputType.emailAddress,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          AppStyledTextField(
+                            onChanged: (value, context) =>
+                                changePassword(context, value),
+                            icon: Icon(
+                              Icons.lock_outline,
+                              color: Color(0xff828289),
+                            ),
+                            fieldName: 'Password',
+                            obscured: true,
+                          ),
+                          SizedBox(
+                            height: 40,
+                          ),
+                          Container(
+                            width: 499,
+                            height: 60,
+                            child: MaterialButton(
+                              color: Color(0xff0088ff),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              onPressed: () {
+                                FocusScope.of(context).requestFocus(FocusNode());
+                                submit(context);
+                              },
+                              textColor: Colors.white,
+                              padding: const EdgeInsets.all(0.0),
+                              child:
+                                  const Text('Sign In', style: TextStyle(fontSize: 16)),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
                           GestureDetector(
                             onTap: () {
-                              print('User pressed sign in');
-                              Navigator.pushNamed(context, SignUpPage.id);
+                              print('User pressed forgotten password');
+                              Navigator.push(context,
+                                MaterialPageRoute(
+                                  builder: (context) => PasswordReset(),
+                                ),);
                             },
-                            child: Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold, color: Colors.blue),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.vpn_key,
+                                  color: Color(0xff828289),
+                                ),
+                                SizedBox(
+                                  width: 4,
+                                ),
+                                Text(
+                                  'Forgot Password?',
+                                  style: TextStyle(color: Color(0xff828289)),
+                                )
+                              ],
                             ),
-                          )
+                          ),
+                          SizedBox(
+                            height: 25,
+                          ),
+                          Stack(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                                child: Divider(
+                                  thickness: 2,
+                                  color: Color(0xffeeeeef),
+                                ),
+                              ),
+                              Center(
+                                  child: Container(
+                                width: 30,
+                                color: Colors.white,
+                                child: Center(
+                                  child: Text(
+                                    'OR',
+                                    style: TextStyle(
+                                        color: Color(0xffc0c0c4),
+                                        backgroundColor: Colors.white),
+                                  ),
+                                ),
+                              ))
+                            ],
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              SocialMediaButton(
+                                image: Image.asset('images/facebook_logo.png'),
+                                text: 'Facebook',
+                                onPressed: (context) => facebookLogin(context),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              SocialMediaButton(
+                                image: Image.asset('images/google_logo.png'),
+                                text: 'Google',
+                                onPressed: (context) => googleLogin(context),
+                              )
+                            ],
+                          ),
+                          Expanded(child: Container()),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text('Don\'t have an account?  '),
+                              GestureDetector(
+                                onTap: () {
+                                  print('User pressed sign in');
+                                  Navigator.pushNamed(context, SignUpPage.id);
+                                },
+                                child: Text(
+                                  'Sign Up',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold, color: Colors.blue),
+                                ),
+                              )
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                );}
+                      ),
+                    ),
+                  );}
               ),
             );
           },

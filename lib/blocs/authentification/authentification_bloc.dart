@@ -1,17 +1,10 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
-
 import '../../database.dart';
-import '../../exceptions.dart';
 import '../../user_repository.dart';
-
-
 part 'authentification_event.dart';
-
 part 'authentification_state.dart';
 
 class AuthenticationBloc
@@ -47,42 +40,25 @@ class AuthenticationBloc
       /// If it doesn't work log the user out
       try {
         await _userRepository.getUser();
-  // TODO: remove user table, make a call to the server each time.
+
+        // TODO: remove user table, make a call to the server each time.
         await DBHelper.getUser(_userRepository.user);
         //try getting user info with jwt token
         try {
-          await _userRepository.user.getUserInfo(await _userRepository.refreshIdToken());
-          //
-          _userRepository.diary.sessionList = await DBHelper.getSessions();
+          await _userRepository.user
+              .getUserInfo(await _userRepository.refreshIdToken());
           _userRepository.diary.sessionList = await DBHelper.getSessions();
           _userRepository.diary.generalDayList = await DBHelper.getGeneralDay();
-          print(_userRepository.diary.sessionList);
-          print(_userRepository.diary.generalDayList);
-          _userRepository.diary.competitionList = await DBHelper.getCompetitions();
+          _userRepository.diary.competitionList =
+              await DBHelper.getCompetitions();
           yield Authenticated();
         }
         //if that doesnt work, send back to firebase asking for another token
-        on ServerErrorException {
-//          print(e);
-          try {
-            print('getting new jwt');
-            FirebaseUser currentUser = await _userRepository.getUser();
-            var idToken = await currentUser.getIdToken();
-            String jwt = idToken.token;
-            _userRepository.user.jwt = jwt;
-            await _userRepository.user.getUserInfo(await _userRepository.refreshIdToken());
-            _userRepository.diary.sessionList = await DBHelper.getSessions();
-            _userRepository.diary.generalDayList = await DBHelper.getGeneralDay();
-            _userRepository.diary.competitionList = await DBHelper.getCompetitions();
-            yield Authenticated();
-          }
-          //if that doesnt work, sign the user out and ask them to authenticate again
-          catch(e){
-            _userRepository.signOut();
-            yield Unauthenticated();
-          }
+        //if that doesnt work, sign the user out and ask them to authenticate again
+        catch (e) {
+          _userRepository.signOut();
+          yield Unauthenticated();
         }
-
       } catch (e) {
         _userRepository.signOut();
         yield Unauthenticated();

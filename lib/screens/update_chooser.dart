@@ -1,4 +1,8 @@
+import 'package:eathlete/models/diary_model.dart';
+import 'package:eathlete/useful_functions.dart';
+import 'package:eathlete/user_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class UpdatePicker extends StatelessWidget {
 
@@ -15,6 +19,8 @@ class UpdatePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Stack(
         children: <Widget>[Container(
           height: MediaQuery.of(context).size.height,

@@ -4,7 +4,7 @@ import 'package:eathlete/models/diary_model.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:meta/meta.dart';
-import 'package:provider/provider.dart';
+
 
 import '../../user_repository.dart';
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:charts_flutter/flutter.dart';
 import 'package:eathlete/models/diary_model.dart';
+import 'package:eathlete/useful_functions.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:meta/meta.dart';
@@ -32,7 +33,9 @@ class GraphBloc extends Bloc<GraphEvent, GraphState> {
   ///String being shown on the button to change length of time
   String timeFrame = '2 weeks';
   /// String shown on change time period button
-  String timePeriod = '${DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day -7).day} - ${DateTime.now().day}';
+  String timePeriod = '${DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day -7).day}'
+      ' ${numberToMonth[DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day -7).month]}'
+      ' - ${DateTime.now().day} ${numberToMonth[DateTime.now().month]}';
   /// number of days currently being shown
   int numberOfDays = 7;
   /// way of updating the graphs from the name given
@@ -266,7 +269,8 @@ class GraphBloc extends Bloc<GraphEvent, GraphState> {
     if (event is ChangeTimeViewBack) {
       lastDay =
           DateTime(lastDay.year, lastDay.month, lastDay.day - numberOfDays);
-      timePeriod = '${DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays).day} - ${lastDay.day}';
+      timePeriod = '${DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).day} ${numberToMonth[DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).month]}'
+          ' - ${lastDay.day} ${numberToMonth[lastDay.month]}';
       getGraphDataNutrition(getLastDaysGeneralDay(lastDay));
       dataForGraph1 = nameToFunctionFunction(graph1Current);
       dataForGraph2 = nameToFunctionFunction(graph2Current);
@@ -275,7 +279,8 @@ class GraphBloc extends Bloc<GraphEvent, GraphState> {
     if (event is ChangeTimeViewForward) {
       lastDay =
           DateTime(lastDay.year, lastDay.month, lastDay.day + numberOfDays);
-      timePeriod = '${DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays).day} - ${lastDay.day}';
+      timePeriod = '${DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).day} ${numberToMonth[DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).month]}'
+          ' - ${lastDay.day} ${numberToMonth[lastDay.month]}';
       getGraphDataNutrition(getLastDaysGeneralDay(lastDay));
       dataForGraph1 =nameToFunctionFunction(graph1Current);
       dataForGraph2 =
@@ -288,6 +293,8 @@ class GraphBloc extends Bloc<GraphEvent, GraphState> {
         numberOfDays = 7;
       }else numberOfDays += 7;
       timeFrame = daysToName[numberOfDays];
+      timePeriod = '${DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).day} ${numberToMonth[DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).month]}'
+          ' - ${lastDay.day} ${numberToMonth[lastDay.month]}';
       getGraphDataNutrition(getLastDaysGeneralDay(lastDay));
       getGraphDataConcentration(getLastDaysGeneralDay(lastDay));
       dataForGraph1 =nameToFunctionFunction(graph1Current);

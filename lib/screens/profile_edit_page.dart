@@ -65,8 +65,6 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
               actions: <Widget>[NotificationButton()],
               backgroundColor: Colors.white,
               title: Row(
-//          mainAxisAlignment: MainAxisAlignment.center,
-//          crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Container(
                       height: 50,
@@ -88,9 +86,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                     children: <Widget>[
                       ProfilePhoto(
                         size: 90,
-                        photo: profileEditBloc.updatedUser.tempImage != null
-                            ? profileEditBloc.updatedUser.tempImage
-                            : NetworkImage(profileEditBloc.updatedUser.profilePhoto),
+                        photo: state.user.newPhoto==null?NetworkImage(state.user.profilePhoto):FileImage(state.user.newPhoto),
                       ),
                       SizedBox(
                         width: 20,
@@ -105,7 +101,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                             return ImagePickerMenu(onPressedPhoto: (image, file){
                               ProfileEditBloc profileEditBloc =
                               BlocProvider.of<ProfileEditBloc>(context);
-                              profileEditBloc.add(UpdateProfilePhotoToSend(file));
+                              profileEditBloc.add(UpdateProfilePhotoToSend(image, file));
                               Navigator.pop(context);
                               setState(() {
 
@@ -114,7 +110,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                             onPressedGallery: (image, file){
                               ProfileEditBloc profileEditBloc =
                               BlocProvider.of<ProfileEditBloc>(context);
-                              profileEditBloc.add(UpdateProfilePhotoToSend(file));
+                              profileEditBloc.add(UpdateProfilePhotoToSend(image, file));
                               Navigator.pop(context);
                               setState(() {
 
@@ -152,9 +148,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                       profileEditBloc.add(UpdateFirstName(value));
                     },
                     fieldName: 'First Name',
-                    initialValue: profileEditBloc.updatedUser.firstName != null
-                        ? profileEditBloc.updatedUser.firstName
-                        : null,
+                    initialValue: state.user.firstName,
                   ),
                 ),
                 Padding(
@@ -167,9 +161,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                       profileEditBloc.add(UpdateLastName(value));
                     },
                     fieldName: 'Last Name',
-                    initialValue: profileEditBloc.updatedUser.lastName != null
-                        ? profileEditBloc.updatedUser.lastName
-                        : null,
+                    initialValue: state.user.lastName,
                   ),
                 ),
                 Padding(
@@ -177,7 +169,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                   child: PickerEntryBox(
                     name: 'Age',
                     value:
-                        '${profileEditBloc.updatedUser.dOB != null ? profileEditBloc.updatedUser.age : '-'} years old',
+                        '${state.user.dOB != null ? state.user.age : '-'} years old',
                     onPressed: () {
                       showPickerDate(context);
                     },
@@ -188,7 +180,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                   child: PickerEntryBox(
                     name: 'Height',
                     value:
-                        '${profileEditBloc.updatedUser.height != null ? profileEditBloc.updatedUser.height : '-'} cm',
+                        '${state.user.height != null ? state.user.height : '-'} cm',
                     onPressed: () {
                       showHeightArray(context);
                     },
@@ -199,7 +191,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                   child: PickerEntryBox(
                     name: 'Weight',
                     value:
-                        '${profileEditBloc.updatedUser.weight != null ? profileEditBloc.updatedUser.weight : '-'} kg',
+                        '${state.user.weight != null ? state.user.weight : '-'} kg',
                     onPressed: () {
                       showWeightArray(context);
                     },
@@ -210,7 +202,7 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                   child: PickerEntryBox(
                     name: 'Sex',
                     value:
-                        '${profileEditBloc.updatedUser.sex != null ? profileEditBloc.updatedUser.sex : '-'}',
+                        '${state.user.sex != null ? state.user.sex : '-'}',
                     onPressed: () {
                       showSexArray(context);
                     },
@@ -226,8 +218,8 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                       profileEditBloc.add(UpdateSport(value));
                     },
                     fieldName: 'Sport',
-                    initialValue: profileEditBloc.updatedUser.sport != null
-                        ? profileEditBloc.updatedUser.sport
+                    initialValue: state.user.sport != null
+                        ? state.user.sport
                         : null,
                   ),
                 ),
@@ -241,8 +233,8 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                       profileEditBloc.add(UpdateShortTermGoal(value));
                     },
                     fieldName: 'Short Term Goal',
-                    initialValue: profileEditBloc.updatedUser.shortTermGoal != null
-                        ? profileEditBloc.updatedUser.shortTermGoal
+                    initialValue: state.user.shortTermGoal != null
+                        ? state.user.shortTermGoal
                         : null,
                   ),
                 ),
@@ -256,8 +248,8 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                       profileEditBloc.add(UpdateMediumTermGoal(value));
                     },
                     fieldName: 'Medium Term Goal',
-                    initialValue: profileEditBloc.updatedUser.mediumTermGoal != null
-                        ? profileEditBloc.updatedUser.mediumTermGoal
+                    initialValue: state.user.mediumTermGoal != null
+                        ? state.user.mediumTermGoal
                         : null,
                   ),
                 ),
@@ -271,8 +263,8 @@ class _ProfileUpdateBodyState extends State<ProfileUpdateBody> {
                       profileEditBloc.add(UpdateLongTermGoal(value));
                     },
                     fieldName: 'Long Term Goal',
-                    initialValue: profileEditBloc.updatedUser.longTermGoal != null
-                        ? profileEditBloc.updatedUser.longTermGoal
+                    initialValue: state.user.longTermGoal != null
+                        ? state.user.longTermGoal
                         : null,
                   ),
                 ),

@@ -117,6 +117,7 @@ class _SessionPageState extends State<SessionPage> {
 
       },
       child: ListView.builder(
+        padding: EdgeInsets.only(bottom: 100),
           itemCount:
               Provider.of<UserRepository>(context, listen: false).diary.sessionList.length,
 
@@ -155,6 +156,7 @@ class _GeneralDayPageState extends State<GeneralDayPage> {
         DBHelper.updateGeneralDayList(Provider.of<UserRepository>(context, listen: false).diary.generalDayList);
       },
       child: ListView.builder(
+        padding: EdgeInsets.only(bottom: 100),
           itemCount:
               Provider.of<UserRepository>(context).diary.generalDayList.length,
           itemBuilder: (BuildContext context, int index) {
@@ -163,6 +165,7 @@ class _GeneralDayPageState extends State<GeneralDayPage> {
             return GeneralDayEntry(
               generalDay: _generalDay,
             );
+
           }),
     );
   }

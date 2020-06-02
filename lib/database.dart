@@ -47,7 +47,7 @@ class DBHelper {
     var dbClient = await db;
 
     await dbClient.execute(
-        "CREATE TABLE User(id INTEGER PRIMARY KEY, firstName TEXT, " +
+        "CREATE TABLE User(id TEXT PRIMARY KEY, firstName TEXT, " +
             "lastName TEXT, dOB TEXT, profilePhoto TEXT, sex TEXT, " +
             "height INTEGER, weight INTEGER, sport TEXT, shortTermGoal TEXT, " +
             "mediumTermGoal TEXT, longTermGoal TEXT, jwt TEXT )");
@@ -177,16 +177,9 @@ class DBHelper {
         return await txn.rawInsert('INSERT INTO  Sessions' +
             "(id, title, date, lengthOfSession, intensity, performance," +
             "feeling, target, reflections) VALUES(" +
-            "${session.id}," +
-            "'${session.title}'," +
-            "'${session.date}'," +
-            "${session.lengthOfSession}," +
-            "${session.intensity}," +
-            "${session.performance}," +
-            "'${session.feeling}'," +
-            "'${session.target}'," +
-            "'${session.reflections}'" +
-            ");");
+            "?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [session.id, session.title, session.date, session.lengthOfSession, session.intensity, session.performance, session.feeling, session.target, session.reflections]
+        );
       });
     }
   }
@@ -227,13 +220,8 @@ class DBHelper {
         return await txn.rawInsert('INSERT INTO  GeneralDays' +
             "(id, date, rested, nutrition, concentration," +
             "reflections) VALUES(" +
-            "${generalDay.id}," +
-            "'${generalDay.date}'," +
-            "${generalDay.rested}," +
-            "${generalDay.nutrition}," +
-            "${generalDay.concentration}," +
-            "'${generalDay.reflections}'" +
-            ");");
+            "?, ?, ?, ?, ?, ?)",
+        [generalDay.id, generalDay.date, generalDay.rested, generalDay.nutrition, generalDay.concentration, generalDay.reflections]);
       });
     }
   }
@@ -273,12 +261,8 @@ class DBHelper {
         return await txn.rawInsert('INSERT INTO  Competitions' +
             "(id, date, name, address, startTime" +
             ") VALUES(" +
-            "${competition.id}," +
-            "'${competition.date}'," +
-            "'${competition.name}'," +
-            "'${competition.address}'," +
-            "'${competition.startTime}'" +
-            ");");
+            "?, ?, ?, ?, ?)",
+        [competition.id, competition.date, competition.name, competition.address, competition.startTime]);
       });
     }
   }

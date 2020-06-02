@@ -1,3 +1,4 @@
+import 'package:eathlete/screens/competition_entry.dart';
 import 'package:eathlete/screens/log_in_screen.dart';
 import 'package:eathlete/screens/main_page.dart';
 import 'package:eathlete/screens/notifications.dart';
@@ -6,11 +7,13 @@ import 'package:eathlete/screens/timer.dart';
 import 'package:eathlete/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 
 import 'package:provider/provider.dart';
 
 import 'blocs/authentification/authentification_bloc.dart';
+import 'blocs/competition/competition_bloc.dart';
 import 'class_definitions.dart';
 import 'main.dart';
 import 'models/diary_model.dart';
@@ -496,11 +499,11 @@ class EAthleteDrawerTile extends StatefulWidget {
 class _EAthleteDrawerTileState extends State<EAthleteDrawerTile> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-          left: 15, top: MediaQuery.of(context).size.height * 0.01, right: 15),
-      child: GestureDetector(
-        onTap: widget.onPressed,
+    return FlatButton(
+      onPressed: widget.onPressed,
+      child: Padding(
+        padding: EdgeInsets.only(
+            left: 0, top: MediaQuery.of(context).size.height * 0.01, right: 15),
         child: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -565,10 +568,12 @@ class NumberScale extends StatefulWidget {
   final Function onChanged;
   final Color selectedColor;
   final Color borderColor;
+  final int initialValue;
 
 
   const NumberScale({
     Key key,
+    this.initialValue=0,
     this.selectedColor = Colors.blue,
     this.onChanged,
     this.borderColor = Colors.grey,
@@ -580,12 +585,15 @@ class NumberScale extends StatefulWidget {
 }
 
 class _NumberScaleState extends State<NumberScale> {
-  int numberChosen = 0;
+  int numberChosen;
+  @override
+  void initState() {
+    super.initState();
+    numberChosen = widget.initialValue;
+  }
 
   @override
   Widget build(BuildContext context) {
-//    List<int> squares = new List<int>.generate(10, (i) => i + 1);
-//    List<int> squares = [1,2,3,4];
     List<GestureDetector> scale = [];
     for (var i = 1; i <= widget.maxNumber; i++) {
       scale.add(GestureDetector(
@@ -798,7 +806,22 @@ class SessionEntry extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: InkWell(
-        onTap: (){print('tapped');},
+          onTap: () {
+            showMaterialModalBottomSheet(
+                expand: true,
+                bounce: true,
+                context: context,
+                builder: (builder, scrollController) {
+                  return BlocProvider(
+                      create: (context) => CompetitionBloc(
+                          Provider.of<UserRepository>(context,
+                              listen: false)),
+                      child: SafeArea(
+                          child: SingleChildScrollView(
+                              child: CompetitionEntry())));
+                });
+
+          },
         onLongPress: (){
           print('longPressed');
         },
@@ -962,7 +985,22 @@ class GeneralDayEntry extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: InkWell(
-        onTap: (){print('tapped');},
+        onTap: () {
+          showMaterialModalBottomSheet(
+              expand: true,
+              bounce: true,
+              context: context,
+              builder: (builder, scrollController) {
+                return BlocProvider(
+                    create: (context) => CompetitionBloc(
+                        Provider.of<UserRepository>(context,
+                            listen: false)),
+                    child: SafeArea(
+                        child: SingleChildScrollView(
+                            child: CompetitionEntry())));
+              });
+
+        },
         onLongPress: (){print('longPressed');},
         child: Container(
           decoration: BoxDecoration(

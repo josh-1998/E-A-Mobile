@@ -98,13 +98,13 @@ class UpdateLongTermGoal extends ProfileEditEvent {
 }
 
 class UpdateProfilePhotoToSend extends ProfileEditEvent{
-  final String profilePhotoToSend;
+  final String profilePhoto;
+  final File profilePhotoFile;
 
-  UpdateProfilePhotoToSend(this.profilePhotoToSend);
+  UpdateProfilePhotoToSend(this.profilePhotoFile, this.profilePhoto,);
 
   @override
-  // TODO: implement props
-  List<Object> get props => [profilePhotoToSend];
+  List<Object> get props => [profilePhotoFile, profilePhoto];
 }
 class UpdateTempImage extends ProfileEditEvent{
   final ImageProvider tempImage;
@@ -112,7 +112,6 @@ class UpdateTempImage extends ProfileEditEvent{
   UpdateTempImage(this.tempImage);
 
   @override
-  // TODO: implement props
   List<Object> get props => [tempImage];
 }
 

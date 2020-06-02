@@ -1,10 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants.dart';
-import '../database.dart';
 import '../exceptions.dart';
 
 class User {
@@ -16,11 +16,14 @@ class User {
   int height;
   int weight;
   String profilePhotoToSend;
+  File newPhoto;
   ImageProvider tempImage;
   String sport;
   String shortTermGoal;
   String mediumTermGoal;
   String longTermGoal;
+  String lastLogin;
+  String dateJoined;
   String jwt;
   get age {
     var years = (DateTime.now().difference(DateTime.parse(dOB)).inDays) / 365;
@@ -71,6 +74,8 @@ class User {
           body['medium_term_goal'] != null ? body['medium_term_goal'] : null;
       this.longTermGoal =
           body['long_term_goal'] != null ? body['long_term_goal'] : null;
+      this.lastLogin = body['last_login'] != null ? body['last_login'] : null;
+      this.dateJoined = body['date_joined'] != null ? body['date_joined'] : null;
     } else {
       throw ServerErrorException('Status code ${response.statusCode}');
     }

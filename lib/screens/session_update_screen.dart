@@ -136,7 +136,8 @@ class _SessionUpdateScreenState extends State<SessionUpdateScreen> {
               AppStyledTextField(fieldName: 'Target', onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateTarget(value)),),
               SizedBox(height: 12,),
               AppStyledTextField(fieldName: 'Reflections', onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateReflections(value)),),
-              BigBlueButton(text: 'Add', onPressed: (){BlocProvider.of<SessionBloc>(context).add(Submit());},)
+              BigBlueButton(text: 'Add', onPressed: (){BlocProvider.of<SessionBloc>(context).add(Submit());},),
+              SizedBox(height: 20,)
 
             ],
           ),

@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import '../class_definitions.dart';
 import '../common_widgets.dart';
 import '../navbar.dart';
+import '../useful_functions.dart';
 import '../user_repository.dart';
 import 'calendar_page.dart';
 import 'diary_entry_screen.dart';
@@ -35,7 +36,7 @@ class _MainPageState extends State<MainPage> {
 
   bool showUpdatePicker = false;
   List<Session> sessions =[];
-//  getSessionList(Provider.of<UserRepository>(context));
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +61,6 @@ class _MainPageState extends State<MainPage> {
             pageNumber: Provider.of<PageNumber>(context,).pageNumber,
             button1OnPressed: (){
               setState(() {
-//              widget.pageNumber = 0;
               Provider.of<PageNumber>(context, listen: false).pageNumber = 0;
               print(Provider.of<PageNumber>(context, listen: false).pageNumber);
               });
@@ -95,10 +95,21 @@ class _MainPageState extends State<MainPage> {
           ),
           showUpdatePicker==true?UpdatePicker(
             button1Function: (){
+              UserRepository _userRepository = Provider.of<UserRepository>(context, listen: false);
+              Map eventsMap = {};
+              for (GeneralDay generalDay in _userRepository.diary.generalDayList) {
+                DateTime date = DateTime.parse(generalDay.date);
+                eventsMap.update(date, (existingValue) {
+                  existingValue.add(generalDay);
+                  return existingValue;
+                }, ifAbsent: () => [generalDay]);
+              }
+
       showMaterialModalBottomSheet(context: context, expand: false, builder: (builder, scrollController){
       return BlocProvider(
           create: (context) => GeneralDayBloc(Provider.of<UserRepository>(context, listen: false)),
-          child: SafeArea(child: SingleChildScrollView(child: GeneralDayUpdateBody())));
+          child: SafeArea(child: SingleChildScrollView(child: eventsMap[currentDay]==null
+              ?GeneralDayUpdateBody():GeneralDayUpdateBody(generalDay: eventsMap[currentDay][0],))));
       }).then((value) {
         setState(() {
           
