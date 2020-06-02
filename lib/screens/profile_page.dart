@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import '../common_widgets.dart';
-import '../user_repository.dart';
+import '../common_widgets/common_widgets.dart';
+import '../misc/user_repository.dart';
 
 class ProfilePage extends StatefulWidget {
 

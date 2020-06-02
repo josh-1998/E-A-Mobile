@@ -4,7 +4,7 @@ import 'package:eathlete/models/diary_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-import '../../user_repository.dart';
+import '../../misc/user_repository.dart';
 
 part 'competition_event.dart';
 

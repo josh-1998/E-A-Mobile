@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:charts_flutter/flutter.dart';
 import 'package:eathlete/models/diary_model.dart';
-import 'package:eathlete/useful_functions.dart';
+import 'package:eathlete/misc/useful_functions.dart';
 import 'package:equatable/equatable.dart';
 
 import 'package:meta/meta.dart';
 
-import '../../class_definitions.dart';
-import '../../user_repository.dart';
+import '../../models/class_definitions.dart';
+import '../../misc/user_repository.dart';
 
 part 'graph_event.dart';
 

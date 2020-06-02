@@ -1,13 +1,14 @@
 // TODO: implement general day and session model
 
 import 'dart:convert';
+import 'dart:io';
 
-import '../constants.dart';
+import '../misc/constants.dart';
 import 'package:http/http.dart' as http;
 
-import '../database.dart';
-import '../exceptions.dart';
-import '../user_repository.dart';
+import '../misc/database.dart';
+import '../misc/exceptions.dart';
+import '../misc/user_repository.dart';
 
 class Session {
   String date;
@@ -120,17 +121,28 @@ class GeneralDay {
       body['concentration'] = this.concentration.toString();
     if (this.reflections != null) body['reflections'] = this.reflections;
 
+    http.Response response;
     //sends new general day off to the server
-    var response = await http.post(kAPIAddress + '/api/general-day/',
-        headers: {
-          'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
-        },
-        body: body);
+    if(this.id!=null){
+      response = await http.patch(kAPIAddress + '/api/general-day/$id/',
+          headers: {
+            'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+          },
+          body: body);
+    }else{
+      response = await http.post(kAPIAddress + '/api/general-day/',
+          headers: {
+            'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+          },
+          body: body);
+    }
+
     print(response.statusCode);
     print(response.body);
     Map responseBody = jsonDecode(response.body);
     //checks that the upload has been successful
-    if (response.statusCode != 201) {
+    if (response.statusCode/100 != 2) {
+      print(response.statusCode/100);
       throw ServerErrorException;
     }
     //uploads the new general day to the DB
@@ -141,9 +153,11 @@ class GeneralDay {
       ..nutrition = responseBody['nutrition']
       ..concentration = responseBody['concentration']
       ..reflections = responseBody['reflections'];
-
-    DBHelper.updateGeneralDayList([_newGeneralDay]);
-    print(_newGeneralDay.reflections);
+    if(response.statusCode == 201) {
+      DBHelper.updateGeneralDayList([_newGeneralDay]);
+    }else if(response.statusCode == 200){
+      DBHelper.updateGeneralDayValue([_newGeneralDay]);
+    }
     //returns the new general day object
     return _newGeneralDay;
   }

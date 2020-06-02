@@ -4,8 +4,8 @@ import 'dart:ui';
 import 'dart:async';
 
 
-import '../common_widgets.dart';
-import '../useful_functions.dart';
+import '../common_widgets/common_widgets.dart';
+import '../misc/useful_functions.dart';
 
 class TimerPageActual extends StatefulWidget {
   static const String id = 'timer';

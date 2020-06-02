@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
-import '../constants.dart';
-import '../exceptions.dart';
+import '../misc/constants.dart';
+import '../misc/exceptions.dart';
 
 class User {
   String firstName;

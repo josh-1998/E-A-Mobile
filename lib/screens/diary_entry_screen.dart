@@ -1,10 +1,11 @@
+import 'package:eathlete/common_widgets/diary_widgets.dart';
 import 'package:eathlete/models/diary_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../common_widgets.dart';
-import '../database.dart';
-import '../user_repository.dart';
+import '../common_widgets/common_widgets.dart';
+import '../misc/database.dart';
+import '../misc/user_repository.dart';
 
 class DiaryEntryPage extends StatefulWidget {
   static const String id = 'home page';

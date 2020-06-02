@@ -6,7 +6,7 @@ import 'package:eathlete/screens/profile_edit_page.dart';
 import 'package:eathlete/screens/settings.dart';
 import 'package:eathlete/screens/sign_up_screen.dart';
 import 'package:eathlete/screens/timer.dart';
-import 'package:eathlete/user_repository.dart';
+import 'package:eathlete/misc/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,8 +15,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 
 import 'blocs/authentification/authentification_bloc.dart';
-import 'class_definitions.dart';
-import 'simple_bloc_delegate.dart';
+import 'models/class_definitions.dart';
+import 'misc/simple_bloc_delegate.dart';
 
 
 void main() async {
@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         buttonColor: Colors.grey,
         primarySwatch: Colors.grey,
-//          iconTheme: IconThemeData(color: Colors.grey)
+
       ),
       routes: {
         LoginPage.id: (context) => LoginPage(),

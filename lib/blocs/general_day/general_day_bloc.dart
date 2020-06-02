@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 
 import 'package:meta/meta.dart';
 
-import '../../user_repository.dart';
+import '../../misc/user_repository.dart';
 
 part 'general_day_event.dart';
 
@@ -17,38 +17,38 @@ class GeneralDayBloc extends Bloc<GeneralDayEvent, GeneralDayState> {
   UserRepository _userRepository;
 
 
-  GeneralDayBloc(this._userRepository):_generalDay = GeneralDay();
+  GeneralDayBloc(this._userRepository,{GeneralDay generalDay}):_generalDay = generalDay ?? GeneralDay();
 
   @override
-  GeneralDayState get initialState => InitialGeneralDayState();
+  GeneralDayState get initialState => InitialGeneralDayState(_generalDay);
 
   @override
   Stream<GeneralDayState> mapEventToState(GeneralDayEvent event) async* {
     if(event is UpdateRested){
         _generalDay.rested = event.rested;
-        yield InitialGeneralDayState();
+        yield InitialGeneralDayState(_generalDay);
     }
     else if(event is UpdateNutrition){
       _generalDay.nutrition = event.nutrition;
-      yield InitialGeneralDayState();
+      yield InitialGeneralDayState(_generalDay);
     }
     else if(event is UpdateConcentration){
       _generalDay.concentration = event.concentration;
-      yield InitialGeneralDayState();
+      yield InitialGeneralDayState(_generalDay);
     }
     else if(event is UpdateReflections){
       _generalDay.reflections =event.reflections;
-      yield InitialGeneralDayState();
+      yield InitialGeneralDayState(_generalDay);
     }
     else if(event is Submit){
-      yield IsSubmitting();
+      yield IsSubmitting(_generalDay);
       try{
         GeneralDay newGeneralDay = await _generalDay.uploadGeneralDay(_userRepository);
         _userRepository.diary.generalDayList.add(newGeneralDay);
-        yield SubmissionSuccessful();
+        yield SubmissionSuccessful(_generalDay);
       }catch(e){
         print(e);
-        yield SubmissionFailed();
+        yield SubmissionFailed(_generalDay);
       }
     }
 

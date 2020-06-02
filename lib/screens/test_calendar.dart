@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 
-import '../class_definitions.dart';
+import '../models/class_definitions.dart';
 
 
 

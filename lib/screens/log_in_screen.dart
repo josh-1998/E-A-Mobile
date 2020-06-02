@@ -9,9 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:provider/provider.dart';
 
-import '../common_widgets.dart';
+import '../common_widgets/common_widgets.dart';
 
-import '../user_repository.dart';
+import '../misc/user_repository.dart';
 import 'main_page.dart';
 
 

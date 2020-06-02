@@ -10,9 +10,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
-import '../common_widgets.dart';
-import '../useful_functions.dart';
-import '../user_repository.dart';
+import '../common_widgets/common_widgets.dart';
+import '../misc/useful_functions.dart';
+import '../misc/user_repository.dart';
 
 
 class ProfileEditPage extends StatefulWidget {

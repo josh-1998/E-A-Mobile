@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:provider/provider.dart';
 
-import '../../user_repository.dart';
+import '../../misc/user_repository.dart';
 
 part 'session_event.dart';
 

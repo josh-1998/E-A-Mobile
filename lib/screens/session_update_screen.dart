@@ -6,11 +6,11 @@ import 'package:flutter_picker/Picker.dart';
 
 import 'package:provider/provider.dart';
 
-import '../class_definitions.dart';
-import '../common_widgets.dart';
+import '../models/class_definitions.dart';
+import '../common_widgets/common_widgets.dart';
 
 import '../main.dart';
-import '../user_repository.dart';
+import '../misc/user_repository.dart';
 import 'main_page.dart';
 
 class SessionUpdateScreen extends StatefulWidget {

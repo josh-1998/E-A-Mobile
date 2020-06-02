@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'package:meta/meta.dart';
 
-import '../../user_repository.dart';
+import '../../misc/user_repository.dart';
 
 
 

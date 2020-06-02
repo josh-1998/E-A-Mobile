@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:provider/provider.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
-import '../class_definitions.dart';
-import '../common_widgets.dart';
-import '../user_repository.dart';
+import '../models/class_definitions.dart';
+import '../common_widgets/common_widgets.dart';
+import '../misc/user_repository.dart';
 
 class HomePage extends StatelessWidget {
   static const String id = 'diary page';

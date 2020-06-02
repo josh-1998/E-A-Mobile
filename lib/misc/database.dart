@@ -5,8 +5,8 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'models/diary_model.dart';
-import 'models/user_model.dart';
+import '../models/diary_model.dart';
+import '../models/user_model.dart';
 
 // TODO: make base DB class that is then extended by userDB class and DiaryDB class
 
@@ -222,6 +222,18 @@ class DBHelper {
             "reflections) VALUES(" +
             "?, ?, ?, ?, ?, ?)",
         [generalDay.id, generalDay.date, generalDay.rested, generalDay.nutrition, generalDay.concentration, generalDay.reflections]);
+      });
+    }
+  }
+
+  static void updateGeneralDayValue(List<GeneralDay> generalDays) async {
+    var dbClient = await db;
+    for (GeneralDay generalDay in generalDays){
+      await dbClient.transaction((txn) async{
+        return await txn.rawUpdate('UPDATE GeneralDays' +
+        ' SET date = ?, rested = ?, nutrition = ?, concentration = ?, reflections = ?' +
+        ' WHERE id = ?',
+        [generalDay.date, generalDay.rested, generalDay.nutrition, generalDay.concentration, generalDay.reflections, generalDay.id]);
       });
     }
   }

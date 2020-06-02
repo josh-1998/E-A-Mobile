@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'database.dart';
-import 'models/diary_model.dart';
-import 'models/user_model.dart';
+import '../models/diary_model.dart';
+import '../models/user_model.dart';
 
 
 

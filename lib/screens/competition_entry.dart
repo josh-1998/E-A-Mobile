@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_picker/Picker.dart';
 import 'package:provider/provider.dart';
 
-import '../class_definitions.dart';
-import '../common_widgets.dart';
-import '../useful_functions.dart';
+import '../models/class_definitions.dart';
+import '../common_widgets/common_widgets.dart';
+import '../misc/useful_functions.dart';
 import 'main_page.dart';
 
 class CompetitionEntry extends StatefulWidget {

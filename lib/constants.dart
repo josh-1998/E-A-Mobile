@@ -1,1 +1,0 @@
-const String kAPIAddress = 'https://www.e-athleteapp.com';

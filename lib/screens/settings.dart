@@ -1,6 +1,6 @@
 import 'package:eathlete/blocs/authentification/authentification_bloc.dart';
-import 'package:eathlete/common_widgets.dart';
-import 'package:eathlete/user_repository.dart';
+import 'package:eathlete/common_widgets/common_widgets.dart';
+import 'package:eathlete/misc/user_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

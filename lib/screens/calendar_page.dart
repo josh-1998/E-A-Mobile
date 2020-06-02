@@ -1,5 +1,6 @@
 import 'package:eathlete/blocs/calendar/calendar_bloc.dart';
 import 'package:eathlete/blocs/competition/competition_bloc.dart';
+import 'package:eathlete/common_widgets/diary_widgets.dart';
 import 'package:eathlete/models/diary_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,9 +9,9 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../class_definitions.dart';
-import '../common_widgets.dart';
-import '../user_repository.dart';
+import '../models/class_definitions.dart';
+import '../common_widgets/common_widgets.dart';
+import '../misc/user_repository.dart';
 import 'competition_entry.dart';
 
 class CalendarPage extends StatelessWidget {

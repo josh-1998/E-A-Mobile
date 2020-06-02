@@ -1,5 +1,5 @@
-import 'package:eathlete/common_widgets.dart';
-import 'package:eathlete/user_repository.dart';
+import 'package:eathlete/common_widgets/common_widgets.dart';
+import 'package:eathlete/misc/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

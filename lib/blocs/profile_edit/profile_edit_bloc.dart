@@ -7,8 +7,8 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:meta/meta.dart';
 
-import '../../database.dart';
-import '../../user_repository.dart';
+import '../../misc/database.dart';
+import '../../misc/user_repository.dart';
 
 part 'profile_edit_event.dart';
 
