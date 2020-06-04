@@ -2,23 +2,57 @@ part of 'session_bloc.dart';
 
 @immutable
 abstract class SessionState extends Equatable{
+  Session session;
+  Last7DaysChooser last7daysChooser;
   @override
   List<Object> get props => [];
 }
 
-class InitialSessionState extends SessionState {}
+class InitialSessionState extends SessionState {
+  final Session session;
+  final Last7DaysChooser last7daysChooser;
 
-class IsSubmitting extends SessionState{}
-
-class SuccessfullySubmitted extends SessionState{}
-
-class SubmissionFailed extends SessionState{}
-
-class InformationIncomplete extends SessionState{
-  final List<bool> conditions;
-
-  InformationIncomplete(this.conditions);
+  InitialSessionState(this.session, this.last7daysChooser);
 
   @override
-  List<Object> get props => [conditions];
+  List<Object> get props => [session, last7daysChooser];
+}
+
+class IsSubmitting extends SessionState{
+  final Session session;
+  final Last7DaysChooser last7daysChooser;
+
+  IsSubmitting(this.session, this.last7daysChooser);
+
+  @override
+  List<Object> get props => [session, last7daysChooser];
+}
+
+class SuccessfullySubmitted extends SessionState{
+  final Session session;
+  final Last7DaysChooser last7daysChooser;
+  SuccessfullySubmitted(this.session, this.last7daysChooser);
+
+  @override
+  List<Object> get props => [session, last7daysChooser];
+}
+
+class SubmissionFailed extends SessionState{
+  final Session session;
+  final Last7DaysChooser last7daysChooser;
+  SubmissionFailed(this.session, this.last7daysChooser);
+
+  @override
+  List<Object> get props => [session, last7daysChooser];
+}
+
+class InformationIncomplete extends SessionState{
+  final Session session;
+  final Last7DaysChooser last7daysChooser;
+  final List<bool> conditions;
+
+  InformationIncomplete(this.session, this.last7daysChooser, this.conditions);
+
+  @override
+  List<Object> get props => [session, last7daysChooser, conditions];
 }

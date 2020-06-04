@@ -1,6 +1,10 @@
 import 'package:eathlete/blocs/competition/competition_bloc.dart';
+import 'package:eathlete/blocs/general_day/general_day_bloc.dart';
+import 'package:eathlete/blocs/session/session_bloc.dart';
 import 'package:eathlete/models/diary_model.dart';
 import 'package:eathlete/screens/competition_entry.dart';
+import 'package:eathlete/screens/general_day_update.dart';
+import 'package:eathlete/screens/session_update_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -8,7 +12,8 @@ import 'package:provider/provider.dart';
 
 import '../misc/user_repository.dart';
 
-class GeneralDayEntry extends StatelessWidget {
+
+class GeneralDayEntry extends StatefulWidget {
   final GeneralDay generalDay;
   const GeneralDayEntry({
     this.generalDay,
@@ -16,28 +21,67 @@ class GeneralDayEntry extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _GeneralDayEntryState createState() => _GeneralDayEntryState();
+}
+
+class _GeneralDayEntryState extends State<GeneralDayEntry> {
+  var _tapPosition;
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
+  _showPopupMenu() async {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+          _tapPosition & Size(40, 40), // smaller rect, the touch area
+          Offset.zero & overlay.size // Bigger rect, the entire screen
+      ),
+      items: [
+        PopupMenuItem(
+
+          child: GestureDetector(
+              onTap: (){
+                showMaterialModalBottomSheet(
+                    context: context,
+                    expand: false,
+                    builder: (builder, scrollController) {
+                      return BlocProvider(
+                          create: (context) => GeneralDayBloc(
+                              Provider.of<UserRepository>(context,
+                                  listen: false),
+                              generalDay: widget.generalDay),
+                          child: SafeArea(
+                              child: SingleChildScrollView(
+                                  child: GeneralDayUpdateBody())));
+                    });
+              },
+              child: Container(child: Text('Edit'))),
+        ),
+        PopupMenuItem(
+          child: GestureDetector(
+              onTap: ()async {
+                await deleteGeneralDayItem(await Provider.of<UserRepository>(context, listen: false).refreshIdToken(), widget.generalDay);
+              },
+              child: Text('Delete')),
+        )
+      ],
+    );
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: InkWell(
-        onTap: () {
-          showMaterialModalBottomSheet(
-              expand: true,
-              bounce: true,
-              context: context,
-              builder: (builder, scrollController) {
-                return BlocProvider(
-                    create: (context) => CompetitionBloc(
-                        Provider.of<UserRepository>(context,
-                            listen: false)),
-                    child: SafeArea(
-                        child: SingleChildScrollView(
-                            child: CompetitionEntry())));
-              });
-
-        },
-        onLongPress: (){
-          print('longPressed');},
+      onTapDown: _storePosition,
+      onLongPress: () {
+        _showPopupMenu();
+      },
+        
         child: Container(
           decoration: BoxDecoration(
             boxShadow: [
@@ -85,7 +129,7 @@ class GeneralDayEntry extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      generalDay.date == null ? '-' : generalDay.date,
+                      widget.generalDay.date == null ? '-' : widget.generalDay.date,
                       style: TextStyle(color: Colors.blueGrey, fontSize: 12),
                     )
                   ],
@@ -102,9 +146,9 @@ class GeneralDayEntry extends StatelessWidget {
                         'I feel well rested',
                         style: TextStyle(color: Color(0xff828289)),
                       ),
-                      Text(generalDay.rested == null
+                      Text(widget.generalDay.rested == null
                           ? '-'
-                          : '${generalDay.rested}'),
+                          : '${widget.generalDay.rested}'),
                     ],
                   ),
                 ),
@@ -120,9 +164,9 @@ class GeneralDayEntry extends StatelessWidget {
                         'I have eaten well today',
                         style: TextStyle(color: Color(0xff828289)),
                       ),
-                      Text(generalDay.nutrition == null
+                      Text(widget.generalDay.nutrition == null
                           ? '-'
-                          : '${generalDay.nutrition}'),
+                          : '${widget.generalDay.nutrition}'),
                     ],
                   ),
                 ),
@@ -135,9 +179,9 @@ class GeneralDayEntry extends StatelessWidget {
                         'Concentration throughout day',
                         style: TextStyle(color: Color(0xff828289)),
                       ),
-                      Text(generalDay.concentration == null
+                      Text(widget.generalDay.concentration == null
                           ? '-'
-                          : '${generalDay.concentration}'),
+                          : '${widget.generalDay.concentration}'),
                     ],
                   ),
                 ),
@@ -153,9 +197,9 @@ class GeneralDayEntry extends StatelessWidget {
                       SizedBox(
                         height: 3,
                       ),
-                      Text(generalDay.reflections == null
+                      Text(widget.generalDay.reflections == null
                           ? '-'
-                          : generalDay.reflections)
+                          : widget.generalDay.reflections)
                     ],
                   ),
                 ),
@@ -168,18 +212,67 @@ class GeneralDayEntry extends StatelessWidget {
   }
 }
 
-class CompetitionDiaryEntry extends StatelessWidget {
+class CompetitionDiaryEntry extends StatefulWidget {
   final Competition _competition;
 
   CompetitionDiaryEntry(this._competition);
 
   @override
+  _CompetitionDiaryEntryState createState() => _CompetitionDiaryEntryState();
+}
+
+class _CompetitionDiaryEntryState extends State<CompetitionDiaryEntry> {
+  var _tapPosition;
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
+  _showPopupMenu() async {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+          _tapPosition & Size(40, 40), // smaller rect, the touch area
+          Offset.zero & overlay.size // Bigger rect, the entire screen
+      ),
+      items: [
+        PopupMenuItem(
+
+          child: GestureDetector(
+              onTap: (){
+                showMaterialModalBottomSheet(
+                    context: context,
+                    expand: false,
+                    builder: (builder, scrollController) {
+                      return BlocProvider(
+                          create: (context) => CompetitionBloc(
+                              Provider.of<UserRepository>(context,
+                                  listen: false),
+                              competition: widget._competition),
+                          child: SafeArea(
+                              child: SingleChildScrollView(
+                                  child: CompetitionEntry())));
+                    });
+              },
+              child: Container(child: Text('Edit'))),
+        ),
+        PopupMenuItem(
+          child: GestureDetector(
+              onTap: ()async {
+                await deleteCompetition(await Provider.of<UserRepository>(context).refreshIdToken(), widget._competition);
+              },
+              child: Text('Delete')),
+        )
+      ],
+    );
+  }
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: InkWell(
-        onTap: (){print('tapped');},
-        onLongPress: (){print('longPressed');},
+        onTapDown: _storePosition,
+        onLongPress: (){_showPopupMenu();},
         child: Container(
           decoration: BoxDecoration(
             boxShadow: [
@@ -220,14 +313,14 @@ class CompetitionDiaryEntry extends StatelessWidget {
                           width: 10,
                         ),
                         Text(
-                          _competition.name == null ? '-' : _competition.name,
+                          widget._competition.name == null ? '-' : widget._competition.name,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16),
                         )
                       ],
                     ),
                     Text(
-                      _competition.date == null ? '-' : _competition.date,
+                      widget._competition.date == null ? '-' : widget._competition.date,
                       style: TextStyle(color: Colors.blueGrey, fontSize: 12),
                     )
                   ],
@@ -244,9 +337,9 @@ class CompetitionDiaryEntry extends StatelessWidget {
                         'Start Time',
                         style: TextStyle(color: Color(0xff828289)),
                       ),
-                      Text(_competition.startTime == null
+                      Text(widget._competition.startTime == null
                           ? '-'
-                          : '${_competition.startTime.substring(0,5)}'),
+                          : '${widget._competition.startTime.substring(0,5)}'),
                     ],
                   ),
                 ),
@@ -262,9 +355,9 @@ class CompetitionDiaryEntry extends StatelessWidget {
                       SizedBox(
                         height: 3,
                       ),
-                      Text(_competition.address == null
+                      Text(widget._competition.address == null
                           ? '-'
-                          : _competition.address)
+                          : widget._competition.address)
                     ],
                   ),
                 ),
@@ -277,7 +370,7 @@ class CompetitionDiaryEntry extends StatelessWidget {
   }
 }
 
-class SessionEntry extends StatelessWidget {
+class SessionEntry extends StatefulWidget {
   final Session session;
   const SessionEntry({
     @required this.session,
@@ -285,28 +378,63 @@ class SessionEntry extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _SessionEntryState createState() => _SessionEntryState();
+}
+
+class _SessionEntryState extends State<SessionEntry> {
+  var _tapPosition;
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
+  _showPopupMenu() async {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+          _tapPosition & Size(40, 40), // smaller rect, the touch area
+          Offset.zero & overlay.size // Bigger rect, the entire screen
+      ),
+      items: [
+        PopupMenuItem(
+
+          child: GestureDetector(
+              onTap: (){
+                showMaterialModalBottomSheet(
+                    context: context,
+                    expand: false,
+                    builder: (builder, scrollController) {
+                      return BlocProvider(
+                          create: (context) => SessionBloc(
+                              Provider.of<UserRepository>(context,
+                                  listen: false),
+                              session: widget.session),
+                          child: SafeArea(
+                              child: SingleChildScrollView(
+                                  child: SessionUpdateScreen())));
+                    });
+              },
+              child: Container(child: Text('Edit'))),
+        ),
+        PopupMenuItem(
+          child: GestureDetector(
+              onTap: ()async {
+                await deleteSession(await Provider.of<UserRepository>(context, listen: false).refreshIdToken(), widget.session);
+              },
+              child: Text('Delete')),
+        )
+      ],
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(15),
       child: InkWell(
-        onTap: () {
-          showMaterialModalBottomSheet(
-              expand: true,
-              bounce: true,
-              context: context,
-              builder: (builder, scrollController) {
-                return BlocProvider(
-                    create: (context) => CompetitionBloc(
-                        Provider.of<UserRepository>(context,
-                            listen: false)),
-                    child: SafeArea(
-                        child: SingleChildScrollView(
-                            child: CompetitionEntry())));
-              });
-
-        },
+        onTapDown: _storePosition,
         onLongPress: (){
-          print('longPressed');
+          _showPopupMenu();
         },
         child: Container(
           decoration: BoxDecoration(
@@ -348,14 +476,14 @@ class SessionEntry extends StatelessWidget {
                           width: 10,
                         ),
                         Text(
-                          session.title,
+                          widget.session.title,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16),
                         )
                       ],
                     ),
                     Text(
-                      session.date,
+                      widget.session.date,
                       style: TextStyle(color: Colors.blueGrey, fontSize: 12),
                     )
                   ],
@@ -372,7 +500,7 @@ class SessionEntry extends StatelessWidget {
                         'Intensity of Session',
                         style: TextStyle(color: Color(0xff828289)),
                       ),
-                      Text('${session.intensity}'),
+                      Text('${widget.session.intensity}'),
                     ],
                   ),
                 ),
@@ -385,7 +513,7 @@ class SessionEntry extends StatelessWidget {
                         'Performance in session',
                         style: TextStyle(color: Color(0xff828289)),
                       ),
-                      Text('${session.performance}'),
+                      Text('${widget.session.performance}'),
                     ],
                   ),
                 ),
@@ -398,7 +526,7 @@ class SessionEntry extends StatelessWidget {
                         'Length of session',
                         style: TextStyle(color: Color(0xff828289)),
                       ),
-                      Text(session.lengthOfSession == null ? '-' : '${session.lengthOfSession}'),
+                      Text(widget.session.lengthOfSession == null ? '-' : '${widget.session.lengthOfSession}'),
                     ],
                   ),
                 ),
@@ -411,7 +539,7 @@ class SessionEntry extends StatelessWidget {
                         'Feeling Scale',
                         style: TextStyle(color: Color(0xff828289)),
                       ),
-                      Text(session.feeling),
+                      Text(widget.session.feeling),
                     ],
                   ),
                 ),
@@ -427,7 +555,7 @@ class SessionEntry extends StatelessWidget {
                       SizedBox(
                         height: 3,
                       ),
-                      Text(session.target == null ? '-' : session.target)
+                      Text(widget.session.target == null ? '-' : widget.session.target)
                     ],
                   ),
                 ),
@@ -443,7 +571,7 @@ class SessionEntry extends StatelessWidget {
                       SizedBox(
                         height: 3,
                       ),
-                      Text(session.reflections == null ? '-' : session.reflections)
+                      Text(widget.session.reflections == null ? '-' : widget.session.reflections)
                     ],
                   ),
                 ),

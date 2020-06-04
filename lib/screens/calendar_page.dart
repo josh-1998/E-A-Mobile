@@ -4,8 +4,6 @@ import 'package:eathlete/common_widgets/diary_widgets.dart';
 import 'package:eathlete/models/diary_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -39,112 +37,132 @@ class CalendarPageContent extends StatelessWidget {
 
     return BlocBuilder(
       bloc: BlocProvider.of<CalendarBloc>(context),
-      builder: (context, CalendarState state ){
+      builder: (context, CalendarState state ) {
         List<Widget> currentDayWidgetList;
         currentDayWidgetList = convertListToWidgets(state.currentDayList);
 
-        return Scaffold(
-          resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: ImageIcon(
-              AssetImage('images/menu_icon@3x.png'),
-              color: Color(0xff828289),
-            ),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
-          elevation: 1,
-          actions: <Widget>[NotificationButton()],
-          backgroundColor: Colors.white,
-          title: Row(
-            children: <Widget>[
-              Container(
-                  height: 50, child: Image.asset('images/placeholder_logo.PNG')),
-              Text(
-                'E-Athlete',
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-              )
-            ],
-          ),
-        ),
-        body: SingleChildScrollView(
-
-          child: Column(
-            children: <Widget>[
-              TableCalendar(
-                calendarActionButton: CalendarActionButton(
-                    child: Row(
-                      children: <Widget>[
-//              Icon(Icons.add, color: Colors.white,),
-                        Text(
-                          'Add Competition',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ],
-                    ),
-                    onPressed: () {
-                      showMaterialModalBottomSheet(
-                        enableDrag: true,
-                        expand: false,
-                        bounce: true,
-                          context: context,
-                          builder: (builder, scrollController) {
-                            return BlocProvider(
-                                create: (context) => CompetitionBloc(
-                                    Provider.of<UserRepository>(context,
-                                        listen: false)),
-                                child: Padding(
-                                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                  child: SafeArea(
-                                    child: SingleChildScrollView(
-                                        child: CompetitionEntry()),
-                                  ),
-                                ));
-                          });
-
-                    }),
-                headerStyle: HeaderStyle(
-                  rightChevronPadding: EdgeInsets.symmetric(horizontal: 0),
-                  leftChevronPadding: EdgeInsets.symmetric(horizontal: 0),
-                  formatButtonVisible: false,
+        return Column(
+          children: <Widget>[
+            AppBar(
+              leading: IconButton(
+                icon: ImageIcon(
+                  AssetImage('images/menu_icon@3x.png'),
+                  color: Color(0xff828289),
                 ),
-              events: state.competitionMap,
-                onDaySelected: (DateTime datetime, List events){
-                  BlocProvider.of<CalendarBloc>(context).add(ChangeDay(currentDay: DateTime(datetime.year, datetime.month, datetime.day)));
+                onPressed: () {
+                  Scaffold.of(context).openDrawer();
                 },
-                availableCalendarFormats: {CalendarFormat.month: 'month'},
-                daysOfWeekStyle: DaysOfWeekStyle(
-                  weekendStyle: TextStyle(color: Colors.grey),
-                ),
-              startingDayOfWeek: StartingDayOfWeek.monday,
-                calendarStyle: CalendarStyle(
-                  contentPadding: EdgeInsets.all(0),
-                  outsideDaysVisible: false,
-                  todayColor: Colors.blueGrey,
-                  selectedColor: Colors.blue,
-                  weekendStyle: TextStyle(color: Colors.grey),
-                ),
-                calendarController: Provider.of<PageNumber>(context).calendarController,
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
-                child: Divider(
-//            color: Colors.grey,
+              elevation: 1,
+              actions: <Widget>[NotificationButton()],
+              backgroundColor: Colors.white,
+              title: Row(
+                children: <Widget>[
+                  Container(
+                      height: 50,
+                      child: Image.asset('images/placeholder_logo.PNG')),
+                  Text(
+                    'E-Athlete',
+                    style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                  )
+                ],
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+
+                child: Column(
+                  children: <Widget>[
+                    TableCalendar(
+                      calendarActionButton: CalendarActionButton(
+                          child: Row(
+                            children: <Widget>[
+//              Icon(Icons.add, color: Colors.white,),
+                              Text(
+                                'Add Competition',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                          onPressed: () {
+                            showModalBottomSheet(
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (builder) {
+                                  return Container(
+                                    child: BlocProvider(
+                                        create: (context) =>
+                                            CompetitionBloc(
+                                                Provider.of<UserRepository>(
+                                                    context,
+                                                    listen: false)),
+                                        child: GestureDetector(
+                                          onTap: (){},
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                                bottom: MediaQuery
+                                                    .of(context)
+                                                    .viewInsets
+                                                    .bottom),
+                                            child: SingleChildScrollView(
+                                                child: CompetitionEntry()),
+                                          ),
+                                        )),
+                                  );
+                                });
+                          }),
+                      headerStyle: HeaderStyle(
+                        rightChevronPadding: EdgeInsets.symmetric(
+                            horizontal: 0),
+                        leftChevronPadding: EdgeInsets.symmetric(horizontal: 0),
+                        formatButtonVisible: false,
+                      ),
+                      events: state.competitionMap,
+                      onDaySelected: (DateTime datetime, List events) {
+                        BlocProvider.of<CalendarBloc>(context).add(ChangeDay(
+                            currentDay: DateTime(
+                                datetime.year, datetime.month, datetime.day)));
+                      },
+                      onDayLongPressed: (datetime, newList){
+                        print(datetime);
+                      },
+                      availableCalendarFormats: {CalendarFormat.month: 'month'},
+                      daysOfWeekStyle: DaysOfWeekStyle(
+                        weekendStyle: TextStyle(color: Colors.grey),
+                      ),
+                      startingDayOfWeek: StartingDayOfWeek.monday,
+                      calendarStyle: CalendarStyle(
+                        contentPadding: EdgeInsets.all(0),
+                        outsideDaysVisible: false,
+                        todayColor: Colors.blueGrey,
+                        selectedColor: Colors.blue,
+                        weekendStyle: TextStyle(color: Colors.grey),
+                      ),
+                      calendarController: Provider
+                          .of<PageNumber>(context)
+                          .calendarController,
                     ),
-              ),
-              Column(
-                children: <Widget>[] + currentDayWidgetList + <Widget>[SizedBox(height: 100,)],
+                    Padding(
+                      padding:
+                      const EdgeInsets.only(
+                          left: 20, right: 20, top: 8, bottom: 8),
+                      child: Divider(
+//            color: Colors.grey,
+                      ),
+                    ),
+                    Column(
+                      children: <Widget>[] + currentDayWidgetList +
+                          <Widget>[SizedBox(height: 100,)],
 //                _currentDayList,
-              )
-            ],
-          ),
-        ),
-      );}
-    );
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      });
   }
 }
 

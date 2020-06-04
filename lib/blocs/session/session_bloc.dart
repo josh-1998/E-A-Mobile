@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:eathlete/models/class_definitions.dart';
 import 'package:eathlete/models/diary_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:provider/provider.dart';
+
 
 import '../../misc/user_repository.dart';
 
@@ -12,57 +13,54 @@ part 'session_event.dart';
 part 'session_state.dart';
 
 class SessionBloc extends Bloc<SessionEvent, SessionState> {
-  Session session;
+  Session _session;
   UserRepository _userRepository;
+
+  Last7DaysChooser _last7daysChooser = Last7DaysChooser();
   /// stores result from validation
   ///0:Intensity, 1: performance, 2: feeling
   List<bool> conditions= [false, false, false,];
 
-
-
-  SessionBloc(this._userRepository,):session = Session(); //  final UserRepository _userRepository;
-//
-//
-//  SessionBloc(this._userRepository);
+  SessionBloc(this._userRepository,{Session session}):_session = session ?? Session(); //  final UserRepository _userRepository;
 
   @override
-  SessionState get initialState => InitialSessionState();
+  SessionState get initialState => InitialSessionState(_session, _last7daysChooser);
 
   @override
   Stream<SessionState> mapEventToState(SessionEvent event) async* {
     if(event is UpdateIntensity){
-      session.intensity = event.intensity;
+      _session.intensity = event.intensity;
       conditions[0] = true;
-      yield InitialSessionState();
+      yield InitialSessionState(_session, _last7daysChooser);
     }
     else if(event is UpdateTitle){
-      session.title = event.title;
-      yield InitialSessionState();
+      _session.title = event.title;
+      yield InitialSessionState(_session, _last7daysChooser);
     }
     else if(event is UpdatePerformance){
-      session.performance = event.performance;
+      _session.performance = event.performance;
       conditions[1] = true;
-      yield InitialSessionState();
+      yield InitialSessionState(_session, _last7daysChooser);
     }
     else if(event is UpdateFeeling){
       conditions[2] = true;
-      session.feeling = event.feeling;
-      yield InitialSessionState();
+      _session.feeling = event.feeling;
+      yield InitialSessionState(_session, _last7daysChooser);
     }
     else if(event is UpdateLengthOfSession){
-      session.lengthOfSession = event.lengthOfSession;
-      yield InitialSessionState();
+      _session.lengthOfSession = event.lengthOfSession;
+      yield InitialSessionState(_session, _last7daysChooser);
     }
     else if(event is UpdateTarget){
-      session.target = event.target;
-      yield InitialSessionState();
+      _session.target = event.target;
+      yield InitialSessionState(_session, _last7daysChooser);
     }
     else if(event is UpdateReflections){
-      session.reflections = event.reflections;
-      yield InitialSessionState();
+      _session.reflections = event.reflections;
+      yield InitialSessionState(_session, _last7daysChooser);
     }
     else if(event is Submit){
-      yield IsSubmitting();
+      yield IsSubmitting(_session, _last7daysChooser);
       int numberOfFalse = 0;
       for(bool value in conditions){
         if(value == false){
@@ -71,16 +69,20 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       }
       if(numberOfFalse == 0) {
         try {
-          Session _newSession = await session.uploadSession(_userRepository);
+          Session _newSession = await _session.uploadSession(_userRepository);
           _userRepository.diary.sessionList.add(_newSession);
-          yield SuccessfullySubmitted();
+          yield SuccessfullySubmitted(_session, _last7daysChooser);
         } catch (e) {
           print(e);
-          yield SubmissionFailed();
+          yield SubmissionFailed(_session, _last7daysChooser);
         }
       }else{
-        yield InformationIncomplete(conditions);
+        yield InformationIncomplete(_session, _last7daysChooser, conditions);
       }
+    }else if(event is ChangeDateBackwards){
+      _last7daysChooser.changeDateBackward();
+    }else if(event is ChangeDateForwards){
+      _last7daysChooser.changeDateForward();
     }
   }
 }

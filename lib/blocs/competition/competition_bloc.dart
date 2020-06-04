@@ -11,28 +11,28 @@ part 'competition_event.dart';
 part 'competition_state.dart';
 
 class CompetitionBloc extends Bloc<CompetitionEvent, CompetitionState> {
-  Competition competition = Competition();
+  Competition _competition;
   UserRepository _userRepository;
   List<bool> conditions= [false, false, false, false];
 
 
-  CompetitionBloc(this._userRepository);
+  CompetitionBloc(this._userRepository, {Competition competition}):_competition = competition ?? Competition();
 
   @override
-  CompetitionState get initialState => InitialCompetitionState();
+  CompetitionState get initialState => InitialCompetitionState(_competition);
 
   @override
   Stream<CompetitionState> mapEventToState(CompetitionEvent event) async* {
     if (event is UpdateDate) {
-      competition.date = event.date;
+      _competition.date = event.date;
       conditions[0] = true;
     }
     else if (event is UpdateStartTime) {
-      competition.startTime = event.startTime;
+      _competition.startTime = event.startTime;
       conditions[1]=true;
     }
     else if (event is UpdateName) {
-      competition.name = event.name;
+      _competition.name = event.name;
       if(event.name!=null && event.name != ''){
         conditions[2]=true;
       }else{
@@ -40,7 +40,7 @@ class CompetitionBloc extends Bloc<CompetitionEvent, CompetitionState> {
       }
     }
     else if (event is UpdateAddress) {
-      competition.address = event.address;
+      _competition.address = event.address;
       if(event.address!=null && event.address != ''){
         conditions[3]=true;
       }else{
@@ -48,7 +48,7 @@ class CompetitionBloc extends Bloc<CompetitionEvent, CompetitionState> {
       }
     }
     else if (event is Submit) {
-      yield IsSubmitting();
+      yield IsSubmitting(_competition);
       int numberOfFalse = 0;
       for(bool value in conditions){
         if(value == false){
@@ -57,16 +57,16 @@ class CompetitionBloc extends Bloc<CompetitionEvent, CompetitionState> {
       }
       if(numberOfFalse == 0) {
         try {
-          Competition _newCompetition = await competition.uploadCompetition(
+          Competition _newCompetition = await _competition.uploadCompetition(
               _userRepository);
           _userRepository.diary.competitionList.add(_newCompetition);
-          yield SubmissionSuccessful();
+          yield SubmissionSuccessful(_competition);
         } catch (e) {
           print(e);
-          yield SubmissionFailed();
+          yield SubmissionFailed(_competition);
         }
       }else{
-        yield InformationIncomplete(conditions);
+        yield InformationIncomplete(_competition, conditions);
       }
     }
   }

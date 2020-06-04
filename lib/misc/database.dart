@@ -183,6 +183,17 @@ class DBHelper {
       });
     }
   }
+
+  static void deleteSession(List<Session> sessions) async{
+    var dbClient = await db;
+    for (Session session in sessions){
+      await dbClient.transaction((txn) async {
+        return await txn.rawDelete('DELETE FROM Sessions WHERE id = ?',
+            [session.id]);
+      });
+    }
+  }
+
   /// creates generalDayTable, when user logs in. This can then be populated
   static void createGeneralDayTable() async {
     var dbClient = await db;
@@ -238,6 +249,15 @@ class DBHelper {
     }
   }
 
+  static void deleteGeneralDayItem(List<GeneralDay> generalDays) async{
+    var dbClient = await db;
+    for (GeneralDay generalDay in generalDays){
+      await dbClient.transaction((txn) async {
+        return await txn.rawDelete('DELETE FROM GeneralDays WHERE id = ?',
+        [generalDay.id]);
+      });
+    }
+  }
 
   static void createCompetitionTable() async {
     var dbClient = await db;
@@ -275,6 +295,16 @@ class DBHelper {
             ") VALUES(" +
             "?, ?, ?, ?, ?)",
         [competition.id, competition.date, competition.name, competition.address, competition.startTime]);
+      });
+    }
+  }
+
+  static void deleteCompetition(List<Competition> competitions) async{
+    var dbClient = await db;
+    for (Competition competition in competitions){
+      await dbClient.transaction((txn) async {
+        return await txn.rawDelete('DELETE FROM Competitions WHERE id = ?',
+            [competition.id]);
       });
     }
   }

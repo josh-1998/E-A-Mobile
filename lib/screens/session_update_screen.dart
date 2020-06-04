@@ -1,4 +1,5 @@
 import 'package:eathlete/blocs/session/session_bloc.dart';
+import 'package:eathlete/misc/useful_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_picker/Picker.dart';
@@ -8,8 +9,6 @@ import 'package:provider/provider.dart';
 
 import '../models/class_definitions.dart';
 import '../common_widgets/common_widgets.dart';
-
-import '../main.dart';
 import '../misc/user_repository.dart';
 import 'main_page.dart';
 
@@ -23,6 +22,8 @@ class SessionUpdateScreen extends StatefulWidget {
 
 class _SessionUpdateScreenState extends State<SessionUpdateScreen> {
   List<bool> conditions =[true, true, true];
+  int dayPointer =0;
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,97 +51,136 @@ class _SessionUpdateScreenState extends State<SessionUpdateScreen> {
               });
             }
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+        child: BlocBuilder<SessionBloc, SessionState>(
+          builder: (BuildContext context, SessionState state) { return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
 
-              TextFormField(
-                decoration: InputDecoration.collapsed(hintText: 'New Session'),
-                onChanged: (value){
-                  BlocProvider.of<SessionBloc>(context).add(UpdateTitle(value));
-                },
-                style: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              SizedBox(
-                height: 13,
-              ),
-              Text(
-                'Intensity',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              NumberScale(
-                borderColor: conditions[0]?Colors.grey:Colors.red,
-                onChanged: (value) {
-                  BlocProvider.of<SessionBloc>(context).add(UpdateIntensity(value));
-                  conditions[0] = true;
-                  setState(() {});
-                },
-                maxNumber: 10,
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Text(
-                'Performance in the session',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              NumberScale(
-                borderColor: conditions[1]?Colors.grey:Colors.red,
-                onChanged: (value) {
-                  BlocProvider.of<SessionBloc>(context)
-                      .add(UpdatePerformance(value));
-                  conditions[1] = true;
-                  setState(() {});
-                },
-                maxNumber: 5,
-              ),
-              SizedBox(
-                height: 12,
-              ),
-              Text(
-                'Feeling',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 12),
-              FeelingPicker(
-                borderColor: conditions[2]?Colors.transparent:Colors.red,
-                onChanged: (value) {
-                  BlocProvider.of<SessionBloc>(context).add(UpdateFeeling(value));
-                  conditions[2] = true;
-                  setState(() {
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextFormField(
+                        initialValue: state.session.title,
+                        decoration: InputDecoration.collapsed(hintText: 'New Session'),
+                        onChanged: (value){
+                          BlocProvider.of<SessionBloc>(context).add(UpdateTitle(value));
+                        },
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    ),
+                    Container(
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(Icons.chevron_left),
+                            onPressed: (){
+                              BlocProvider.of<SessionBloc>(context).add(ChangeDateBackwards());
+                            },
+                          ),
+                          Text('${state.last7daysChooser.displayDate}'),
+                          IconButton(
+                            icon: Icon(Icons.chevron_right),
+                            onPressed: (){
+                              BlocProvider.of<SessionBloc>(context).add(ChangeDateForwards());
+                            },
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 13,
+                ),
+                Text(
+                  'Intensity',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                NumberScale(
+                  initialValue: state.session.intensity,
+                  borderColor: conditions[0]?Colors.grey:Colors.red,
+                  onChanged: (value) {
+                    BlocProvider.of<SessionBloc>(context).add(UpdateIntensity(value));
+                    conditions[0] = true;
+                    setState(() {});
+                  },
+                  maxNumber: 10,
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Text(
+                  'Performance in the session',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                NumberScale(
+                  initialValue: state.session.performance,
+                  borderColor: conditions[1]?Colors.grey:Colors.red,
+                  onChanged: (value) {
+                    BlocProvider.of<SessionBloc>(context)
+                        .add(UpdatePerformance(value));
+                    conditions[1] = true;
+                    setState(() {});
+                  },
+                  maxNumber: 5,
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Text(
+                  'Feeling',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 12),
+                FeelingPicker(
+                  initialValue: state.session.feeling,
+                  borderColor: conditions[2]?Colors.transparent:Colors.red,
+                  onChanged: (value) {
+                    BlocProvider.of<SessionBloc>(context).add(UpdateFeeling(value));
+                    conditions[2] = true;
+                    setState(() {
 
-                  });
-                },
-              ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric( vertical: 12),
-                child: PickerEntryBox(
-                  name: 'Length of Session',
-                  value:
-                  BlocProvider.of<SessionBloc>(context).session.lengthOfSession==null?'-':'${BlocProvider.of<SessionBloc>(context).session.lengthOfSession}',
-                  onPressed: () {
-                    showTimeArray(context);
+                    });
                   },
                 ),
-              ),
-              AppStyledTextField(fieldName: 'Target', onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateTarget(value)),),
-              SizedBox(height: 12,),
-              AppStyledTextField(fieldName: 'Reflections', onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateReflections(value)),),
-              BigBlueButton(text: 'Add', onPressed: (){BlocProvider.of<SessionBloc>(context).add(Submit());},),
-              SizedBox(height: 20,)
 
-            ],
-          ),
+                Padding(
+                  padding: const EdgeInsets.symmetric( vertical: 12),
+                  child: PickerEntryBox(
+                    name: 'Length of Session',
+                    value:
+                    state.session.lengthOfSession==null?'-':'${state.session.lengthOfSession}',
+                    onPressed: () {
+                      showTimeArray(context);
+                    },
+                  ),
+                ),
+                AppStyledTextField(
+                  fieldName: 'Target',
+                  initialValue: state.session.target,
+                  onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateTarget(value)),
+                ),
+                SizedBox(height: 12,),
+                AppStyledTextField(
+                  fieldName: 'Reflections',
+                  onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateReflections(value)),
+                  initialValue: state.session.reflections,
+                ),
+                BigBlueButton(text: 'Add', onPressed: (){BlocProvider.of<SessionBloc>(context).add(Submit());},),
+                SizedBox(height: 20,)
+
+              ],
+            ),
+          );}
         ),
       );
 
@@ -176,16 +216,27 @@ class _SessionUpdateScreenState extends State<SessionUpdateScreen> {
 
 
 class FeelingPicker extends StatefulWidget {
+  final String initialValue;
   final Function onChanged;
   final Color borderColor;
-  const FeelingPicker({Key key, this.onChanged, this.borderColor = Colors.transparent}) : super(key: key);
+  const FeelingPicker({Key key, this.onChanged, this.borderColor = Colors.transparent, this.initialValue}) : super(key: key);
 
   @override
   _FeelingPickerState createState() => _FeelingPickerState();
 }
 
 class _FeelingPickerState extends State<FeelingPicker> {
+
   String feeling;
+
+  @override
+  void initState() {
+    super.initState();
+    if(widget.initialValue != null){
+      feeling = widget.initialValue;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(

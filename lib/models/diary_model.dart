@@ -69,6 +69,14 @@ class Session {
 
 }
 
+Future<void> deleteSession(String jwt, Session session) async {
+  int id = session.id;
+  print(id);
+  var response = await http.delete(kAPIAddress + '/api/general-day/$id/');
+  print(response.statusCode);
+  DBHelper.deleteSession([session]);
+}
+
 Future<List<Session>> getSessionList(String jwt) async {
   var response = await http.get(kAPIAddress + '/api/session/',
       headers: {'Authorization': 'JWT ' + jwt});
@@ -141,7 +149,7 @@ class GeneralDay {
     print(response.body);
     Map responseBody = jsonDecode(response.body);
     //checks that the upload has been successful
-    if (response.statusCode/100 != 2) {
+    if ((response.statusCode/100).floor() != 2) {
       print(response.statusCode/100);
       throw ServerErrorException;
     }
@@ -161,7 +169,18 @@ class GeneralDay {
     //returns the new general day object
     return _newGeneralDay;
   }
+
 }
+
+Future<void> deleteGeneralDayItem(String jwt, GeneralDay generalDay) async {
+  int id = generalDay.id;
+  print(id);
+  var response = await http.delete(kAPIAddress + '/api/general-day/$id/');
+  print(response.statusCode);
+  DBHelper.deleteGeneralDayItem([generalDay]);
+}
+
+
 
 Future<List<GeneralDay>> getGeneralDayList(String jwt) async {
   var response = await http.get(kAPIAddress + '/api/general-day/',
@@ -240,6 +259,14 @@ Future<List<Competition>> getCompetitionList(String jwt) async {
   }
   print(competitions);
   return competitions;
+}
+
+Future<void> deleteCompetition(String jwt, Competition competition) async {
+  int id = competition.id;
+  print(id);
+  var response = await http.delete(kAPIAddress + '/api/general-day/$id/');
+  print(response.statusCode);
+  DBHelper.deleteCompetition([competition]);
 }
 
 class Diary {

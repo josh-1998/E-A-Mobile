@@ -1,3 +1,5 @@
+//import 'dart:html';
+
 import 'package:eathlete/blocs/general_day/general_day_bloc.dart';
 import 'package:eathlete/blocs/session/session_bloc.dart';
 import 'package:eathlete/models/diary_model.dart';
@@ -6,10 +8,7 @@ import 'package:eathlete/screens/session_update_screen.dart';
 import 'package:eathlete/screens/update_chooser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
-
 import '../models/class_definitions.dart';
 import '../common_widgets/common_widgets.dart';
 import '../common_widgets/navbar.dart';
@@ -101,18 +100,52 @@ class _MainPageState extends State<MainPage> {
                       }, ifAbsent: () => [generalDay]);
                     }
 
-                    showMaterialModalBottomSheet(
-                        context: context,
-                        expand: false,
-                        builder: (builder, scrollController) {
-                          return BlocProvider(
-                              create: (context) => GeneralDayBloc(
-                                  Provider.of<UserRepository>(context,
-                                      listen: false),
-                                  generalDay: eventsMap[currentDay]!=null?eventsMap[currentDay][0]:GeneralDay()),
-                              child: SafeArea(
-                                  child: SingleChildScrollView(
-                                      child: GeneralDayUpdateBody())));
+                    showModalBottomSheet(
+                      backgroundColor: Colors.transparent,
+                      isScrollControlled: true,
+                      context: context,
+                        builder: (builder) {
+                          return Container(
+                            height: MediaQuery.of(context).size.height*0.9,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))
+                            ),
+                            child: Column(
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    height: 10,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.circular(40)
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: MediaQuery.of(context)
+                                            .viewInsets
+                                            .bottom),
+                                    child: SingleChildScrollView(
+                                      child: BlocProvider(
+                                        create: (context) => GeneralDayBloc(
+                                              Provider.of<UserRepository>(context,
+                                                  listen: false),
+                                              generalDay: eventsMap[currentDay]!=null?eventsMap[currentDay][0]:GeneralDay()),
+                                        child: SafeArea(
+                                            child: GeneralDayUpdateBody(),
+                                          ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
                         }).then((value) {
                       setState(() {});
                     });
@@ -121,22 +154,52 @@ class _MainPageState extends State<MainPage> {
                     });
                   },
                   button2Function: () {
-                    showMaterialModalBottomSheet(
+                    showModalBottomSheet(
+                      backgroundColor: Colors.transparent,
+                      isScrollControlled: true,
                         context: context,
-                        builder: (builder, scrollController) {
-                          return BlocProvider(
-                              create: (context) => SessionBloc(
-                                  Provider.of<UserRepository>(context,
-                                      listen: false)),
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    bottom: MediaQuery.of(context)
-                                        .viewInsets
-                                        .bottom),
-                                child: SafeArea(
+                        builder: (builder) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10)
+                            ),
+                            height: MediaQuery.of(context).size.height*0.9,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Container(
+                                    height: 10,
+                                    width: 40,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      borderRadius: BorderRadius.circular(40)
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                          bottom: MediaQuery.of(context)
+                                              .viewInsets
+                                              .bottom),
                                     child: SingleChildScrollView(
-                                        child: SessionUpdateScreen())),
-                              ));
+                                      child: BlocProvider(
+                                        create: (context) => SessionBloc(
+                                              Provider.of<UserRepository>(context,
+                                                  listen: false)),
+                                        child: SafeArea(
+                                              child: SessionUpdateScreen()),
+                                      ),
+                                      physics: ClampingScrollPhysics(),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
                         });
                     setState(() {
                       showUpdatePicker = false;
@@ -155,4 +218,3 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
-// TODO: grey out the general day button if there is already a general day on the app
