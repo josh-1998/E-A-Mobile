@@ -44,3 +44,7 @@ class UpdateReflections extends GeneralDayEvent{
 }
 
 class Submit extends GeneralDayEvent{}
+
+class ChangeDateForwards extends GeneralDayEvent{}
+
+class ChangeDateBackwards extends GeneralDayEvent{}

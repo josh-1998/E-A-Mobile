@@ -1,6 +1,7 @@
 import 'package:eathlete/blocs/calendar/calendar_bloc.dart';
 import 'package:eathlete/blocs/competition/competition_bloc.dart';
 import 'package:eathlete/common_widgets/diary_widgets.dart';
+import 'package:eathlete/misc/useful_functions.dart';
 import 'package:eathlete/models/diary_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -126,6 +127,31 @@ class CalendarPageContent extends StatelessWidget {
                       },
                       onDayLongPressed: (datetime, newList){
                         print(datetime);
+                        showModalBottomSheet(
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (builder) {
+                              return Container(
+                                child: BlocProvider(
+                                    create: (context) =>
+                                        CompetitionBloc(
+                                            Provider.of<UserRepository>(
+                                                context,
+                                                listen: false), competition: Competition(date: '${datetime.year}-${timeToString(datetime.month)}-${timeToString(datetime.day)}')),
+                                    child: GestureDetector(
+                                      onTap: (){},
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                            bottom: MediaQuery
+                                                .of(context)
+                                                .viewInsets
+                                                .bottom),
+                                        child: SingleChildScrollView(
+                                            child: CompetitionEntry()),
+                                      ),
+                                    )),
+                              );
+                            });
                       },
                       availableCalendarFormats: {CalendarFormat.month: 'month'},
                       daysOfWeekStyle: DaysOfWeekStyle(

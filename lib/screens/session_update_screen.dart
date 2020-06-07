@@ -76,15 +76,21 @@ class _SessionUpdateScreenState extends State<SessionUpdateScreen> {
                         children: <Widget>[
                           IconButton(
                             icon: Icon(Icons.chevron_left),
-                            onPressed: (){
+                            onPressed: state.last7daysChooser.dayPointer>=6?null:(){
                               BlocProvider.of<SessionBloc>(context).add(ChangeDateBackwards());
+                              setState(() {
+
+                              });
                             },
                           ),
-                          Text('${state.last7daysChooser.displayDate}'),
+                          Text(state.last7daysChooser.displayDate),
                           IconButton(
                             icon: Icon(Icons.chevron_right),
-                            onPressed: (){
+                            onPressed: state.last7daysChooser.dayPointer<=0?null:(){
                               BlocProvider.of<SessionBloc>(context).add(ChangeDateForwards());
+                              setState(() {
+
+                              });
                             },
                           )
                         ],

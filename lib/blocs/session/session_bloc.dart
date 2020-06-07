@@ -21,7 +21,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   ///0:Intensity, 1: performance, 2: feeling
   List<bool> conditions= [false, false, false,];
 
-  SessionBloc(this._userRepository,{Session session}):_session = session ?? Session(); //  final UserRepository _userRepository;
+  SessionBloc(this._userRepository,{Session session}):_session = session ?? Session(date: DateTime.now().toIso8601String()); //  final UserRepository _userRepository;
 
   @override
   SessionState get initialState => InitialSessionState(_session, _last7daysChooser);
@@ -81,8 +81,10 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       }
     }else if(event is ChangeDateBackwards){
       _last7daysChooser.changeDateBackward();
+      _session.date = _last7daysChooser.previous7Days[_last7daysChooser.dayPointer].toIso8601String();
     }else if(event is ChangeDateForwards){
       _last7daysChooser.changeDateForward();
+      _session.date = _last7daysChooser.previous7Days[_last7daysChooser.dayPointer].toIso8601String();
     }
   }
 }

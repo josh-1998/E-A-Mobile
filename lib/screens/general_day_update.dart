@@ -52,12 +52,42 @@ class _GeneralDayUpdateBodyState extends State<GeneralDayUpdateBody> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  'General Day',
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'General Day',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                    Container(
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(Icons.chevron_left),
+                            onPressed: state.last7daysChooser.dayPointer>=6?null:(){
+                              BlocProvider.of<GeneralDayBloc>(context).add(ChangeDateBackwards());
+                              setState(() {
+
+                              });
+                            },
+                          ),
+                          Text(state.last7daysChooser.displayDate),
+                          IconButton(
+                            icon: Icon(Icons.chevron_right),
+                            onPressed: state.last7daysChooser.dayPointer<=0?null:(){
+                              BlocProvider.of<GeneralDayBloc>(context).add(ChangeDateForwards());
+                              setState(() {
+
+                              });
+                            },
+                          )
+                        ],
+                      ),
+                    )
+                  ],
                 ),
                 SizedBox(
                   height: 13,

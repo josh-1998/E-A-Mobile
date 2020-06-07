@@ -5,6 +5,7 @@ import 'package:eathlete/models/diary_model.dart';
 import 'package:eathlete/screens/competition_entry.dart';
 import 'package:eathlete/screens/general_day_update.dart';
 import 'package:eathlete/screens/session_update_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -14,9 +15,11 @@ import '../misc/user_repository.dart';
 
 
 class GeneralDayEntry extends StatefulWidget {
+  final Function onDelete;
   final GeneralDay generalDay;
   const GeneralDayEntry({
     this.generalDay,
+    this.onDelete,
     Key key,
   }) : super(key: key);
 
@@ -62,7 +65,15 @@ class _GeneralDayEntryState extends State<GeneralDayEntry> {
         PopupMenuItem(
           child: GestureDetector(
               onTap: ()async {
+                Navigator.pop(context);
                 await deleteGeneralDayItem(await Provider.of<UserRepository>(context, listen: false).refreshIdToken(), widget.generalDay);
+                widget.onDelete();
+                setState(() {
+                });
+
+//               showDialog(context: context, child: CupertinoAlertDialog(content: Text('Day successfully deleted'), actions: <Widget>[
+//                 CupertinoDialogAction(child: Text('Ok'),onPressed: ()=>Navigator.pop(context),)
+//               ],),);
               },
               child: Text('Delete')),
         )
@@ -214,8 +225,8 @@ class _GeneralDayEntryState extends State<GeneralDayEntry> {
 
 class CompetitionDiaryEntry extends StatefulWidget {
   final Competition _competition;
-
-  CompetitionDiaryEntry(this._competition);
+  final Function onDelete;
+  CompetitionDiaryEntry(this._competition, {this.onDelete});
 
   @override
   _CompetitionDiaryEntryState createState() => _CompetitionDiaryEntryState();
@@ -259,7 +270,9 @@ class _CompetitionDiaryEntryState extends State<CompetitionDiaryEntry> {
         PopupMenuItem(
           child: GestureDetector(
               onTap: ()async {
-                await deleteCompetition(await Provider.of<UserRepository>(context).refreshIdToken(), widget._competition);
+                Navigator.pop(context);
+                await deleteCompetition(await Provider.of<UserRepository>(context, listen: false).refreshIdToken(), widget._competition);
+                widget.onDelete();
               },
               child: Text('Delete')),
         )
@@ -372,8 +385,10 @@ class _CompetitionDiaryEntryState extends State<CompetitionDiaryEntry> {
 
 class SessionEntry extends StatefulWidget {
   final Session session;
+  final Function onDelete;
   const SessionEntry({
     @required this.session,
+    this.onDelete,
     Key key,
   }) : super(key: key);
 
@@ -414,14 +429,18 @@ class _SessionEntryState extends State<SessionEntry> {
                                   child: SessionUpdateScreen())));
                     });
               },
-              child: Container(child: Text('Edit'))),
+              child: Container(child: Center(child: Text('Edit')))),
         ),
         PopupMenuItem(
           child: GestureDetector(
               onTap: ()async {
+                Navigator.pop(context);
                 await deleteSession(await Provider.of<UserRepository>(context, listen: false).refreshIdToken(), widget.session);
+                widget.onDelete();
               },
-              child: Text('Delete')),
+              child: Container(
+
+                  child: Center(child: Text('Delete')))),
         )
       ],
     );

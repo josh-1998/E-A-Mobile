@@ -29,7 +29,6 @@ class _DiaryEntryPageState extends State<DiaryEntryPage>
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     tabController = TabController(
       vsync: this,
@@ -128,6 +127,15 @@ class _SessionPageState extends State<SessionPage> {
                sessionListReversed[index];
             return SessionEntry(
               session: _session,
+              onDelete: ()async {
+                Provider.of<UserRepository>(context, listen: false).diary.sessionList =
+                    await getSessionList(
+                    await Provider.of<UserRepository>(context, listen: false).refreshIdToken());
+                setState(() {
+
+                });
+
+              },
             );
           }),
     );
@@ -165,6 +173,14 @@ class _GeneralDayPageState extends State<GeneralDayPage> {
                 generalDayListReversed[index];
             return GeneralDayEntry(
               generalDay: _generalDay,
+              onDelete: ()async{
+                Provider.of<UserRepository>(context, listen: false).diary.generalDayList =
+                await getGeneralDayList(
+                    await Provider.of<UserRepository>(context, listen: false).refreshIdToken());
+                setState(() {
+
+                });
+              },
             );
 
           }),

@@ -20,6 +20,9 @@ class Last7DaysChooser{
   final List<DateTime> previous7Days= [for(var i=0;i<7; i++)DateTime(currentDay.year, currentDay.month, currentDay.day -i)];
   int dayPointer =0;
   String displayDate;
+  int currentDayInt = 6;
+  int currentMonth;
+
 
   Last7DaysChooser(){displayDate = '${previous7Days[dayPointer].day} ${numberToMonth[previous7Days[dayPointer].month]}';}
 

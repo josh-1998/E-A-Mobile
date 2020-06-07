@@ -135,7 +135,9 @@ class _MainPageState extends State<MainPage> {
                                         create: (context) => GeneralDayBloc(
                                               Provider.of<UserRepository>(context,
                                                   listen: false),
-                                              generalDay: eventsMap[currentDay]!=null?eventsMap[currentDay][0]:GeneralDay()),
+                                              generalDay: eventsMap[currentDay]!=null?
+                                              eventsMap[currentDay][0]:GeneralDay(
+                                                  date: DateTime.now().toIso8601String())),
                                         child: SafeArea(
                                             child: GeneralDayUpdateBody(),
                                           ),

@@ -1,4 +1,4 @@
-// TODO: implement general day and session model
+
 
 import 'dart:convert';
 import 'dart:io';
@@ -44,14 +44,16 @@ class Session {
     if (this.feeling != null) body['feeling'] = this.feeling;
     if (this.target != null) body['target'] = this.target;
     if (this.reflections != null) body['reflections'] = this.reflections;
-
+    if (this.date != null) body['date'] = this.date.substring(0,10);
+    print(body);
     var response = await http.post(kAPIAddress + '/api/session/',
         headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()},
         body: body);
-//    print(response.body);
     Map responseBody = jsonDecode(response.body);
+    print(responseBody);
     if (response.statusCode != 201) {
       throw ServerErrorException;
+
     }
     Session _newSession = Session()
       ..title = responseBody['title']
@@ -72,7 +74,9 @@ class Session {
 Future<void> deleteSession(String jwt, Session session) async {
   int id = session.id;
   print(id);
-  var response = await http.delete(kAPIAddress + '/api/general-day/$id/');
+  var response = await http.delete(kAPIAddress + '/api/session/$id/', headers: {
+    'Authorization': 'JWT ' + jwt
+  });
   print(response.statusCode);
   DBHelper.deleteSession([session]);
 }
@@ -128,6 +132,8 @@ class GeneralDay {
     if (this.concentration != null)
       body['concentration'] = this.concentration.toString();
     if (this.reflections != null) body['reflections'] = this.reflections;
+    if (this.date != null) body['date'] = this.date.substring(0,10);
+    print(body);
 
     http.Response response;
     //sends new general day off to the server
@@ -175,8 +181,11 @@ class GeneralDay {
 Future<void> deleteGeneralDayItem(String jwt, GeneralDay generalDay) async {
   int id = generalDay.id;
   print(id);
-  var response = await http.delete(kAPIAddress + '/api/general-day/$id/');
+  var response = await http.delete(kAPIAddress + '/api/general-day/$id/', headers: {
+    'Authorization': 'JWT ' + jwt
+  } );
   print(response.statusCode);
+
   DBHelper.deleteGeneralDayItem([generalDay]);
 }
 
@@ -203,7 +212,7 @@ Future<List<GeneralDay>> getGeneralDayList(String jwt) async {
 }
 
 class Competition {
-  String date; // look  at this
+  String date;
   String name;
   String address;
   String startTime;
@@ -264,7 +273,10 @@ Future<List<Competition>> getCompetitionList(String jwt) async {
 Future<void> deleteCompetition(String jwt, Competition competition) async {
   int id = competition.id;
   print(id);
-  var response = await http.delete(kAPIAddress + '/api/general-day/$id/');
+  var response = await http.delete(kAPIAddress + '/api/competition/$id/',
+      headers: {
+        'Authorization': 'JWT ' + jwt
+      });
   print(response.statusCode);
   DBHelper.deleteCompetition([competition]);
 }
