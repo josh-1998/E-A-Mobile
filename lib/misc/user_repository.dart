@@ -1,3 +1,4 @@
+import 'package:eathlete/models/class_definitions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
@@ -14,6 +15,7 @@ class UserRepository extends ChangeNotifier{
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
   final FacebookLogin _facebookLogin;
+  List<UserNotification> notifications;
   User user;
   Diary diary;
 

@@ -85,8 +85,7 @@ class _MainPageState extends State<MainPage> {
               });
             },
           ),
-          showUpdatePicker == true
-              ? UpdatePicker(
+          if (showUpdatePicker == true) UpdatePicker(
                   button1Function: () {
                     UserRepository _userRepository =
                         Provider.of<UserRepository>(context, listen: false);
@@ -105,48 +104,14 @@ class _MainPageState extends State<MainPage> {
                       isScrollControlled: true,
                       context: context,
                         builder: (builder) {
-                          return Container(
-                            height: MediaQuery.of(context).size.height*0.9,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius:BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))
-                            ),
-                            child: Column(
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    height: 10,
-                                    width: 40,
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey,
-                                        borderRadius: BorderRadius.circular(40)
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                        bottom: MediaQuery.of(context)
-                                            .viewInsets
-                                            .bottom),
-                                    child: SingleChildScrollView(
-                                      child: BlocProvider(
-                                        create: (context) => GeneralDayBloc(
-                                              Provider.of<UserRepository>(context,
-                                                  listen: false),
-                                              generalDay: eventsMap[currentDay]!=null?
-                                              eventsMap[currentDay][0]:GeneralDay(
-                                                  date: DateTime.now().toIso8601String())),
-                                        child: SafeArea(
-                                            child: GeneralDayUpdateBody(),
-                                          ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                          return BlocProvider(
+                            create: (context) => GeneralDayBloc(
+                                  Provider.of<UserRepository>(context,
+                                      listen: false),
+                                  generalDay: eventsMap[currentDay]!=null?
+                                  eventsMap[currentDay][0]:GeneralDay(
+                                      date: DateTime.now().toIso8601String())),
+                            child: GeneralDayUpdateBody(),
                           );
                         }).then((value) {
                       setState(() {});
@@ -161,46 +126,11 @@ class _MainPageState extends State<MainPage> {
                       isScrollControlled: true,
                         context: context,
                         builder: (builder) {
-                          return Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10)
-                            ),
-                            height: MediaQuery.of(context).size.height*0.9,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    height: 10,
-                                    width: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius: BorderRadius.circular(40)
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(
-                                          bottom: MediaQuery.of(context)
-                                              .viewInsets
-                                              .bottom),
-                                    child: SingleChildScrollView(
-                                      child: BlocProvider(
-                                        create: (context) => SessionBloc(
-                                              Provider.of<UserRepository>(context,
-                                                  listen: false)),
-                                        child: SafeArea(
-                                              child: SessionUpdateScreen()),
-                                      ),
-                                      physics: ClampingScrollPhysics(),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                          return BlocProvider(
+                            create: (context) => SessionBloc(
+                                Provider.of<UserRepository>(context,
+                                    listen: false)),
+                            child: SessionUpdateScreen(),
                           );
                         });
                     setState(() {
@@ -212,8 +142,7 @@ class _MainPageState extends State<MainPage> {
                       showUpdatePicker = false;
                     });
                   },
-                )
-              : Container()
+                ) else Container()
         ]),
       ),
     );

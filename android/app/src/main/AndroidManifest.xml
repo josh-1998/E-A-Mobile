@@ -10,7 +10,7 @@
 
     <application
 
-        android:name=".Application"
+        android:name="io.flutter.app.FlutterApplication"
         android:label="E-Athlete"
         android:icon="@mipmap/ic_launcher">
         <activity

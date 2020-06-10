@@ -1,5 +1,4 @@
 import 'package:eathlete/blocs/session/session_bloc.dart';
-import 'package:eathlete/misc/useful_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_picker/Picker.dart';
@@ -27,166 +26,198 @@ class _SessionUpdateScreenState extends State<SessionUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
-      return BlocListener<SessionBloc, SessionState>(
-        listener: (BuildContext context, SessionState state){
+      return Container(
+        height: MediaQuery.of(context).size.height*0.9,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10)
+        ),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 10,
+                width: 40,
+                decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(40)
+                ),
+              ),
+            ),
 
-          if(state is InformationIncomplete){
-            conditions = state.conditions;
-            setState(() {
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context)
+                .viewInsets
+                .bottom),
+                child: SingleChildScrollView(
+                  child: BlocListener<SessionBloc, SessionState>(
+                  listener: (BuildContext context, SessionState state){
 
-            });
-          }
-          if(state is SuccessfullySubmitted){
-              Future.delayed(Duration(milliseconds: 1)).then((value) {
-                Provider.of<PageNumber>(context, listen: false).pageNumber = 1;
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MainPage(
-                          pageNumber:
-                          Provider.of<PageNumber>(context, listen: false)
-                              .pageNumber,
-                        )),
-                        (route) => false);
-              });
-            }
-        },
-        child: BlocBuilder<SessionBloc, SessionState>(
-          builder: (BuildContext context, SessionState state) { return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
+                    if(state is InformationIncomplete){
+                      conditions = state.conditions;
+                      setState(() {
 
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: TextFormField(
-                        initialValue: state.session.title,
-                        decoration: InputDecoration.collapsed(hintText: 'New Session'),
-                        onChanged: (value){
-                          BlocProvider.of<SessionBloc>(context).add(UpdateTitle(value));
-                        },
-                        style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ),
-                    Container(
-                      child: Row(
+                      });
+                    }
+                    if(state is SuccessfullySubmitted){
+                        Future.delayed(Duration(milliseconds: 1)).then((value) {
+                          Provider.of<PageNumber>(context, listen: false).pageNumber = 1;
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MainPage(
+                                    pageNumber:
+                                    Provider.of<PageNumber>(context, listen: false)
+                                        .pageNumber,
+                                  )),
+                                  (route) => false);
+                        });
+                      }
+                  },
+                  child: BlocBuilder<SessionBloc, SessionState>(
+                    builder: (BuildContext context, SessionState state) { return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          IconButton(
-                            icon: Icon(Icons.chevron_left),
-                            onPressed: state.last7daysChooser.dayPointer>=6?null:(){
-                              BlocProvider.of<SessionBloc>(context).add(ChangeDateBackwards());
+
+                          Row(
+                            children: <Widget>[
+                              Expanded(
+                                child: TextFormField(
+                                  initialValue: state.session.title,
+                                  decoration: InputDecoration.collapsed(hintText: 'New Session'),
+                                  onChanged: (value){
+                                    BlocProvider.of<SessionBloc>(context).add(UpdateTitle(value));
+                                  },
+                                  style: TextStyle(
+                                      color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+                                ),
+                              ),
+                              Container(
+                                child: Row(
+                                  children: <Widget>[
+                                    IconButton(
+                                      icon: Icon(Icons.chevron_left),
+                                      onPressed: state.last7daysChooser.dayPointer>=6?null:(){
+                                        BlocProvider.of<SessionBloc>(context).add(ChangeDateBackwards());
+                                        setState(() {
+
+                                        });
+                                      },
+                                    ),
+                                    Text(state.last7daysChooser.displayDate),
+                                    IconButton(
+                                      icon: Icon(Icons.chevron_right),
+                                      onPressed: state.last7daysChooser.dayPointer<=0?null:(){
+                                        BlocProvider.of<SessionBloc>(context).add(ChangeDateForwards());
+                                        setState(() {
+
+                                        });
+                                      },
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          SizedBox(
+                            height: 13,
+                          ),
+                          Text(
+                            'Intensity',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          NumberScale(
+                            initialValue: state.session.intensity,
+                            borderColor: conditions[0]?Colors.grey:Colors.red,
+                            onChanged: (value) {
+                              BlocProvider.of<SessionBloc>(context).add(UpdateIntensity(value));
+                              conditions[0] = true;
+                              setState(() {});
+                            },
+                            maxNumber: 10,
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Text(
+                            'Performance in the session',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          NumberScale(
+                            initialValue: state.session.performance,
+                            borderColor: conditions[1]?Colors.grey:Colors.red,
+                            onChanged: (value) {
+                              BlocProvider.of<SessionBloc>(context)
+                                  .add(UpdatePerformance(value));
+                              conditions[1] = true;
+                              setState(() {});
+                            },
+                            maxNumber: 5,
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Text(
+                            'Feeling',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          SizedBox(height: 12),
+                          FeelingPicker(
+                            initialValue: state.session.feeling,
+                            borderColor: conditions[2]?Colors.transparent:Colors.red,
+                            onChanged: (value) {
+                              BlocProvider.of<SessionBloc>(context).add(UpdateFeeling(value));
+                              conditions[2] = true;
                               setState(() {
 
                               });
                             },
                           ),
-                          Text(state.last7daysChooser.displayDate),
-                          IconButton(
-                            icon: Icon(Icons.chevron_right),
-                            onPressed: state.last7daysChooser.dayPointer<=0?null:(){
-                              BlocProvider.of<SessionBloc>(context).add(ChangeDateForwards());
-                              setState(() {
 
-                              });
-                            },
-                          )
+                          Padding(
+                            padding: const EdgeInsets.symmetric( vertical: 12),
+                            child: PickerEntryBox(
+                              name: 'Length of Session',
+                              value:
+                              state.session.lengthOfSession==null?'-':'${state.session.lengthOfSession}',
+                              onPressed: () {
+                                showTimeArray(context);
+                              },
+                            ),
+                          ),
+                          AppStyledTextField(
+                            fieldName: 'Target',
+                            initialValue: state.session.target,
+                            onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateTarget(value)),
+                          ),
+                          SizedBox(height: 12,),
+                          AppStyledTextField(
+                            fieldName: 'Reflections',
+                            onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateReflections(value)),
+                            initialValue: state.session.reflections,
+                          ),
+                          BigBlueButton(text: 'Add', onPressed: (){BlocProvider.of<SessionBloc>(context).add(Submit());},),
+                          SizedBox(height: 20,)
+
                         ],
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 13,
-                ),
-                Text(
-                  'Intensity',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                NumberScale(
-                  initialValue: state.session.intensity,
-                  borderColor: conditions[0]?Colors.grey:Colors.red,
-                  onChanged: (value) {
-                    BlocProvider.of<SessionBloc>(context).add(UpdateIntensity(value));
-                    conditions[0] = true;
-                    setState(() {});
-                  },
-                  maxNumber: 10,
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Text(
-                  'Performance in the session',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                NumberScale(
-                  initialValue: state.session.performance,
-                  borderColor: conditions[1]?Colors.grey:Colors.red,
-                  onChanged: (value) {
-                    BlocProvider.of<SessionBloc>(context)
-                        .add(UpdatePerformance(value));
-                    conditions[1] = true;
-                    setState(() {});
-                  },
-                  maxNumber: 5,
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Text(
-                  'Feeling',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 12),
-                FeelingPicker(
-                  initialValue: state.session.feeling,
-                  borderColor: conditions[2]?Colors.transparent:Colors.red,
-                  onChanged: (value) {
-                    BlocProvider.of<SessionBloc>(context).add(UpdateFeeling(value));
-                    conditions[2] = true;
-                    setState(() {
-
-                    });
-                  },
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric( vertical: 12),
-                  child: PickerEntryBox(
-                    name: 'Length of Session',
-                    value:
-                    state.session.lengthOfSession==null?'-':'${state.session.lengthOfSession}',
-                    onPressed: () {
-                      showTimeArray(context);
-                    },
+                    );}
                   ),
+          ),
                 ),
-                AppStyledTextField(
-                  fieldName: 'Target',
-                  initialValue: state.session.target,
-                  onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateTarget(value)),
-                ),
-                SizedBox(height: 12,),
-                AppStyledTextField(
-                  fieldName: 'Reflections',
-                  onChanged: (value, context)=>BlocProvider.of<SessionBloc>(context).add(UpdateReflections(value)),
-                  initialValue: state.session.reflections,
-                ),
-                BigBlueButton(text: 'Add', onPressed: (){BlocProvider.of<SessionBloc>(context).add(Submit());},),
-                SizedBox(height: 20,)
-
-              ],
-            ),
-          );}
+              ),
+            )],
         ),
       );
 

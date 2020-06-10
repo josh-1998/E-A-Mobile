@@ -46,7 +46,7 @@ class GeneralDayBloc extends Bloc<GeneralDayEvent, GeneralDayState> {
       yield IsSubmitting(_generalDay, _last7daysChooser);
       try{
         GeneralDay newGeneralDay = await _generalDay.uploadGeneralDay(_userRepository);
-        _userRepository.diary.generalDayList.add(newGeneralDay);
+       if(_generalDay.id ==null) _userRepository.diary.generalDayList.add(newGeneralDay);
         yield SubmissionSuccessful(_generalDay, _last7daysChooser);
       }catch(e){
         print(e);

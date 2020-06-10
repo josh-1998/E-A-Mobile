@@ -45,15 +45,17 @@ class Session {
     if (this.target != null) body['target'] = this.target;
     if (this.reflections != null) body['reflections'] = this.reflections;
     if (this.date != null) body['date'] = this.date.substring(0,10);
-    print(body);
-    var response = await http.post(kAPIAddress + '/api/session/',
+    var response;
+    if(this.id != null){
+      response = await http.patch(kAPIAddress + '/api/session/$id/', headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
+    }else{
+    response = await http.post(kAPIAddress + '/api/session/',
         headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()},
-        body: body);
+        body: body);}
     Map responseBody = jsonDecode(response.body);
     print(responseBody);
-    if (response.statusCode != 201) {
+    if ((response.statusCode/100).floor() != 2) {
       throw ServerErrorException;
-
     }
     Session _newSession = Session()
       ..title = responseBody['title']
@@ -65,7 +67,11 @@ class Session {
       ..target = responseBody['target']
       ..reflections = responseBody['reflections']
       ..id = responseBody['id'];
-    DBHelper.updateSessionsList([_newSession]);
+    if(response.statusCode == 201) {
+      DBHelper.updateSessionsList([_newSession]);
+    }else if(response.statusCode == 200){
+      DBHelper.updateSessionValue([_newSession]);
+    }
     return _newSession;
   }
 
@@ -73,11 +79,9 @@ class Session {
 
 Future<void> deleteSession(String jwt, Session session) async {
   int id = session.id;
-  print(id);
   var response = await http.delete(kAPIAddress + '/api/session/$id/', headers: {
     'Authorization': 'JWT ' + jwt
   });
-  print(response.statusCode);
   DBHelper.deleteSession([session]);
 }
 
@@ -85,7 +89,6 @@ Future<List<Session>> getSessionList(String jwt) async {
   var response = await http.get(kAPIAddress + '/api/session/',
       headers: {'Authorization': 'JWT ' + jwt});
   assert(response.statusCode == 200);
-  print(response.body);
   List body = jsonDecode(response.body);
   List<Session> sessions = [];
   for (var session in body) {
@@ -102,7 +105,6 @@ Future<List<Session>> getSessionList(String jwt) async {
 
     sessions.add(newSession);
   }
-//  print(sessions);
   return sessions;
 }
 
@@ -133,7 +135,6 @@ class GeneralDay {
       body['concentration'] = this.concentration.toString();
     if (this.reflections != null) body['reflections'] = this.reflections;
     if (this.date != null) body['date'] = this.date.substring(0,10);
-    print(body);
 
     http.Response response;
     //sends new general day off to the server
@@ -151,8 +152,6 @@ class GeneralDay {
           body: body);
     }
 
-    print(response.statusCode);
-    print(response.body);
     Map responseBody = jsonDecode(response.body);
     //checks that the upload has been successful
     if ((response.statusCode/100).floor() != 2) {
@@ -180,11 +179,9 @@ class GeneralDay {
 
 Future<void> deleteGeneralDayItem(String jwt, GeneralDay generalDay) async {
   int id = generalDay.id;
-  print(id);
   var response = await http.delete(kAPIAddress + '/api/general-day/$id/', headers: {
     'Authorization': 'JWT ' + jwt
   } );
-  print(response.statusCode);
 
   DBHelper.deleteGeneralDayItem([generalDay]);
 }
@@ -194,7 +191,6 @@ Future<void> deleteGeneralDayItem(String jwt, GeneralDay generalDay) async {
 Future<List<GeneralDay>> getGeneralDayList(String jwt) async {
   var response = await http.get(kAPIAddress + '/api/general-day/',
       headers: {'Authorization': 'JWT ' + jwt});
-  print(response.body);
   List body = jsonDecode(response.body);
   List<GeneralDay> generalDays = [];
   for (var day in body) {
@@ -227,16 +223,23 @@ class Competition {
     if (this.address != null) body['address'] = this.address;
     if (this.startTime != null) body['start_time'] = this.startTime;
 
-    var response = await http.post(kAPIAddress + '/api/competition/',
+    var response;
+    if(id ==null){
+    response = await http.post(kAPIAddress + '/api/competition/',
         headers: {
           'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
         },
-        body: body);
-    print(response.statusCode);
-    print(response.body);
+        body: body);}else{
+      response = await http.patch(kAPIAddress + '/api/competition/$id/',
+          headers: {
+            'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+          },
+          body: body);
+    }
+
+
     Map responseBody = jsonDecode(response.body);
-    print(responseBody);
-    if (response.statusCode != 201) {
+    if ((response.statusCode/100).floor() != 2) {
       throw ServerErrorException;
     }
     Competition _newCompetition = Competition()
@@ -245,7 +248,11 @@ class Competition {
     ..address = responseBody['address']
     ..startTime = responseBody['start_time']
     ..id = responseBody['id'];
-    DBHelper.updateCompetitionsList([_newCompetition]);
+    if(response.statusCode == 201) {
+      DBHelper.updateCompetitionsList([_newCompetition]);
+    }else if(response.statusCode == 200){
+      DBHelper.updateCompetitionValue([_newCompetition]);
+    }
     return _newCompetition;
   }
 }
@@ -253,7 +260,6 @@ class Competition {
 Future<List<Competition>> getCompetitionList(String jwt) async {
   var response = await http.get(kAPIAddress + '/api/competition/',
       headers: {'Authorization': 'JWT ' + jwt});
-  print(response.body);
   List body = jsonDecode(response.body);
   List<Competition> competitions = [];
   for (var competition in body) {
@@ -266,23 +272,106 @@ Future<List<Competition>> getCompetitionList(String jwt) async {
 
     competitions.add(newComp);
   }
-  print(competitions);
   return competitions;
 }
 
 Future<void> deleteCompetition(String jwt, Competition competition) async {
   int id = competition.id;
-  print(id);
   var response = await http.delete(kAPIAddress + '/api/competition/$id/',
       headers: {
         'Authorization': 'JWT ' + jwt
       });
-  print(response.statusCode);
   DBHelper.deleteCompetition([competition]);
+}
+
+
+class Result{
+
+  int id;
+  String date;
+  String name;
+  int position;
+  String reflections;
+
+  Result({this.id, this.date, this.name, this.position, this.reflections});
+
+//photo?
+
+  Future<Result> uploadResult(UserRepository _userRepository) async {
+    Map body = {};
+    if (this.date != null) body['date'] = this.date;
+    if (this.name != null) body['name'] = this.name;
+    if (this.position != null) body['position'] = this.position;
+    if (this.reflections != null) body['reflections'] = this.reflections;
+
+    var response;
+    if(id ==null){
+      response = await http.post(kAPIAddress + '/api/result/',
+          headers: {
+            'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+          },
+          body: body);}else{
+      response = await http.patch(kAPIAddress + '/api/result/$id/',
+          headers: {
+            'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+          },
+          body: body);
+    }
+
+
+    Map responseBody = jsonDecode(response.body);
+    if ((response.statusCode/100).floor() != 2) {
+      throw ServerErrorException;
+    }
+    Result _newResult = Result()
+      ..name = responseBody['name']
+      ..date = responseBody['date']
+      ..position = responseBody['position']
+      ..reflections = responseBody['reflections']
+      ..id = responseBody['id'];
+    if(response.statusCode == 201) {
+      DBHelper.updateResultList([_newResult]);
+    }else if(response.statusCode == 200){
+      DBHelper.updateResultValue([_newResult]);
+    }
+    return _newResult;
+  }
+
+}
+
+Future<List<Result>> getResultList(String jwt) async {
+  var response = await http.get(kAPIAddress + '/api/result/',
+      headers: {'Authorization': 'JWT ' + jwt});
+  List body = jsonDecode(response.body);
+  List<Result> results = [];
+  for (var result in body) {
+    Result newResult = Result()
+      ..date = result['date']
+      ..name = result['name']
+      ..position = result['position']
+      ..reflections = result['reflections']
+      ..id = result['id'];
+
+    results.add(newResult);
+  }
+  return results;
+}
+
+
+Future<void> deleteResult(String jwt, Result result) async {
+  int id = result.id;
+  var response = await http.delete(kAPIAddress + '/api/result/$id/',
+      headers: {
+        'Authorization': 'JWT ' + jwt
+      });
+  DBHelper.deleteResult([result]);
 }
 
 class Diary {
   List<Session> sessionList = [];
   List<Competition> competitionList = [];
   List<GeneralDay> generalDayList = [];
+  List<Result> resultList = [];
 }
+
+

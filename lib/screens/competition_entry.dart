@@ -20,93 +20,132 @@ class _CompetitionEntryState extends State<CompetitionEntry> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CompetitionBloc, CompetitionState>(
-      listener: (BuildContext context, CompetitionState state){
-        if(state is InformationIncomplete){
-          conditions = state.conditions;
-          setState(() {
+    return GestureDetector(
+      onTap: (){
+        FocusScopeNode currentFocus = FocusScope.of(context);
 
-          });
-        }
-        if(state is SubmissionSuccessful){
-          Provider.of<PageNumber>(context, listen: false).pageNumber = 2;
-          Future.delayed(Duration(milliseconds: 1)).then((value) {
-          setState(() {
-
-          });
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MainPage(
-                    pageNumber:
-                    Provider.of<PageNumber>(context, listen: false)
-                        .pageNumber,
-                  )),
-                  (route) => false);
-        });
-              }
+        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) { currentFocus.focusedChild.unfocus(); }
       },
-      child: BlocBuilder<CompetitionBloc, CompetitionState>(
-        builder:(BuildContext context, CompetitionState state) {return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            children: <Widget>[
-               TextFormField(
-                 initialValue: state.competition.name,
-                decoration: InputDecoration.collapsed(hintText: 'Title', hintStyle: TextStyle(color: conditions[0]?Color(0xff828289):Colors.red)),
-                onChanged: (value){
-                  BlocProvider.of<CompetitionBloc>(context).add(UpdateName(value));
-                },
-                style: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric( vertical: 12),
-                child: PickerEntryBox(
-                  borderColor: conditions[1]?Color(0xff828289):Colors.red,
-                  textColor: conditions[1]?Colors.black:Colors.red,
-                  name: 'Competition Date',
-                  value:
-                  state.competition.date==null?'-':'${state.competition.date}',
-                  onPressed: () {
-                    showPickerDate(context);
-                    conditions[1]=true;
-                  },
+      child: Container(
+        height: MediaQuery.of(context).size.height*0.8,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius:BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))
+        ),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: Container(
+                height: 10,
+                width: 40,
+                decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(40)
                 ),
               ),
-              Padding(padding: EdgeInsets.symmetric(vertical: 12),
-                child: PickerEntryBox(
-                  borderColor: conditions[2]?Color(0xff828289):Colors.red,
-                  textColor: conditions[2]?Colors.black:Colors.red,
-                  name: 'Start Time',
-                  value: state.competition.startTime==null?'-':'${state.competition.startTime}',
-                  onPressed: (){
-                    showStartTimeArray(context);
-                    conditions[2]=true;
-                  },
-                ),),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: AppStyledTextField(fieldName: 'Address',
-                initialValue: state.competition.address,
-                borderColor: conditions[3]?Color(0xff828289):Colors.red,
-                  helpTextColor: conditions[3]?Color(0xff828289):Colors.red,
-                keyboardType: TextInputType.multiline,
-                onChanged: (value, context){
-                  BlocProvider.of<CompetitionBloc>(context).add(UpdateAddress(value));
-                },
-                minLines: 5,
-                maxLines: 5,),
-              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context)
+                        .viewInsets
+                        .bottom),
+                child: SingleChildScrollView(
+                  child: BlocListener<CompetitionBloc, CompetitionState>(
+                    listener: (BuildContext context, CompetitionState state){
+                      if(state is InformationIncomplete){
+                        conditions = state.conditions;
+                        setState(() {
 
-              BigBlueButton(text: 'Add',
-              onPressed: (){
-                BlocProvider.of<CompetitionBloc>(context).add(Submit());
-              },),
-              SizedBox(height: 15,)
-            ],
-          ),
-        );}
+                        });
+                      }
+                      if(state is SubmissionSuccessful){
+                        Provider.of<PageNumber>(context, listen: false).pageNumber = 2;
+                        Future.delayed(Duration(milliseconds: 1)).then((value) {
+                        setState(() {
+
+                        });
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MainPage(
+                                  pageNumber:
+                                  Provider.of<PageNumber>(context, listen: false)
+                                      .pageNumber,
+                                )),
+                                (route) => false);
+                      });
+                            }
+                    },
+                    child: BlocBuilder<CompetitionBloc, CompetitionState>(
+                      builder:(BuildContext context, CompetitionState state) {return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 30),
+                        child: Column(
+                          children: <Widget>[
+                             TextFormField(
+                               initialValue: state.competition.name,
+                              decoration: InputDecoration.collapsed(hintText: 'Enter competition name here', hintStyle: TextStyle(color: conditions[0]?Color(0xff828289):Colors.red)),
+                              onChanged: (value){
+                                BlocProvider.of<CompetitionBloc>(context).add(UpdateName(value));
+                              },
+                              style: TextStyle(
+                                  color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric( vertical: 12),
+                              child: PickerEntryBox(
+                                borderColor: conditions[1]?Color(0xff828289):Colors.red,
+                                textColor: conditions[1]?Colors.black:Colors.red,
+                                name: 'Competition Date',
+                                value:
+                                state.competition.date==null?'-':'${state.competition.date}',
+                                onPressed: () {
+                                  showPickerDate(context);
+                                  conditions[1]=true;
+                                },
+                              ),
+                            ),
+                            Padding(padding: EdgeInsets.symmetric(vertical: 12),
+                              child: PickerEntryBox(
+                                borderColor: conditions[2]?Color(0xff828289):Colors.red,
+                                textColor: conditions[2]?Colors.black:Colors.red,
+                                name: 'Start Time',
+                                value: state.competition.startTime==null?'-':'${state.competition.startTime}',
+                                onPressed: (){
+                                  showStartTimeArray(context);
+                                  conditions[2]=true;
+                                },
+                              ),),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: AppStyledTextField(fieldName: 'Address',
+                              initialValue: state.competition.address,
+                              borderColor: conditions[3]?Color(0xff828289):Colors.red,
+                                helpTextColor: conditions[3]?Color(0xff828289):Colors.red,
+                              keyboardType: TextInputType.multiline,
+                              onChanged: (value, context){
+                                BlocProvider.of<CompetitionBloc>(context).add(UpdateAddress(value));
+                              },
+                              minLines: 5,
+                              maxLines: 5,),
+                            ),
+
+                            BigBlueButton(text: 'Add',
+                            onPressed: (){
+                              BlocProvider.of<CompetitionBloc>(context).add(Submit());
+                            },),
+                            SizedBox(height: 15,)
+                          ],
+                        ),
+                      );}
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

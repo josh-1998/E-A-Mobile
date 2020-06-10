@@ -21,10 +21,14 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   ///0:Intensity, 1: performance, 2: feeling
   List<bool> conditions= [false, false, false,];
 
-  SessionBloc(this._userRepository,{Session session}):_session = session ?? Session(date: DateTime.now().toIso8601String()); //  final UserRepository _userRepository;
+  SessionBloc(this._userRepository,{Session session}):_session = session ?? Session(date: DateTime.now().toIso8601String());
 
   @override
-  SessionState get initialState => InitialSessionState(_session, _last7daysChooser);
+  SessionState get initialState {
+      _session.intensity!=null?conditions[0]=true:conditions[0]=false;
+  _session.performance!=null?conditions[1]=true:conditions[1]=false;
+  _session.feeling!=null?conditions[2]=true:conditions[2]=false;
+    return InitialSessionState(_session, _last7daysChooser);}
 
   @override
   Stream<SessionState> mapEventToState(SessionEvent event) async* {
@@ -70,7 +74,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       if(numberOfFalse == 0) {
         try {
           Session _newSession = await _session.uploadSession(_userRepository);
-          _userRepository.diary.sessionList.add(_newSession);
+          if(_session.id == null) _userRepository.diary.sessionList.add(_newSession);
           yield SuccessfullySubmitted(_session, _last7daysChooser);
         } catch (e) {
           print(e);

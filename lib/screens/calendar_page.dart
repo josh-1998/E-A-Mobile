@@ -88,6 +88,7 @@ class CalendarPageContent extends StatelessWidget {
                           ),
                           onPressed: () {
                             showModalBottomSheet(
+                              backgroundColor: Colors.transparent,
                                 isScrollControlled: true,
                                 context: context,
                                 builder: (builder) {
@@ -131,26 +132,13 @@ class CalendarPageContent extends StatelessWidget {
                             isScrollControlled: true,
                             context: context,
                             builder: (builder) {
-                              return Container(
-                                child: BlocProvider(
-                                    create: (context) =>
-                                        CompetitionBloc(
-                                            Provider.of<UserRepository>(
-                                                context,
-                                                listen: false), competition: Competition(date: '${datetime.year}-${timeToString(datetime.month)}-${timeToString(datetime.day)}')),
-                                    child: GestureDetector(
-                                      onTap: (){},
-                                      child: Padding(
-                                        padding: EdgeInsets.only(
-                                            bottom: MediaQuery
-                                                .of(context)
-                                                .viewInsets
-                                                .bottom),
-                                        child: SingleChildScrollView(
-                                            child: CompetitionEntry()),
-                                      ),
-                                    )),
-                              );
+                              return BlocProvider(
+                                  create: (context) =>
+                                      CompetitionBloc(
+                                          Provider.of<UserRepository>(
+                                              context,
+                                              listen: false), competition: Competition(date: '${datetime.year}-${timeToString(datetime.month)}-${timeToString(datetime.day)}')),
+                                  child: CompetitionEntry());
                             });
                       },
                       availableCalendarFormats: {CalendarFormat.month: 'month'},

@@ -40,3 +40,12 @@ class Last7DaysChooser{
     }
   }
 }
+
+class UserNotification{
+  String photoURL;
+  String title;
+  String content;
+  DateTime timeReceived;
+
+  UserNotification({this.photoURL, this.title, this.content, this.timeReceived});
+}

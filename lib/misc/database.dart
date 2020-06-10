@@ -34,6 +34,7 @@ class DBHelper {
     await dbClient.execute("DROP TABLE IF EXISTS Sessions");
     await dbClient.execute("DROP TABLE IF EXISTS GeneralDays");
     await dbClient.execute("DROP TABLE IF EXISTS Competitions");
+    await dbClient.execute("DROP TABLE IF EXISTS Results");
   }
 
   
@@ -194,6 +195,21 @@ class DBHelper {
     }
   }
 
+  static void updateSessionValue(List<Session> sessions) async {
+    var dbClient = await db;
+    for (Session session in sessions){
+      await dbClient.transaction((txn) async{
+        return await txn.rawUpdate('UPDATE Competitions' +
+            ' SET title = ?, date = ?, lengthOfSession = ?, intensity = ?, performance = ? ' +
+            'feeling = ?, target = ?, reflections = ?'
+            ' WHERE id = ?',
+            [session.title, session.date, session.lengthOfSession, session.intensity,
+              session.performance, session.feeling, session.target, session.reflections,
+            session.id]);
+      });
+    }
+  }
+
   /// creates generalDayTable, when user logs in. This can then be populated
   static void createGeneralDayTable() async {
     var dbClient = await db;
@@ -305,6 +321,80 @@ class DBHelper {
       await dbClient.transaction((txn) async {
         return await txn.rawDelete('DELETE FROM Competitions WHERE id = ?',
             [competition.id]);
+      });
+    }
+  }
+
+  static void updateCompetitionValue(List<Competition> competitions) async {
+    var dbClient = await db;
+    for (Competition competition in competitions){
+      await dbClient.transaction((txn) async{
+        return await txn.rawUpdate('UPDATE Competitions' +
+            ' SET date = ?, name = ?, address = ?, startTime = ?' +
+            ' WHERE id = ?',
+            [competition.date, competition.name, competition.address, competition.startTime, competition.id]);
+      });
+    }
+  }
+
+  static void createResultsTable() async {
+    var dbClient = await db;
+
+    await dbClient.execute(
+        "CREATE TABLE Results(id INTEGER PRIMARY KEY, name TEXT, " +
+            "date TEXT, position INTEGER, reflections TEXT)");
+    print("Created Results table");
+  }
+
+  /// Used for  querying the internal memory and adding generalDayList to the
+  /// UserRepository model. Only called when app is opened and user is logged in
+  static Future<List<Result>> getResults() async {
+    var dbClient = await db;
+    List<Map> list = await dbClient.rawQuery('SELECT * FROM Results');
+    List<Result> resultList = [];
+    for (var result in list) {
+      Result newResult = Result();
+      newResult.id = result['id'];
+      newResult.date = result['date'];
+      newResult.name = result['name'];
+      newResult.position = result['position'];
+      newResult.reflections = result['reflections'];
+      resultList.add(newResult);
+    }
+    return resultList;
+  }
+
+  static void updateResultList(List<Result> results) async {
+    var dbClient = await db;
+    for (Result result in results) {
+      await dbClient.transaction((txn) async {
+        return await txn.rawInsert('INSERT INTO  Results' +
+            "(id, date, name, position, reflections" +
+            ") VALUES(" +
+            "?, ?, ?, ?, ?)",
+            [result.id, result.date, result.name, result.position, result.reflections]);
+      });
+    }
+  }
+
+  static void deleteResult(List<Result> results) async{
+    var dbClient = await db;
+    for (Result result in results){
+      await dbClient.transaction((txn) async {
+        return await txn.rawDelete('DELETE FROM Results WHERE id = ?',
+            [result.id]);
+      });
+    }
+  }
+
+  static void updateResultValue(List<Result> results) async {
+    var dbClient = await db;
+    for (Result result in results){
+      await dbClient.transaction((txn) async{
+        return await txn.rawUpdate('UPDATE Competitions' +
+            ' SET date = ?, name = ?, position = ?, reflections = ?' +
+            ' WHERE id = ?',
+            [result.date, result.name, result.position, result.reflections, result.id]);
       });
     }
   }

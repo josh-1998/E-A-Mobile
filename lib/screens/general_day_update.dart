@@ -12,7 +12,6 @@ import 'main_page.dart';
 
 
 class GeneralDayUpdateBody extends StatefulWidget {
-  //TODO: move existing general day into generalDay bloc, then add update method if day already exists.
 
   const GeneralDayUpdateBody({
     Key key,
@@ -25,140 +24,173 @@ class GeneralDayUpdateBody extends StatefulWidget {
 class _GeneralDayUpdateBodyState extends State<GeneralDayUpdateBody> {
   @override
   Widget build(BuildContext context) {
-    return BlocListener<GeneralDayBloc, GeneralDayState>(
-      listener: (BuildContext context, GeneralDayState state){
-        if(state is SubmissionSuccessful){
-          Future.delayed(Duration(milliseconds: 1)).then((value) {
-            Provider.of<PageNumber>(context, listen: false).pageNumber = 1;
-            Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MainPage(
-                      pageNumber:
-                      Provider.of<PageNumber>(context, listen: false)
-                          .pageNumber,
-                    )),
-                    (route) => false);
-          });
-        }
-      },
-      child: BlocBuilder(
-        bloc: BlocProvider.of<GeneralDayBloc>(context),
-        builder: (BuildContext context, GeneralDayState state){
-          return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: SingleChildScrollView(
-            reverse: true,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      'General Day',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
-                    ),
-                    Container(
-                      child: Row(
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(Icons.chevron_left),
-                            onPressed: state.last7daysChooser.dayPointer>=6?null:(){
-                              BlocProvider.of<GeneralDayBloc>(context).add(ChangeDateBackwards());
-                              setState(() {
-
-                              });
-                            },
-                          ),
-                          Text(state.last7daysChooser.displayDate),
-                          IconButton(
-                            icon: Icon(Icons.chevron_right),
-                            onPressed: state.last7daysChooser.dayPointer<=0?null:(){
-                              BlocProvider.of<GeneralDayBloc>(context).add(ChangeDateForwards());
-                              setState(() {
-
-                              });
-                            },
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 13,
-                ),
-                Text(
-                  'I feel well rested',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                NumberScale(
-                  initialValue: state.generalDay.rested,
-                  onChanged: (value)=> BlocProvider.of<GeneralDayBloc>(context).add(UpdateRested(value)),
-                  maxNumber: 5,
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Text(
-                  'I have eaten well today',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                NumberScale(
-                  initialValue: state.generalDay.nutrition,
-                  onChanged: (value)=> BlocProvider.of<GeneralDayBloc>(context).add(UpdateNutrition(value)),
-                  maxNumber: 10,
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Text(
-                  'I was able to maintain concentration in my tasks today',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                NumberScale(
-                  initialValue: state.generalDay.concentration,
-                  onChanged: (value)=> BlocProvider.of<GeneralDayBloc>(context).add(UpdateConcentration(value)),
-                  maxNumber: 10,
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                  child: AppStyledTextField(
-                    initialValue: state.generalDay.reflections==''?null:state.generalDay.reflections,
-                    minLines: 5,
-                    maxLines: 5,
-                    onChanged: (value, context) => BlocProvider.of<GeneralDayBloc>(context).add(UpdateReflections(value)),
-                    fieldName: 'Reflections on today',
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                BigBlueButton(text: 'Add',
-                onPressed: (){BlocProvider.of<GeneralDayBloc>(context).add(Submit());
-//                Navigator.pop(context);
-                },),
-                SizedBox(height: 20,)
-              ],
+    return Container(
+      height: MediaQuery.of(context).size.height*0.9,
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius:BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10))
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Container(
+              height: 10,
+              width: 40,
+              decoration: BoxDecoration(
+                  color: Colors.grey,
+                  borderRadius: BorderRadius.circular(40)
+              ),
             ),
           ),
-        );}
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context)
+                      .viewInsets
+                      .bottom),
+              child: SingleChildScrollView(
+                child: BlocListener<GeneralDayBloc, GeneralDayState>(
+                  listener: (BuildContext context, GeneralDayState state){
+                    if(state is SubmissionSuccessful){
+                      Future.delayed(Duration(milliseconds: 1)).then((value) {
+                        Provider.of<PageNumber>(context, listen: false).pageNumber = 1;
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MainPage(
+                                  pageNumber:
+                                  Provider.of<PageNumber>(context, listen: false)
+                                      .pageNumber,
+                                )),
+                                (route) => false);
+                      });
+                    }
+                  },
+                  child: BlocBuilder(
+                    bloc: BlocProvider.of<GeneralDayBloc>(context),
+                    builder: (BuildContext context, GeneralDayState state){
+                      return Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: SingleChildScrollView(
+                        reverse: true,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  'General Day',
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                                Container(
+                                  child: Row(
+                                    children: <Widget>[
+                                      IconButton(
+                                        icon: Icon(Icons.chevron_left),
+                                        onPressed: state.last7daysChooser.dayPointer>=6?null:(){
+                                          BlocProvider.of<GeneralDayBloc>(context).add(ChangeDateBackwards());
+                                          setState(() {
+
+                                          });
+                                        },
+                                      ),
+                                      Text(state.last7daysChooser.displayDate),
+                                      IconButton(
+                                        icon: Icon(Icons.chevron_right),
+                                        onPressed: state.last7daysChooser.dayPointer<=0?null:(){
+                                          BlocProvider.of<GeneralDayBloc>(context).add(ChangeDateForwards());
+                                          setState(() {
+
+                                          });
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 13,
+                            ),
+                            Text(
+                              'I feel well rested',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            NumberScale(
+                              initialValue: state.generalDay.rested,
+                              onChanged: (value)=> BlocProvider.of<GeneralDayBloc>(context).add(UpdateRested(value)),
+                              maxNumber: 5,
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            Text(
+                              'I have eaten well today',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            NumberScale(
+                              initialValue: state.generalDay.nutrition,
+                              onChanged: (value)=> BlocProvider.of<GeneralDayBloc>(context).add(UpdateNutrition(value)),
+                              maxNumber: 10,
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            Text(
+                              'I was able to maintain concentration in my tasks today',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            NumberScale(
+                              initialValue: state.generalDay.concentration,
+                              onChanged: (value)=> BlocProvider.of<GeneralDayBloc>(context).add(UpdateConcentration(value)),
+                              maxNumber: 10,
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                              child: AppStyledTextField(
+                                initialValue: state.generalDay.reflections==''?null:state.generalDay.reflections,
+                                minLines: 5,
+                                maxLines: 5,
+                                onChanged: (value, context) => BlocProvider.of<GeneralDayBloc>(context).add(UpdateReflections(value)),
+                                fieldName: 'Reflections on today',
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            BigBlueButton(text: 'Add',
+                            onPressed: (){BlocProvider.of<GeneralDayBloc>(context).add(Submit());
+//                Navigator.pop(context);
+                            },),
+                            SizedBox(height: 20,)
+                          ],
+                        ),
+                      ),
+                    );}
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:eathlete/screens/competition_entry.dart';
 import 'package:eathlete/screens/log_in_screen.dart';
 import 'package:eathlete/screens/main_page.dart';
 import 'package:eathlete/screens/notifications.dart';
+import 'package:eathlete/screens/results.dart';
 import 'package:eathlete/screens/settings.dart';
 import 'package:eathlete/screens/timer.dart';
 import 'package:eathlete/misc/user_repository.dart';
@@ -380,6 +381,26 @@ class _EAthleteDrawerState extends State<EAthleteDrawer> {
                             )),
                     (route) => false);
               });
+            },
+          ),
+          EAthleteDrawerTile(
+            name: 'Results',
+            selected:
+            Provider.of<PageNumber>(context, listen: false).pageNumber == 4
+                ? true
+                : false,
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                Provider.of<PageNumber>(context, listen: false).pageNumber = 4;
+                print(
+                    Provider.of<PageNumber>(context, listen: false).pageNumber);
+              });
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>Results()),
+                      (route) => false);
             },
           ),
           EAthleteDrawerTile(

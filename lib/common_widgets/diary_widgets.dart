@@ -1,16 +1,16 @@
 import 'package:eathlete/blocs/competition/competition_bloc.dart';
 import 'package:eathlete/blocs/general_day/general_day_bloc.dart';
+import 'package:eathlete/blocs/result/result_bloc.dart';
 import 'package:eathlete/blocs/session/session_bloc.dart';
 import 'package:eathlete/models/diary_model.dart';
+import 'package:eathlete/screens/Result_update_body.dart';
 import 'package:eathlete/screens/competition_entry.dart';
 import 'package:eathlete/screens/general_day_update.dart';
 import 'package:eathlete/screens/session_update_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
-
 import '../misc/user_repository.dart';
 
 
@@ -46,18 +46,17 @@ class _GeneralDayEntryState extends State<GeneralDayEntry> {
 
           child: GestureDetector(
               onTap: (){
-                showMaterialModalBottomSheet(
+                showModalBottomSheet(
                     context: context,
-                    expand: false,
-                    builder: (builder, scrollController) {
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (builder) {
                       return BlocProvider(
                           create: (context) => GeneralDayBloc(
                               Provider.of<UserRepository>(context,
                                   listen: false),
                               generalDay: widget.generalDay),
-                          child: SafeArea(
-                              child: SingleChildScrollView(
-                                  child: GeneralDayUpdateBody())));
+                          child: GeneralDayUpdateBody());
                     });
               },
               child: Container(child: Text('Edit'))),
@@ -251,10 +250,11 @@ class _CompetitionDiaryEntryState extends State<CompetitionDiaryEntry> {
 
           child: GestureDetector(
               onTap: (){
-                showMaterialModalBottomSheet(
+                showModalBottomSheet(
                     context: context,
-                    expand: false,
-                    builder: (builder, scrollController) {
+                    backgroundColor: Colors.transparent,
+                    isScrollControlled: true,
+                    builder: (builder) {
                       return BlocProvider(
                           create: (context) => CompetitionBloc(
                               Provider.of<UserRepository>(context,
@@ -415,10 +415,11 @@ class _SessionEntryState extends State<SessionEntry> {
 
           child: GestureDetector(
               onTap: (){
-                showMaterialModalBottomSheet(
+                showModalBottomSheet(
                     context: context,
-                    expand: false,
-                    builder: (builder, scrollController) {
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (builder) {
                       return BlocProvider(
                           create: (context) => SessionBloc(
                               Provider.of<UserRepository>(context,
@@ -591,6 +592,180 @@ class _SessionEntryState extends State<SessionEntry> {
                         height: 3,
                       ),
                       Text(widget.session.reflections == null ? '-' : widget.session.reflections)
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ResultEntry extends StatefulWidget {
+  final Function onDelete;
+  final Result result;
+  const ResultEntry({
+    this.result,
+    this.onDelete,
+    Key key,
+  }) : super(key: key);
+
+  @override
+  _ResultEntryState createState() => _ResultEntryState();
+}
+
+class _ResultEntryState extends State<ResultEntry> {
+  var _tapPosition;
+  void _storePosition(TapDownDetails details) {
+    _tapPosition = details.globalPosition;
+  }
+  _showPopupMenu() async {
+    final RenderBox overlay = Overlay.of(context).context.findRenderObject();
+
+    await showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+          _tapPosition & Size(40, 40), // smaller rect, the touch area
+          Offset.zero & overlay.size // Bigger rect, the entire screen
+      ),
+      items: [
+        PopupMenuItem(
+
+          child: GestureDetector(
+              onTap: (){
+                showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (builder) {
+                      return BlocProvider(
+                          create: (context) => ResultBloc(
+                              Provider.of<UserRepository>(context,
+                                  listen: false),
+                              result: widget.result),
+                          child: ResultUpdateBody());
+                    });
+              },
+              child: Container(child: Text('Edit'))),
+        ),
+        PopupMenuItem(
+          child: GestureDetector(
+              onTap: ()async {
+                Navigator.pop(context);
+                await deleteResult(await Provider.of<UserRepository>(context, listen: false).refreshIdToken(), widget.result);
+                widget.onDelete();
+                setState(() {
+                });
+              },
+              child: Text('Delete')),
+        )
+      ],
+    );
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: InkWell(
+        onTapDown: _storePosition,
+        onLongPress: () {
+          _showPopupMenu();
+        },
+
+        child: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(spreadRadius: 0.5, blurRadius: 1, color: Colors.grey)
+            ],
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Container(
+                          height: 16,
+                          width: 16,
+                          child: Center(
+                              child: Icon(
+                                Icons.calendar_today,
+                                size: 13,
+                              )),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                    spreadRadius: 0.5,
+                                    blurRadius: 1,
+                                    color: Colors.grey)
+                              ],
+                              borderRadius: BorderRadius.circular(4)),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          widget.result.name==null?'Result':widget.result.name,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        )
+                      ],
+                    ),
+                    Text(
+                      widget.result.date == null ? '-' : widget.result.date,
+                      style: TextStyle(color: Colors.blueGrey, fontSize: 12),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Position',
+                        style: TextStyle(color: Color(0xff828289)),
+                      ),
+                      Text(widget.result.position == null
+                          ? '-'
+                          : '${widget.result.position}'),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Reflections',
+                        style: TextStyle(color: Color(0xff828289)),
+                      ),
+                      SizedBox(
+                        height: 3,
+                      ),
+                      Text(widget.result.reflections == null
+                          ? '-'
+                          : widget.result.reflections)
                     ],
                   ),
                 ),

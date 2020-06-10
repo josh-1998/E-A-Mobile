@@ -106,11 +106,10 @@ class User {
     }
   }
 
-  Future<int> deleteUser(String jwt) async {
+  Future<void> deleteUser(String jwt) async {
     var response = await http.delete(
       kAPIAddress + '/api/users/current/',
       headers: {'Authorization': 'JWT ' + jwt},
     );
-
   }
 }
