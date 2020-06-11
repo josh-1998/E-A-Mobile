@@ -370,7 +370,28 @@ class _CompetitionDiaryEntryState extends State<CompetitionDiaryEntry> {
                       ),
                       Text(widget._competition.address == null
                           ? '-'
-                          : widget._competition.address)
+                          : widget._competition.address),
+                      SizedBox(height: 8,),
+                      DateTime.parse(widget._competition.date).isBefore(DateTime.now())?FlatButton(
+                        child: Text('Convert into Result', style: TextStyle(color: Colors.blue),),
+                        onPressed: (){
+                          showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (builder) {
+                                return BlocProvider(
+                                    create: (context) => ResultBloc(
+                                        Provider.of<UserRepository>(context,
+                                            listen: false),
+                                        competition: widget._competition,
+                                        isCompetitionConverter: true,
+                                        result: Result(date: widget._competition.date,
+                                        name: widget._competition.name)),
+                                    child: ResultUpdateBody());
+                              });
+                        },
+                      ):Container()
                     ],
                   ),
                 ),

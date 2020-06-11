@@ -104,6 +104,9 @@ class _ResultUpdateBodyState extends State<ResultUpdateBody> {
                                     Expanded(
                                       child: TextFormField(
                                         keyboardType: TextInputType.number,
+                                        onChanged: (value){
+                                          BlocProvider.of<ResultBloc>(context).add(AddPosition(int.parse(value)));
+                                        },
                                       ),
                                     ),
                                   ],

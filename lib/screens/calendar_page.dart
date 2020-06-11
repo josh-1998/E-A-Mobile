@@ -193,6 +193,8 @@ List<Widget> convertListToWidgets(List events) {
       ));
     } else if (entry is GeneralDay) {
       currentDayWidgetList.add(GeneralDayEntry(generalDay: entry,));
+    } else if(entry is Result){
+      currentDayWidgetList.add(ResultEntry(result: entry,));
     }
   }
   return currentDayWidgetList;

@@ -51,6 +51,7 @@ class AuthenticationBloc
           _userRepository.diary.generalDayList = await DBHelper.getGeneralDay();
           _userRepository.diary.competitionList =
               await DBHelper.getCompetitions();
+          _userRepository.diary.resultList = await DBHelper.getResults();
           yield Authenticated();
         }
         //if that doesnt work, send back to firebase asking for another token

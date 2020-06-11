@@ -24,12 +24,12 @@ class Notifications extends StatelessWidget {
           ],
         ),
       ),
-      body: ListView.builder(
-          itemCount: Provider.of<UserRepository>(context).notifications.length,
-          itemBuilder: (BuildContext context, int index){
-            UserNotification _notification = Provider.of<UserRepository>(context).notifications[index];
-            return NotificationTile(_notification);
-          }),
+//      body: ListView.builder(
+//          itemCount: Provider.of<UserRepository>(context).notifications.length,
+//          itemBuilder: (BuildContext context, int index){
+//            UserNotification _notification = Provider.of<UserRepository>(context).notifications[index];
+//            return NotificationTile(_notification);
+//          }),
     );
   }
 }

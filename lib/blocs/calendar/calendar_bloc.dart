@@ -36,6 +36,17 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
         return existingValue;
       }, ifAbsent: () => [currentCompetition]);
     }
+    for (Result result in userRepository.diary.resultList){
+      DateTime date = DateTime.parse(result.date);
+      _competitionMap.update(date, (List existingValue){
+        existingValue.add(result);
+        return existingValue;
+      }, ifAbsent: () => [result]);
+      eventsMap.update(date, (existingValue){
+        existingValue.add(result);
+        return existingValue;
+      }, ifAbsent: () => [result]);
+    }
     for (GeneralDay generalDay in userRepository.diary.generalDayList) {
       DateTime date = DateTime.parse(generalDay.date);
       eventsMap.update(date, (existingValue) {

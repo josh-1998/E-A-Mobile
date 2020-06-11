@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-
 import 'package:provider/provider.dart';
 
 import '../blocs/authentification/authentification_bloc.dart';
@@ -64,7 +63,7 @@ class AppStyledTextField extends StatefulWidget {
       {this.fieldName,
       this.icon,
       this.obscured = false,
-      this.initialValue='',
+      this.initialValue = '',
       this.onChanged,
       this.minLines = 1,
       this.maxLines = 1,
@@ -82,18 +81,18 @@ class _AppStyledTextFieldState extends State<AppStyledTextField> {
   String textValue;
   bool _hidden = true;
 
-
   @override
   void initState() {
     super.initState();
     textValue = widget.initialValue;
   }
+
   @override
   Widget build(BuildContext context) {
     if (widget.obscured == false) {
       return Container(
-        child: Stack(
-          children: <Widget>[Padding(
+        child: Stack(children: <Widget>[
+          Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Container(
               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
@@ -101,7 +100,8 @@ class _AppStyledTextFieldState extends State<AppStyledTextField> {
                   border: Border.all(width: 1.0, color: widget.borderColor),
                   borderRadius: BorderRadius.circular(10)),
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: widget.minLines==1?0:8),
+                padding: EdgeInsets.symmetric(
+                    vertical: widget.minLines == 1 ? 0 : 8),
                 child: Row(
                   children: <Widget>[
                     widget.icon == null
@@ -117,14 +117,15 @@ class _AppStyledTextFieldState extends State<AppStyledTextField> {
                         minLines: widget.minLines,
                         maxLines: widget.maxLines,
                         keyboardType: widget.keyboardType,
-                        onChanged: (value){
+                        onChanged: (value) {
                           setState(() {
-                          textValue = value;
+                            textValue = value;
                           });
-                          widget.onChanged(value, context);},
+                          widget.onChanged(value, context);
+                        },
                         initialValue: widget.initialValue,
-                        decoration:
-                            InputDecoration.collapsed(hintText: widget.fieldName,
+                        decoration: InputDecoration.collapsed(
+                            hintText: widget.fieldName,
                             hintStyle: TextStyle(color: widget.helpTextColor)),
                       ),
                     ),
@@ -136,20 +137,26 @@ class _AppStyledTextFieldState extends State<AppStyledTextField> {
               ),
             ),
           ),
-          textValue!=''?Positioned(
-            top: 0,
-            left: 10,
-            child: Text(' ${widget.fieldName} ', style: TextStyle(backgroundColor: Colors.white, color: widget.borderColor),),
-          ):Container()]
-        ),
+          textValue != ''
+              ? Positioned(
+                  top: 0,
+                  left: 10,
+                  child: Text(
+                    ' ${widget.fieldName} ',
+                    style: TextStyle(
+                        backgroundColor: Colors.white,
+                        color: widget.borderColor),
+                  ),
+                )
+              : Container()
+        ]),
       );
     } else {
       return Container(
-        child: Stack(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Container(
+        child: Stack(children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Container(
               padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
               decoration: BoxDecoration(
                   border: Border.all(width: 1.0, color: widget.borderColor),
@@ -165,8 +172,8 @@ class _AppStyledTextFieldState extends State<AppStyledTextField> {
                     child: TextField(
                       onChanged: (value) => widget.onChanged(value, context),
                       obscureText: _hidden,
-                      decoration:
-                          new InputDecoration.collapsed(hintText: widget.fieldName),
+                      decoration: new InputDecoration.collapsed(
+                          hintText: widget.fieldName),
                     ),
                   ),
                   Expanded(
@@ -185,14 +192,21 @@ class _AppStyledTextFieldState extends State<AppStyledTextField> {
                   )
                 ],
               ),
-          ),
             ),
-            textValue!=''?Positioned(
-              top: 0,
-              left: 10,
-              child: Text(' ${widget.fieldName} ', style: TextStyle(backgroundColor: Colors.white, color: Color(0xff828289)),),
-            ):Container()]
-        ),
+          ),
+          textValue != ''
+              ? Positioned(
+                  top: 0,
+                  left: 10,
+                  child: Text(
+                    ' ${widget.fieldName} ',
+                    style: TextStyle(
+                        backgroundColor: Colors.white,
+                        color: Color(0xff828289)),
+                  ),
+                )
+              : Container()
+        ]),
       );
     }
   }
@@ -386,9 +400,9 @@ class _EAthleteDrawerState extends State<EAthleteDrawer> {
           EAthleteDrawerTile(
             name: 'Results',
             selected:
-            Provider.of<PageNumber>(context, listen: false).pageNumber == 4
-                ? true
-                : false,
+                Provider.of<PageNumber>(context, listen: false).pageNumber == 4
+                    ? true
+                    : false,
             onPressed: () {
               Navigator.pop(context);
               setState(() {
@@ -396,11 +410,8 @@ class _EAthleteDrawerState extends State<EAthleteDrawer> {
                 print(
                     Provider.of<PageNumber>(context, listen: false).pageNumber);
               });
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>Results()),
-                      (route) => false);
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Results()));
             },
           ),
           EAthleteDrawerTile(
@@ -591,10 +602,9 @@ class NumberScale extends StatefulWidget {
   final Color borderColor;
   final int initialValue;
 
-
   const NumberScale({
     Key key,
-    this.initialValue=0,
+    this.initialValue = 0,
     this.selectedColor = Colors.blue,
     this.onChanged,
     this.borderColor = Colors.grey,
@@ -746,7 +756,7 @@ class _PickerEntryBoxState extends State<PickerEntryBox> {
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(10),
-      onTap: (){
+      onTap: () {
         widget.onPressed();
         setState(() {});
       },
@@ -762,7 +772,8 @@ class _PickerEntryBoxState extends State<PickerEntryBox> {
             ),
             Text(
               widget.name,
-              style: TextStyle(fontWeight: FontWeight.normal, color: widget.textColor),
+              style: TextStyle(
+                  fontWeight: FontWeight.normal, color: widget.textColor),
             ),
             Expanded(
               flex: 10,
@@ -770,9 +781,15 @@ class _PickerEntryBoxState extends State<PickerEntryBox> {
                 height: 45,
               ),
             ),
-            Text(widget.value, style: TextStyle(color: widget.textColor),),
+            Text(
+              widget.value,
+              style: TextStyle(color: widget.textColor),
+            ),
             IconButton(
-              icon: Icon(Icons.keyboard_arrow_down, color: widget.borderColor,),
+              icon: Icon(
+                Icons.keyboard_arrow_down,
+                color: widget.borderColor,
+              ),
               padding: EdgeInsets.all(0),
               onPressed: () {
                 widget.onPressed();
@@ -790,7 +807,12 @@ class BigBlueButton extends StatelessWidget {
   final String text;
   final Function onPressed;
   final Color color;
-  const BigBlueButton({Key key, this.onPressed, this.text, this.color=const Color(0xff0088ff)}) : super(key: key);
+  const BigBlueButton(
+      {Key key,
+      this.onPressed,
+      this.text,
+      this.color = const Color(0xff0088ff)})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -814,6 +836,3 @@ class BigBlueButton extends StatelessWidget {
     );
   }
 }
-
-
-

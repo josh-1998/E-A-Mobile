@@ -13,11 +13,16 @@ part 'result_state.dart';
 class ResultBloc extends Bloc<ResultEvent, ResultState> {
   final UserRepository _userRepository;
   final Result _result;
+  final bool _isCompetitionConverter;
+  final Competition competition;
   //0:title, 1:position,
   List<bool> conditions = [false, false];
 
 
-  ResultBloc(this._userRepository, {Result result}):_result = result ?? Result();
+  ResultBloc(this._userRepository, {Result result, bool isCompetitionConverter,
+    this.competition}):
+        _result = result ?? Result(),
+        _isCompetitionConverter = isCompetitionConverter ?? false;
 
   @override
   ResultState get initialState => InitialResultState(_result);
@@ -56,6 +61,10 @@ class ResultBloc extends Bloc<ResultEvent, ResultState> {
         try {
           Result _newResult = await _result.uploadResult(
               _userRepository);
+          if(_isCompetitionConverter) {
+            await deleteCompetition(await _userRepository.refreshIdToken(), competition);
+            _userRepository.diary.competitionList = await getCompetitionList(await _userRepository.refreshIdToken());
+          }
           if(_result.id == null) _userRepository.diary.resultList.add(_newResult);
           yield SubmissionSuccessful(_result);
         } catch (e) {

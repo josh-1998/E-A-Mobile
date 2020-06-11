@@ -1,6 +1,7 @@
 import 'package:eathlete/blocs/result/result_bloc.dart';
 import 'package:eathlete/common_widgets/common_widgets.dart';
 import 'package:eathlete/common_widgets/diary_widgets.dart';
+import 'package:eathlete/misc/database.dart';
 import 'package:eathlete/misc/user_repository.dart';
 import 'package:eathlete/models/diary_model.dart';
 import 'package:eathlete/screens/Result_update_body.dart';
@@ -21,12 +22,9 @@ class _ResultsState extends State<Results> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: ImageIcon(
-            AssetImage('images/menu_icon@3x.png'),
-            color: Color(0xff828289),
-          ),
+          icon: Icon(Icons.chevron_left),
           onPressed: () {
-            Scaffold.of(context).openDrawer();
+            Navigator.pop(context);
             setState(() {});
           },
         ),
@@ -63,26 +61,39 @@ class _ResultsState extends State<Results> {
               },
             ),
             Expanded(
-              child: ListView.builder(
-                  padding: EdgeInsets.only(bottom: 100),
-                  itemCount:
-                  Provider.of<UserRepository>(context, listen: false).diary.resultList.length,
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  Provider.of<UserRepository>(context, listen: false).diary.resultList =
+                  await getResultList(
+                      await Provider.of<UserRepository>(context, listen: false).refreshIdToken());
+                  setState(() {
 
-                  itemBuilder: (context, int index) {
+                  });
+                  DBHelper.deleteDataFromTable('Results');
+                  DBHelper.updateResultList(Provider.of<UserRepository>(context, listen: false).diary.resultList);
 
-                    Result _result = sessionListReversed[index];
-                    return ResultEntry(
-                      result: _result,
-                      onDelete: ()async {
-                        Provider.of<UserRepository>(context, listen: false).diary.resultList =
-                        await getResultList(
-                            await Provider.of<UserRepository>(context, listen: false).refreshIdToken());
-                        setState(() {
-                        });
+                },
+                child: ListView.builder(
+                    padding: EdgeInsets.only(bottom: 100),
+                    itemCount:
+                    Provider.of<UserRepository>(context, listen: false).diary.resultList.length,
 
-                      },
-                    );
-                  }),
+                    itemBuilder: (context, int index) {
+
+                      Result _result = sessionListReversed[index];
+                      return ResultEntry(
+                        result: _result,
+                        onDelete: ()async {
+                          Provider.of<UserRepository>(context, listen: false).diary.resultList =
+                          await getResultList(
+                              await Provider.of<UserRepository>(context, listen: false).refreshIdToken());
+                          setState(() {
+                          });
+
+                        },
+                      );
+                    }),
+              ),
             ),
           ],
         ),

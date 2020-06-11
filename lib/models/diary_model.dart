@@ -301,7 +301,7 @@ class Result{
     Map body = {};
     if (this.date != null) body['date'] = this.date;
     if (this.name != null) body['name'] = this.name;
-    if (this.position != null) body['position'] = this.position;
+    if (this.position != null) body['position'] = this.position.toString();
     if (this.reflections != null) body['reflections'] = this.reflections;
 
     var response;
@@ -320,6 +320,7 @@ class Result{
 
 
     Map responseBody = jsonDecode(response.body);
+    print(responseBody);
     if ((response.statusCode/100).floor() != 2) {
       throw ServerErrorException;
     }
@@ -354,6 +355,7 @@ Future<List<Result>> getResultList(String jwt) async {
 
     results.add(newResult);
   }
+  print(results);
   return results;
 }
 
