@@ -438,6 +438,30 @@ class _EAthleteDrawerState extends State<EAthleteDrawer> {
                   (route) => false);
             },
           ),
+          EAthleteDrawerTile(
+            name: 'Goals',
+            selected:
+            Provider.of<PageNumber>(context, listen: false).pageNumber == 0
+                ? true
+                : false,
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                Provider.of<PageNumber>(context, listen: false).pageNumber = 0;
+                print(
+                    Provider.of<PageNumber>(context, listen: false).pageNumber);
+              });
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MainPage(
+                        pageNumber:
+                        Provider.of<PageNumber>(context, listen: false)
+                            .pageNumber,
+                      )),
+                      (route) => false);
+            },
+          ),
 
 //          EAthleteDrawerTile(
 //            name: 'My Programs',

@@ -45,20 +45,13 @@ class _MyMessageHandlerState extends State<MyMessageHandler> {
     _fcm.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
-//        UserNotification newNotification = UserNotification()
-//        ..photoURL =message['']
-//        Session newSession = Session()
-//          ..title = session['title']
-//          ..date = session['date']
-//          ..lengthOfSession = session['time']
-//          ..intensity = session['intensity']
-//          ..performance = session['performance']
-//          ..feeling = session['feeling']
-//          ..target = session['target']
-//          ..reflections = session['reflections']
-//          ..id = session['id'];
-//
-//        sessions.add(newSession);
+        UserNotification newNotification = UserNotification()
+        ..photoURL =message['']
+        ..timeReceived=message['timereceived']
+        ..content = message['content']
+        ..title = message['title'];
+        print(newNotification);
+
 
       },
 //      onBackgroundMessage: myBackgroundMessageHandler,

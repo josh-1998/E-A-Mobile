@@ -1,7 +1,11 @@
 import 'package:eathlete/misc/message_handler.dart';
+import 'package:eathlete/misc/network_handler.dart';
 import 'package:eathlete/screens/loading_screen.dart';
+
 import 'package:eathlete/screens/log_in_screen.dart';
 import 'package:eathlete/screens/main_page.dart';
+
+import 'package:eathlete/screens/new_graph.dart';
 import 'package:eathlete/screens/notifications.dart';
 import 'package:eathlete/screens/profile_edit_page.dart';
 import 'package:eathlete/screens/settings.dart';
@@ -48,42 +52,48 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return MyMessageHandler(
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          buttonColor: Colors.grey,
-          primarySwatch: Colors.grey,
+    return NetworkHandler(
+      child: MyMessageHandler(
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            buttonColor: Colors.grey,
+            primarySwatch: Colors.grey,
 
-        ),
-        routes: {
-          LoginPage.id: (context) => LoginPage(),
-          SignUpPage.id: (context) => SignUpPage(),
-          MainPage.id: (context) => MainPage(),
-          ProfileEditPage.id: (context) => ProfileEditPage(),
-          TimerPageActual.id: (context) => TimerPageActual(),
-          Notifications.id: (context) => Notifications(),
-          Settings.id: (context) => Settings(),
-        },
-        home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-            builder: (context, state) {
-              if (state is Loading) {
-                return LoadingScreen();
-              }
-              if (state is Uninitialized) {
-                return LoginPage();
-              }
-              if (state is Authenticated) {
-                return MainPage(
-                  pageNumber: Provider.of<PageNumber>(context).pageNumber,
-                );
-              }
-              if (state is Unauthenticated) {
-                return LoginPage();
-              }
-              return Container();
-            },
           ),
+          routes: {
+            LoginPage.id: (context) => LoginPage(),
+            SignUpPage.id: (context) => SignUpPage(),
+            MainPage.id: (context) => MainPage(),
+            ProfileEditPage.id: (context) => ProfileEditPage(),
+            TimerPageActual.id: (context) => TimerPageActual(),
+            Notifications.id: (context) => Notifications(),
+            Settings.id: (context) => Settings(),
+          },
+          home:
+//          NewAttemptAtGraph()
+//        Goals()
+//        NewGraphTest()
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+              builder: (context, state) {
+                if (state is Loading) {
+                  return LoadingScreen();
+                }
+                if (state is Uninitialized) {
+                  return LoginPage();
+                }
+                if (state is Authenticated) {
+                  return MainPage(
+                    pageNumber: Provider.of<PageNumber>(context).pageNumber,
+                  );
+                }
+                if (state is Unauthenticated) {
+                  return LoginPage();
+                }
+                return Container();
+              },
+            ),
+        ),
       ),
     );
   }

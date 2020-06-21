@@ -21,126 +21,132 @@ class _ResultUpdateBodyState extends State<ResultUpdateBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10), topRight: Radius.circular(10))),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.all(8),
-            child: Container(
-              height: 10,
-              width: 40,
-              decoration: BoxDecoration(
-                  color: Colors.grey, borderRadius: BorderRadius.circular(40)),
+    return BlocBuilder<ResultBloc, ResultState>(
+      builder: (BuildContext context, ResultState state){
+        if(state is IncompleteInformation){
+          conditions = state.conditions;
+        }
+        return Container(
+        height: MediaQuery.of(context).size.height * 0.9,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10))),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: Container(
+                height: 10,
+                width: 40,
+                decoration: BoxDecoration(
+                    color: Colors.grey, borderRadius: BorderRadius.circular(40)),
+              ),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom),
-              child: SingleChildScrollView(
-                child: BlocListener<ResultBloc, ResultState>(
-                  listener: (BuildContext context, ResultState state) {
-                    if (state is SubmissionSuccessful) {
-                      Future.delayed(Duration(milliseconds: 1)).then((value) {
-                        Provider.of<PageNumber>(context, listen: false)
-                            .pageNumber = 1;
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MainPage(
-                                      pageNumber: Provider.of<PageNumber>(
-                                              context,
-                                              listen: false)
-                                          .pageNumber,
-                                    )),
-                            (route) => false);
-                      });
-                    }
-                  },
-                  child: BlocBuilder<ResultBloc, ResultState>(
-                    builder: (BuildContext context, ResultState state){
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            children: <Widget>[
-                              TextFormField(
-                                initialValue: state.result.name,
-                                decoration: InputDecoration.collapsed(hintText: 'Enter competition name here', hintStyle: TextStyle(color: conditions[0]?Color(0xff828289):Colors.red)),
-                                onChanged: (value){
-                                  BlocProvider.of<ResultBloc>(context).add(AddTitle(value));
-                                },
-                                style: TextStyle(
-                                    color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric( vertical: 12),
-                                child: PickerEntryBox(
-                                  borderColor: conditions[1]?Color(0xff828289):Colors.red,
-                                  textColor: conditions[1]?Colors.black:Colors.red,
-                                  name: 'Competition Date',
-                                  value:
-                                  state.result.date==null?'-':'${state.result.date}',
-                                  onPressed: () {
-                                    showPickerDate(context);
-                                    conditions[1]=true;
-                                  },
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text(
-                                      'Position',
-                                      style: TextStyle(color: Color(0xff828289)),
-                                    ),
-                                    Expanded(
-                                      child: TextFormField(
-                                        keyboardType: TextInputType.number,
-                                        onChanged: (value){
-                                          BlocProvider.of<ResultBloc>(context).add(AddPosition(int.parse(value)));
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-                                child: AppStyledTextField(
-                                  initialValue: state.result.reflections==''?null:state.result.reflections,
-                                  minLines: 5,
-                                  maxLines: 5,
-                                  onChanged: (value, context) => BlocProvider.of<ResultBloc>(context).add(AddReflections(value)),
-                                  fieldName: 'Reflections on today',
-                                ),
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              BigBlueButton(text: 'Add',
-                                onPressed: (){BlocProvider.of<ResultBloc>(context).add(Submit());
-//                Navigator.pop(context);
-                                },),
-                              SizedBox(height: 20,)
-                            ],
-                          ),
-                        );
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: SingleChildScrollView(
+                  child: BlocListener<ResultBloc, ResultState>(
+                    listener: (BuildContext context, ResultState state) {
+                      if (state is SubmissionSuccessful) {
+                        Future.delayed(Duration(milliseconds: 1)).then((value) {
+                          Provider.of<PageNumber>(context, listen: false)
+                              .pageNumber = 1;
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MainPage(
+                                        pageNumber: Provider.of<PageNumber>(
+                                                context,
+                                                listen: false)
+                                            .pageNumber,
+                                      )),
+                              (route) => false);
+                        });
+                      }
                     },
+                    child: BlocBuilder<ResultBloc, ResultState>(
+                      builder: (BuildContext context, ResultState state){
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              children: <Widget>[
+                                TextFormField(
+                                  initialValue: state.result.name,
+                                  decoration: InputDecoration.collapsed(hintText: 'Enter competition name here', hintStyle: TextStyle(color: conditions[0]?Color(0xff828289):Colors.red)),
+                                  onChanged: (value){
+                                    BlocProvider.of<ResultBloc>(context).add(AddTitle(value));
+                                  },
+                                  style: TextStyle(
+                                      color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric( vertical: 12),
+                                  child: PickerEntryBox(
+                                    borderColor: conditions[1]?Color(0xff828289):Colors.red,
+                                    textColor: conditions[1]?Colors.black:Colors.red,
+                                    name: 'Competition Date',
+                                    value:
+                                    state.result.date==null?'-':'${state.result.date}',
+                                    onPressed: () {
+                                      showPickerDate(context);
+                                      conditions[1]=true;
+                                    },
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text(
+                                        'Position',
+                                        style: TextStyle(color: Color(0xff828289)),
+                                      ),
+                                      Expanded(
+                                        child: TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          onChanged: (value){
+                                            BlocProvider.of<ResultBloc>(context).add(AddPosition(int.parse(value)));
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                  child: AppStyledTextField(
+                                    initialValue: state.result.reflections==''?null:state.result.reflections,
+                                    minLines: 5,
+                                    maxLines: 5,
+                                    onChanged: (value, context) => BlocProvider.of<ResultBloc>(context).add(AddReflections(value)),
+                                    fieldName: 'Reflections on today',
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                BigBlueButton(text: 'Add',
+                                  onPressed: (){BlocProvider.of<ResultBloc>(context).add(Submit());
+//                Navigator.pop(context);
+                                  },),
+                                SizedBox(height: 20,)
+                              ],
+                            ),
+                          );
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
-          )
-        ],
-      ),
+            )
+          ],
+        ),
+      );}
     );
   }
   showPickerDate(BuildContext context) {

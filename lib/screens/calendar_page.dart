@@ -81,7 +81,7 @@ class CalendarPageContent extends StatelessWidget {
                             children: <Widget>[
 //              Icon(Icons.add, color: Colors.white,),
                               Text(
-                                'Add Competition',
+                                'Add Event',
                                 style: TextStyle(color: Colors.white),
                               ),
                             ],

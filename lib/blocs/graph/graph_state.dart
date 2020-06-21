@@ -4,36 +4,35 @@ part of 'graph_bloc.dart';
 abstract class GraphState extends Equatable{
   List<GraphObject> dataList1;
   List<GraphObject> dataList2;
-  List<TickSpec<DateTime>> days;
+  List<DateTime> limits;
   String lengthOfTime;
   String timePeriodName;
   @override
-  // TODO: implement props
   List<Object> get props => [];
 }
 
 class InitialGraphState extends GraphState {
   final List<GraphObject> dataList1;
   final List<GraphObject> dataList2;
-  final List<TickSpec<DateTime>> days;
+  List<DateTime> limits;
   final String timePeriodName;
   final String lengthOfTime;
 
-  InitialGraphState(this.dataList1, this.dataList2, this.timePeriodName, this.lengthOfTime, this.days);
+  InitialGraphState(this.dataList1, this.dataList2, this.timePeriodName, this.lengthOfTime, this.limits);
 
   @override
-  List<Object> get props => [dataList1, dataList2, timePeriodName, lengthOfTime, days];
+  List<Object> get props => [dataList1, dataList2, timePeriodName, lengthOfTime, limits];
 }
 
 class NewGraphInfo extends GraphState {
  final List<GraphObject> dataList1;
  final List<GraphObject> dataList2;
- List<TickSpec<DateTime>> days;
+ List<DateTime> limits;
  final String timePeriodName;
  final String lengthOfTime;
 
- NewGraphInfo(this.dataList1, this.dataList2, this.timePeriodName, this.lengthOfTime, this.days);
+ NewGraphInfo(this.dataList1, this.dataList2, this.timePeriodName, this.lengthOfTime, this.limits);
 
  @override
-  List<Object> get props => [dataList1, dataList2, timePeriodName, lengthOfTime, days];
+  List<Object> get props => [dataList1, dataList2, timePeriodName, lengthOfTime, limits];
 }

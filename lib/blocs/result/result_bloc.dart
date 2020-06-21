@@ -30,19 +30,10 @@ class ResultBloc extends Bloc<ResultEvent, ResultState> {
   @override
   Stream<ResultState> mapEventToState(ResultEvent event) async* {
     if(event is AddTitle){
-      if(event.title!=null && event.title !='') {
-        conditions[0] = true;
-      }else{
-        conditions[0] = false;
-      }
+
       _result.name = event.title;
       yield UpdatedResultState(_result);
     }else if(event is AddPosition){
-      if(event.position>0) {
-        conditions[1] = true;
-      }else{
-        conditions[1] = false;
-      }
       _result.position = event.position;
       yield UpdatedResultState(_result);
     }else if(event is ChangeDate){
@@ -54,12 +45,22 @@ class ResultBloc extends Bloc<ResultEvent, ResultState> {
     }else if(event is Submit){
       yield IsSubmitting(_result);
       int numberOfFalse = 0;
+      if(_result.name!=null && _result.name !='') {
+        conditions[1] = true;
+      }else{
+        conditions[1] = false;
+      }
+      if(_result.position!=null && _result.position>0) {
+        conditions[1] = true;
+      }else{
+        conditions[1] = false;
+      }
       for(bool condition in conditions){
         if(condition == false)numberOfFalse++;
       }
 //      if(numberOfFalse == 0) {
         try {
-          Result _newResult = await _result.uploadResult(
+          Result _newResult = await _result.upload(
               _userRepository);
           if(_isCompetitionConverter) {
             await deleteCompetition(await _userRepository.refreshIdToken(), competition);

@@ -6,18 +6,27 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'database.dart';
 import '../models/diary_model.dart';
 import '../models/user_model.dart';
+import 'package:connectivity/connectivity.dart';
 
 
 
 /// This class contains logic for the user to log in, as well as containing user
 /// info and diary info
 class UserRepository extends ChangeNotifier{
+  ///instances for login of user
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
   final FacebookLogin _facebookLogin;
+
+  ///information about user that can be accessed by the rest of the app
   List<UserNotification> notifications;
   User user;
   Diary diary;
+  List<DiaryModel> diaryItemsToSend = [];
+  // if i can have a stream in here that checks for internet connection and then
+  //fires off all the items in the list that would be ideal
+
+
 
 
   UserRepository({FirebaseAuth firebaseAuth, GoogleSignIn googleSignin})
@@ -65,7 +74,8 @@ class UserRepository extends ChangeNotifier{
       throw e;
     }
   }
-
+  ///method to be called when a user signs in, which makes calls to api to
+  ///get all user info and store it on the device
   Future<void> setUserOnSignin ()async {
     await user.getUserInfo(await refreshIdToken());
     // create tables in internal database
@@ -80,11 +90,12 @@ class UserRepository extends ChangeNotifier{
     diary.sessionList = await getSessionList(user.jwt);
     diary.generalDayList = await getGeneralDayList(user.jwt);
     diary.competitionList = await getCompetitionList(user.jwt);
+    diary.resultList = await getResultList(user.jwt);
     // store data from user model in the user database
     DBHelper.updateSessionsList(diary.sessionList);
     DBHelper.updateGeneralDayList(diary.generalDayList);
     DBHelper.updateCompetitionsList(diary.competitionList);
-
+    DBHelper.updateResultList(diary.resultList);
   }
 
   Future<void> signInWithCredentials (String email, String password)async {

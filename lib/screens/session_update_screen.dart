@@ -1,4 +1,5 @@
 import 'package:eathlete/blocs/session/session_bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_picker/Picker.dart';
@@ -55,6 +56,22 @@ class _SessionUpdateScreenState extends State<SessionUpdateScreen> {
                 child: SingleChildScrollView(
                   child: BlocListener<SessionBloc, SessionState>(
                   listener: (BuildContext context, SessionState state){
+//                    if(state is IsSubmitting){
+//
+//                      showCupertinoModalPopup(context: context, builder: (BuildContext context){
+//                        return Container(
+//                          height: MediaQuery.of(context).size.height,
+//                          width: MediaQuery.of(context).size.width,
+//                          child: Center(
+//                            child: Container(
+//                              height: 100,
+//                              width: 300,
+//                              color: Colors.white,
+//                            ),
+//                          ),
+//                        );
+//                      });
+//                    }
 
                     if(state is InformationIncomplete){
                       conditions = state.conditions;

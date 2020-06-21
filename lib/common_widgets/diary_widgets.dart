@@ -485,139 +485,149 @@ class _SessionEntryState extends State<SessionEntry> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(
+          child: Stack(
+            children: <Widget>[
+              Container(
+                height: 45,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+                    color: Colors.blue
+                ),
+              ),
+              Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            height: 16,
+                            width: 16,
+                            child: Center(
+                                child: Icon(
+                                  Icons.hourglass_empty,
+                                  size: 13,
+                                )),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                      spreadRadius: 0.5,
+                                      blurRadius: 1,
+                                      color: Colors.grey)
+                                ],
+                                borderRadius: BorderRadius.circular(4)),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            widget.session.title,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white),
+                          )
+                        ],
+                      ),
+                      Text(
+                        widget.session.date,
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Container(
-                          height: 16,
-                          width: 16,
-                          child: Center(
-                              child: Icon(
-                                Icons.hourglass_empty,
-                                size: 13,
-                              )),
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                    spreadRadius: 0.5,
-                                    blurRadius: 1,
-                                    color: Colors.grey)
-                              ],
-                              borderRadius: BorderRadius.circular(4)),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
                         Text(
-                          widget.session.title,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
-                        )
+                          'Intensity of Session',
+                          style: TextStyle(color: Color(0xff828289)),
+                        ),
+                        Text('${widget.session.intensity}'),
                       ],
                     ),
-                    Text(
-                      widget.session.date,
-                      style: TextStyle(color: Colors.blueGrey, fontSize: 12),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Intensity of Session',
-                        style: TextStyle(color: Color(0xff828289)),
-                      ),
-                      Text('${widget.session.intensity}'),
-                    ],
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Performance in session',
-                        style: TextStyle(color: Color(0xff828289)),
-                      ),
-                      Text('${widget.session.performance}'),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Performance in session',
+                          style: TextStyle(color: Color(0xff828289)),
+                        ),
+                        Text('${widget.session.performance}'),
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Length of session',
-                        style: TextStyle(color: Color(0xff828289)),
-                      ),
-                      Text(widget.session.lengthOfSession == null ? '-' : '${widget.session.lengthOfSession}'),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Length of session',
+                          style: TextStyle(color: Color(0xff828289)),
+                        ),
+                        Text(widget.session.lengthOfSession == null ? '-' : '${widget.session.lengthOfSession}'),
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text(
-                        'Feeling Scale',
-                        style: TextStyle(color: Color(0xff828289)),
-                      ),
-                      Text(widget.session.feeling),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Feeling Scale',
+                          style: TextStyle(color: Color(0xff828289)),
+                        ),
+                        Text(widget.session.feeling),
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Targets for the session',
-                        style: TextStyle(color: Color(0xff828289)),
-                      ),
-                      SizedBox(
-                        height: 3,
-                      ),
-                      Text(widget.session.target == null ? '-' : widget.session.target)
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Targets for the session',
+                          style: TextStyle(color: Color(0xff828289)),
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Text(widget.session.target == null ? '-' : widget.session.target)
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Reflections on the session',
-                        style: TextStyle(color: Color(0xff828289)),
-                      ),
-                      SizedBox(
-                        height: 3,
-                      ),
-                      Text(widget.session.reflections == null ? '-' : widget.session.reflections)
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Reflections on the session',
+                          style: TextStyle(color: Color(0xff828289)),
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Text(widget.session.reflections == null ? '-' : widget.session.reflections)
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ),]
           ),
         ),
       ),

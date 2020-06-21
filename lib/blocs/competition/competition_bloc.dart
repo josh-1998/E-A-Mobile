@@ -63,7 +63,7 @@ class CompetitionBloc extends Bloc<CompetitionEvent, CompetitionState> {
       }
       if(numberOfFalse == 0) {
         try {
-          Competition _newCompetition = await _competition.uploadCompetition(
+          Competition _newCompetition = await _competition.upload(
               _userRepository);
           if(_competition.id == null) _userRepository.diary.competitionList.add(_newCompetition);
           yield SubmissionSuccessful(_competition);

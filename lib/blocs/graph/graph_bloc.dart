@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:charts_flutter/flutter.dart';
 import 'package:eathlete/models/diary_model.dart';
 import 'package:eathlete/misc/useful_functions.dart';
 import 'package:equatable/equatable.dart';
@@ -14,18 +13,19 @@ part 'graph_event.dart';
 
 part 'graph_state.dart';
 
+
 class GraphBloc extends Bloc<GraphEvent, GraphState> {
   final UserRepository userRepository;
   ///Map with lists of all sessions with key values of day they were inputted
   Map sessionMap = {};
+  /// Limits for the graph
+  List<DateTime> limits = [DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day-7), currentDay];
   /// Map with lists of all generalDays with key values of day they were inputted
   Map generalDayMap = {};
   ///List of data for the first graph
   List<GraphObject> dataForGraph1 = [];
   ///List of data for the second graph
   List<GraphObject> dataForGraph2 = [];
-  ///List of values for bottom axis
-  List<TickSpec<DateTime>> days = [];
   ///The current data that is being shown on graph 1
   String graph1Current = 'Intensity';
   ///The current data that is being shown on graph 2
@@ -47,32 +47,27 @@ class GraphBloc extends Bloc<GraphEvent, GraphState> {
   21:'4 weeks',
   28:'1 week'};
   GraphBloc({@required this.userRepository}){
-    nameToFunction = {
-      'Intensity':getGraphDataIntensity(getLastDaysSession(lastDay)),
-      'Performance': getGraphDataPerformance(getLastDaysSession(lastDay)),
-      'Feeling': getGraphDataFeeling(getLastDaysSession(lastDay)),
-      'Rest': getGraphDataRested(getLastDaysGeneralDay(lastDay)),
-      'Nutrition': getGraphDataNutrition(getLastDaysGeneralDay(lastDay)),
-      'Concentration': getGraphDataConcentration(getLastDaysGeneralDay(lastDay)),
-      'None': []};
   }
 
+  ///Function that takes the type of data to be shown and gets the graph
+  ///information for that
+  ///
   List<GraphObject> nameToFunctionFunction (String graphType){
     List<GraphObject> returnValue =[];
     if(graphType == 'Intensity'){
-      returnValue = getGraphDataIntensity(getLastDaysSession(lastDay));
+      returnValue = getGraphDataIntensity(getAllDaysSession());
     }else if(graphType == 'Performance'){
-      returnValue = getGraphDataPerformance(getLastDaysSession(lastDay));
+      returnValue = getGraphDataPerformance(getAllDaysSession());
     }else if(graphType == 'Feeling'){
-      returnValue = getGraphDataFeeling(getLastDaysSession(lastDay));
+      returnValue = getGraphDataFeeling(getAllDaysSession());
     }else if(graphType == 'Rest'){
-      returnValue = getGraphDataRested(getLastDaysGeneralDay(lastDay));
+      returnValue = getGraphDataRested(getAllDaysGeneralDay());
     }else if(graphType == 'Nutrition'){
-      returnValue = getGraphDataNutrition(getLastDaysGeneralDay(lastDay));
+      returnValue = getGraphDataNutrition(getAllDaysGeneralDay());
     }else if(graphType == 'Concentration'){
-      returnValue = getGraphDataConcentration(getLastDaysGeneralDay(lastDay));
+      returnValue = getGraphDataConcentration(getAllDaysGeneralDay());
     }else if(graphType == 'None'){
-      returnValue = [];
+      returnValue = <GraphObject>[];
     }
 
     return returnValue;
@@ -95,37 +90,29 @@ class GraphBloc extends Bloc<GraphEvent, GraphState> {
     }
   }
 
-  List<List> getLastDaysSession(DateTime lastDay) {
+  List<List> getAllDaysSession() {
     List<List> lastSevenDaysSessions = [];
-    print(numberOfDays);
-    days =[];
-    for (var i = 0; i < numberOfDays; i++) {
-      days.add(TickSpec( DateTime(lastDay.year, lastDay.month, lastDay.day - i)));
-      DateTime _currentDay =
-          DateTime(lastDay.year, lastDay.month, lastDay.day - i);
-      List _currentDayEvents = sessionMap[_currentDay];
+    sessionMap.forEach((key, value) {
+      List _currentDayEvents = value;
       if (_currentDayEvents != null) {
+        DateTime _currentDay = key;
         lastSevenDaysSessions.add([_currentDay, _currentDayEvents]);
       }
-    }
+    });
     //this is a list of lists with [DateTime, [Session, Session, Session etc]
-
     return lastSevenDaysSessions;
   }
 
-  List<List> getLastDaysGeneralDay(DateTime lastDay) {
+  List<List> getAllDaysGeneralDay() {
     List<List> lastSevenDaysSessions = [];
-    print(numberOfDays);
-    days = [];
-    for (var i = 0; i < numberOfDays; i++) {
-      days.add(TickSpec( DateTime(lastDay.year, lastDay.month, lastDay.day - i)));
-      DateTime _currentDay =
-          DateTime(lastDay.year, lastDay.month, lastDay.day - i);
-      List _currentDayEvents = generalDayMap[_currentDay];
+    generalDayMap.forEach((key, value) {
+      List _currentDayEvents = value;
       if (_currentDayEvents != null) {
+        DateTime _currentDay = key;
         lastSevenDaysSessions.add([_currentDay, _currentDayEvents]);
       }
-    }
+    });
+
     //this is a list of lists with [DateTime, [Session, Session, Session etc]
 
     return lastSevenDaysSessions;
@@ -142,6 +129,7 @@ class GraphBloc extends Bloc<GraphEvent, GraphState> {
 
       returnValue.add(GraphObject(item[0], valueToAdd));
     }
+
     return returnValue;
   }
 
@@ -156,6 +144,11 @@ class GraphBloc extends Bloc<GraphEvent, GraphState> {
 
       returnValue.add(GraphObject(item[0], valueToAdd));
     }
+//    List sampleData = [];
+//    for(GraphObject object in returnValue){
+//      sampleData.add([object.xAxis, object.yAxis]);
+//    }
+//    print(sampleData);
     return returnValue;
   }
 
@@ -245,63 +238,54 @@ class GraphBloc extends Bloc<GraphEvent, GraphState> {
   @override
   GraphState get initialState {
     getIndividualDays();
-    dataForGraph1 = getGraphDataIntensity(getLastDaysSession(DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day)));
-    dataForGraph2 = getGraphDataPerformance(getLastDaysSession(DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day)));
-    return InitialGraphState(dataForGraph1, dataForGraph2, timeFrame, timePeriod, days);
+    dataForGraph1 = getGraphDataIntensity(getAllDaysSession());
+    dataForGraph2 = getGraphDataPerformance(getAllDaysSession());
+    return InitialGraphState(dataForGraph1, dataForGraph2, timeFrame, timePeriod, limits);
   }
 
   @override
   Stream<GraphState> mapEventToState(GraphEvent event) async* {
     if (event is ChangeGraph1) {
       graph1Current = event.valueName;
-      print(graph1Current);
-      dataForGraph1 = nameToFunction[event.valueName];
-      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, days);
+      dataForGraph1 = nameToFunctionFunction(event.valueName);
+      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, limits);
     }
     if (event is ChangeGraph2) {
       graph2Current = event.valueName;
-      print(graph2Current);
-      dataForGraph2 = nameToFunction[event.valueName];
-      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, days);
+      dataForGraph2 = nameToFunctionFunction(graph2Current);
+      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, limits);
     }
     if (event is ChangeTimeViewBack) {
       lastDay =
           DateTime(lastDay.year, lastDay.month, lastDay.day - numberOfDays);
       timePeriod = '${DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).day} ${numberToMonth[DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).month]}'
           ' - ${lastDay.day} ${numberToMonth[lastDay.month]}';
-      getGraphDataNutrition(getLastDaysGeneralDay(lastDay));
+      getGraphDataNutrition(getAllDaysGeneralDay());
       dataForGraph1 = nameToFunctionFunction(graph1Current);
       dataForGraph2 = nameToFunctionFunction(graph2Current);
-      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, days);
+      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, limits);
     }
     if (event is ChangeTimeViewForward) {
       lastDay =
           DateTime(lastDay.year, lastDay.month, lastDay.day + numberOfDays);
       timePeriod = '${DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).day} ${numberToMonth[DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).month]}'
           ' - ${lastDay.day} ${numberToMonth[lastDay.month]}';
-      getGraphDataNutrition(getLastDaysGeneralDay(lastDay));
+      getGraphDataNutrition(getAllDaysGeneralDay());
       dataForGraph1 =nameToFunctionFunction(graph1Current);
       dataForGraph2 =
           nameToFunctionFunction(graph2Current);
 
-      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, days);
+      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, limits);
     }
     if (event is ChangeTimeViewTimeFrame){
       if(numberOfDays == 28){
         numberOfDays = 7;
-      }else numberOfDays += 7;
-      timeFrame = daysToName[numberOfDays];
-      timePeriod = '${DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).day} ${numberToMonth[DateTime(lastDay.year, lastDay.month, lastDay.day-numberOfDays+1).month]}'
-          ' - ${lastDay.day} ${numberToMonth[lastDay.month]}';
-      getGraphDataNutrition(getLastDaysGeneralDay(lastDay));
-      getGraphDataConcentration(getLastDaysGeneralDay(lastDay));
-      dataForGraph1 =nameToFunctionFunction(graph1Current);
-      dataForGraph2 =
-      nameToFunctionFunction(graph2Current);
+      }else{
+        numberOfDays += 7;
+      }
+      limits = [DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day-numberOfDays), currentDay];
 
-      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, days);
+      yield NewGraphInfo(dataForGraph1, dataForGraph2, timeFrame, timePeriod, limits);
     }
   }
 }

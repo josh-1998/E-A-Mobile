@@ -73,7 +73,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       }
       if(numberOfFalse == 0) {
         try {
-          Session _newSession = await _session.uploadSession(_userRepository);
+          Session _newSession = await _session.upload(_userRepository);
           if(_session.id == null) _userRepository.diary.sessionList.add(_newSession);
           yield SuccessfullySubmitted(_session, _last7daysChooser);
         } catch (e) {

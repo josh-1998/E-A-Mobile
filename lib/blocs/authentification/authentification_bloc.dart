@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:eathlete/misc/useful_functions.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import '../../misc/database.dart';
 import '../../misc/user_repository.dart';
+import 'package:connectivity/connectivity.dart';
 part 'authentification_event.dart';
 part 'authentification_state.dart';
+
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
@@ -18,7 +21,6 @@ class AuthenticationBloc
   @override
   AuthenticationState get initialState => Loading();
 
-  // TODO: make a loading screen that will show on Uninitialized
 
   @override
   Stream<AuthenticationState> mapEventToState(
@@ -33,17 +35,20 @@ class AuthenticationBloc
     }
   }
 
+  /// called when app is started
+  /// if user logged in then check for internet connection, if exists check JWT,
+  /// if no internet then log in but dont do all api calls
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     final isSignedIn = await _userRepository.isSignedIn();
     if (isSignedIn) {
-      /// uses refreshidtoken to get new data
-      /// If it doesn't work log the user out
+
+
+      if(await hasInternetConnection()){
       try {
         await _userRepository.getUser();
 
-        // TODO: remove user table, make a call to the server each time.
+
         await DBHelper.getUser(_userRepository.user);
-        //try getting user info with jwt token
         try {
           await _userRepository.user
               .getUserInfo(await _userRepository.refreshIdToken());
@@ -54,8 +59,6 @@ class AuthenticationBloc
           _userRepository.diary.resultList = await DBHelper.getResults();
           yield Authenticated();
         }
-        //if that doesnt work, send back to firebase asking for another token
-        //if that doesnt work, sign the user out and ask them to authenticate again
         catch (e) {
           _userRepository.signOut();
           yield Unauthenticated();
@@ -64,6 +67,14 @@ class AuthenticationBloc
         _userRepository.signOut();
         yield Unauthenticated();
         print(e);
+      }}else{
+        await DBHelper.getUser(_userRepository.user);
+        _userRepository.diary.sessionList = await DBHelper.getSessions();
+        _userRepository.diary.generalDayList = await DBHelper.getGeneralDay();
+        _userRepository.diary.competitionList =
+        await DBHelper.getCompetitions();
+        _userRepository.diary.resultList = await DBHelper.getResults();
+        yield Authenticated();
       }
     } else {
       yield Unauthenticated();
