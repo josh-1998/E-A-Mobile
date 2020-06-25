@@ -1,5 +1,6 @@
 import 'package:eathlete/misc/message_handler.dart';
 import 'package:eathlete/misc/network_handler.dart';
+import 'package:eathlete/screens/goals.dart';
 import 'package:eathlete/screens/loading_screen.dart';
 
 import 'package:eathlete/screens/log_in_screen.dart';
@@ -71,8 +72,7 @@ class MyApp extends StatelessWidget {
             Settings.id: (context) => Settings(),
           },
           home:
-//          NewAttemptAtGraph()
-//        Goals()
+//          Goals()
 //        NewGraphTest()
           BlocBuilder<AuthenticationBloc, AuthenticationState>(
               builder: (context, state) {

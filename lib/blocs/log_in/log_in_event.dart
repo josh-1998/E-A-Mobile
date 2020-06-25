@@ -8,11 +8,8 @@ abstract class LogInEvent extends Equatable {
 
 class NameChanged extends LogInEvent {
   final String name;
-
   NameChanged(this.name);
-
   @override
-  // TODO: implement props
   List<Object> get props => [name];
 }
 

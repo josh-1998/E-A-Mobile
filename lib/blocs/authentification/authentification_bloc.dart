@@ -37,7 +37,7 @@ class AuthenticationBloc
 
   /// called when app is started
   /// if user logged in then check for internet connection, if exists check JWT,
-  /// if no internet then log in but dont do all api calls
+  /// if no internet then log in but don't do all api calls
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     final isSignedIn = await _userRepository.isSignedIn();
     if (isSignedIn) {
@@ -47,7 +47,7 @@ class AuthenticationBloc
       try {
         await _userRepository.getUser();
 
-
+        ///update user profile from server if internet connection exists
         await DBHelper.getUser(_userRepository.user);
         try {
           await _userRepository.user
@@ -67,7 +67,10 @@ class AuthenticationBloc
         _userRepository.signOut();
         yield Unauthenticated();
         print(e);
-      }}else{
+      }}
+      ///login without checking user info and just loading sessions from internal
+      ///DB
+      else{
         await DBHelper.getUser(_userRepository.user);
         _userRepository.diary.sessionList = await DBHelper.getSessions();
         _userRepository.diary.generalDayList = await DBHelper.getGeneralDay();
@@ -76,15 +79,18 @@ class AuthenticationBloc
         _userRepository.diary.resultList = await DBHelper.getResults();
         yield Authenticated();
       }
-    } else {
+    }
+    ///if user is not signed in then yield unauthenticated
+    else {
       yield Unauthenticated();
     }
   }
 
+  /// When user signs in
   Stream<AuthenticationState> _mapLoggedInToState() async* {
     yield Authenticated();
   }
-
+  /// When user signs out
   Stream<AuthenticationState> _mapLoggedOutToState() async* {
     await _userRepository.signOut();
     yield Unauthenticated();

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:eathlete/misc/useful_functions.dart';
+import 'package:eathlete/models/user_model.dart';
 import '../misc/constants.dart';
 import 'package:http/http.dart' as http;
 import '../misc/database.dart';
@@ -10,6 +11,8 @@ import 'goals.dart';
 abstract class DiaryModel{
 
   Future<DiaryModel> upload(UserRepository userRepository);
+
+  Future<String> delete(UserRepository userRepository);
 }
 
 class Session extends DiaryModel{
@@ -153,7 +156,16 @@ class Session extends DiaryModel{
     }
     return _newSession;
   }
+
+  Future<String> delete(UserRepository _userRepository)async {
+    int id = this.id;
+    var response = await http.delete(kAPIAddress + '/api/session/$id/',
+        headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
+    DBHelper.deleteSession([Session(id: this.id)]);
+  }
 }
+
+
 
 Future<void> deleteSession(String jwt, Session session) async {
   int id = session.id;
@@ -271,6 +283,14 @@ class GeneralDay extends DiaryModel{
       return _newGeneralDay;
     }
   }
+
+  Future<String> delete(UserRepository _userRepository) async {
+    var response = await http.delete(kAPIAddress + '/api/general-day/$id/',
+        headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
+
+    DBHelper.deleteGeneralDayItem([GeneralDay(id: id)]);
+  }
+
 }
 
 Future<void> deleteGeneralDayItem(String jwt, GeneralDay generalDay) async {
@@ -366,6 +386,13 @@ class Competition extends DiaryModel{
       return _newCompetition;
     }
   }
+
+  Future<String> delete(UserRepository _userRepository)async{
+
+    var response = await http.delete(kAPIAddress + '/api/competition/$id/',
+        headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
+    DBHelper.deleteCompetition([Competition(id: id)]);
+  }
 }
 
 Future<List<Competition>> getCompetitionList(String jwt) async {
@@ -460,6 +487,19 @@ class Result extends DiaryModel{
       }
 
       return _newResult;
+    }
+  }
+
+  Future<String> delete(UserRepository _userRepository) async{
+    if(await hasInternetConnection()){
+    var response = await http.delete(kAPIAddress + '/api/result/$id/',
+        headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
+    _userRepository.diary.resultList.removeWhere((item) => item.id == this.id);
+    DBHelper.deleteResult([Result(id: id)]);
+  }else{
+      _userRepository.diaryItemsToDelete.add(Result(id: id));
+      _userRepository.diary.resultList.removeWhere((item) => item.id == this.id);
+      DBHelper.deleteResult([Result(id:id)]);
     }
   }
 }

@@ -23,8 +23,8 @@ class UserRepository extends ChangeNotifier{
   User user;
   Diary diary;
   List<DiaryModel> diaryItemsToSend = [];
-  // if i can have a stream in here that checks for internet connection and then
-  //fires off all the items in the list that would be ideal
+  List<DiaryModel> diaryItemsToDelete = [];
+
 
 
 

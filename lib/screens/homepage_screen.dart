@@ -635,25 +635,33 @@ class _HomePageContentState extends State<HomePageContent> {
                             ),
                             Row(
                               children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: PopupMenuButton(
-                                    itemBuilder: (context){
-                                      return dropDownButtons;
-                                    },
-                                    initialValue: 'Performance',
-                                    onSelected: (value){
-                                      setState(() {
-                                        BlocProvider.of<GraphBloc>(context)
-                                            .add(ChangeGraph1(value));
-                                      });
-                                    },
-                                    child: Row(
-                                      children: <Widget>[
-                                        Text(_value),
-                                        SizedBox(width: 8,),
-                                        Icon(Icons.arrow_drop_down, color: Colors.grey,)
-                                      ],
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      color: Colors.white,
+                                      border: Border.all(color: Colors.blue)
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: PopupMenuButton(
+                                      itemBuilder: (context){
+                                        return dropDownButtons;
+                                      },
+                                      initialValue: 'Performance',
+                                      onSelected: (value){
+                                        setState(() {
+                                          BlocProvider.of<GraphBloc>(context)
+                                              .add(ChangeGraph1(value));
+                                        });
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Text(_value, style: TextStyle(color: Colors.blue),),
+                                          SizedBox(width: 8,),
+                                          Icon(Icons.arrow_drop_down, color: Colors.grey,)
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -673,17 +681,23 @@ class _HomePageContentState extends State<HomePageContent> {
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: Colors.blue
+                                        borderRadius: BorderRadius.circular(20),
+                                        color: Colors.white,
+                                        border: Border.all(color: Colors.red)
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          children: <Widget>[
-                                            Text('2nd chart'),
-                                            SizedBox(width: 8,),
-                                            Icon(Icons.arrow_drop_down, color: Colors.grey,)
-                                          ],
+                                      child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Text('2nd chart', style: TextStyle(
+                                                color: Colors.red
+                                              ),),
+                                              SizedBox(width: 8,),
+                                              Icon(Icons.arrow_drop_down, color: Colors.grey,)
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),

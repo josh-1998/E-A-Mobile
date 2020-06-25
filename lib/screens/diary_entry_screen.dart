@@ -16,7 +16,7 @@ class DiaryEntryPage extends StatefulWidget {
 
 class _DiaryEntryPageState extends State<DiaryEntryPage>
     with TickerProviderStateMixin {
-  List<Widget> _children = [SessionPage(), GeneralDayPage()];
+  List<Widget> _children = [SessionPage(), GeneralDayAnimatedListPage()];
 
   int _currentIndex = 0;
   TabController tabController;
@@ -141,6 +141,53 @@ class _SessionPageState extends State<SessionPage> {
     );
   }
 }
+
+
+class GeneralDayAnimatedListPage extends StatefulWidget {
+  @override
+  _GeneralDayAnimatedListPageState createState() => _GeneralDayAnimatedListPageState();
+}
+
+class _GeneralDayAnimatedListPageState extends State<GeneralDayAnimatedListPage> {
+  @override
+  Widget build(BuildContext context) {
+    List generalDayList = Provider.of<UserRepository>(context,).diary.generalDayList;
+    List<GeneralDay> generalDayListReversed = List.from(generalDayList.reversed);
+    return RefreshIndicator(
+        onRefresh: ()async {
+      Provider.of<UserRepository>(context, listen: false).diary.generalDayList =
+          await getGeneralDayList(
+          await Provider.of<UserRepository>(context, listen: false).refreshIdToken());
+    setState(() {
+
+    });
+    DBHelper.deleteDataFromTable('GeneralDays');
+    DBHelper.updateGeneralDayList(Provider.of<UserRepository>(context, listen: false).diary.generalDayList);
+  },
+    child: AnimatedList(
+      initialItemCount: Provider.of<UserRepository>(context).diary.generalDayList.length,
+      itemBuilder: (BuildContext context, index, animation){
+        GeneralDay _generalDay =
+        generalDayListReversed[index];
+        return GeneralDayEntry(
+          key: UniqueKey(),
+          index: index,
+          generalDay: _generalDay,
+          onDelete: ()async{
+            Provider.of<UserRepository>(context, listen: false).diary.generalDayList =
+            await getGeneralDayList(
+                await Provider.of<UserRepository>(context, listen: false).refreshIdToken());
+            setState(() {
+
+            });
+          },
+        );
+      },
+    ));
+  }
+}
+
+
 
 class GeneralDayPage extends StatefulWidget {
   @override

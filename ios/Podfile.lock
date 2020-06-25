@@ -4,8 +4,6 @@ PODS:
     - AppAuth/ExternalUserAgent (= 1.3.0)
   - AppAuth/Core (1.3.0)
   - AppAuth/ExternalUserAgent (1.3.0)
-  - apple_sign_in (0.0.1):
-    - Flutter
   - connectivity (0.0.1):
     - Flutter
     - Reachability
@@ -184,7 +182,6 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - apple_sign_in (from `.symlinks/plugins/apple_sign_in/ios`)
   - connectivity (from `.symlinks/plugins/connectivity/ios`)
   - connectivity_macos (from `.symlinks/plugins/connectivity_macos/ios`)
   - FBSDKCoreKit
@@ -238,8 +235,6 @@ SPEC REPOS:
     - Reachability
 
 EXTERNAL SOURCES:
-  apple_sign_in:
-    :path: ".symlinks/plugins/apple_sign_in/ios"
   connectivity:
     :path: ".symlinks/plugins/connectivity/ios"
   connectivity_macos:
@@ -285,7 +280,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AppAuth: 73574f3013a1e65b9601a3ddc8b3158cce68c09d
-  apple_sign_in: 7716c7ddfa195aeab7dec0dc374ef4ff45d1adb4
   connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
   connectivity_macos: e2e9731b6b22dda39eb1b128f6969d574460e191
   FBSDKCoreKit: 1d5acf7c9d7a2f92bb1a242dc60cae5b7adb91df

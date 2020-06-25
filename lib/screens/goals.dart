@@ -17,7 +17,13 @@ class _GoalsState extends State<Goals> {
   @override
   Widget build(BuildContext context) {
     UserRepository _userRepository = Provider.of<UserRepository>(context, listen: false);
-    var successfullDrop;
+    String acceptedData = '';
+    List<Widget> testExpansionTiles = [
+      GoalTile(Goal(content: 'stand up', date: '19/10/2021')),
+    ];
+    List<Widget> finishedGoalsTiles = [
+      GoalTile(Goal(content: 'stand up', date: '19/10/2021')),
+    ];
     return Scaffold(
       drawer: EAthleteDrawer(),
       appBar: AppBar(
@@ -222,7 +228,15 @@ class _GoalsState extends State<Goals> {
               GoalTile(Goal(content: 'Get swole', date: '12/10/2021')),
             ],
           ),
-
+          DragTarget(builder: (context, accepted, rejected){
+            return ExpansionTile(
+              title: Text('Test Expansion title'),
+              children: testExpansionTiles,
+            );
+          },
+          onAccept: (Goal data){
+            testExpansionTiles.add(GoalTile(data));
+          },),
           ExpansionTile(
             title: Text('Daily Goals'),
             children: <Widget>[
@@ -231,9 +245,16 @@ class _GoalsState extends State<Goals> {
               GoalTile(Goal(content: 'think', date: '19/10/2021')),
             ],
           ),
-          ExpansionTile(
-            title: Text('Finished Goals'),
-          )
+          DragTarget(builder: (context, accepted, rejected){
+            return ExpansionTile(
+              title: Text('Finished Goals'),
+              children: finishedGoalsTiles,
+            );
+          },
+            onAccept: (Goal data){
+              finishedGoalsTiles.add(GoalTile(data));
+            },),
+
         ],
       ),
     );
@@ -256,19 +277,23 @@ class _GoalTileState extends State<GoalTile> {
   @override
   Widget build(BuildContext context) {
     return LongPressDraggable(
-      childWhenDragging: Container(
-        height: 70,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Text(widget.goal.content),
-              Text(widget.goal.date)
-            ],
-          ),
-        ),
-      ),
+      onDragStarted: (){
+
+      },
+      data: widget.goal,
+//      childWhenDragging: Container(
+//        height: 70,
+//        child: Padding(
+//          padding: const EdgeInsets.all(8.0),
+//          child: Row(
+//            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//            children: <Widget>[
+//              Text(widget.goal.content),
+//              Text(widget.goal.date)
+//            ],
+//          ),
+//        ),
+//      ),
       feedback: Container(
         height: 70,
         color: Colors.white,
