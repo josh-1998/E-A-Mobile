@@ -1,6 +1,7 @@
 import 'package:eathlete/common_widgets/common_widgets.dart';
 import 'package:eathlete/misc/user_repository.dart';
 import 'package:eathlete/models/goals.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
@@ -13,17 +14,23 @@ class Goals extends StatefulWidget {
 }
 
 class _GoalsState extends State<Goals> {
-
+  List<Widget> mediumTermGoalsTiles = [
+    GoalTile(Goal(content: 'stand up', date: '19/10/2021'), key: UniqueKey(),),
+  ];
+  List<Widget> dailyGoalsTiles = [
+    GoalTile(Goal(content: 'stand up', date: '19/10/2021'), key: UniqueKey(),),
+  ];
+  List<Widget> crazyGoalsTiles = [
+    GoalTile(Goal(content: 'stand up', date: '19/10/2021'), key: UniqueKey(),),
+  ];
+  List<Widget> finishedGoalsTiles = [
+    GoalTile(Goal(content: 'stand up', date: '19/10/2021'), key: UniqueKey(),),
+  ];
   @override
   Widget build(BuildContext context) {
     UserRepository _userRepository = Provider.of<UserRepository>(context, listen: false);
     String acceptedData = '';
-    List<Widget> testExpansionTiles = [
-      GoalTile(Goal(content: 'stand up', date: '19/10/2021')),
-    ];
-    List<Widget> finishedGoalsTiles = [
-      GoalTile(Goal(content: 'stand up', date: '19/10/2021')),
-    ];
+
     return Scaffold(
       drawer: EAthleteDrawer(),
       appBar: AppBar(
@@ -212,38 +219,42 @@ class _GoalsState extends State<Goals> {
               ],
             ),
           ),
-          ExpansionTile(
-            title: Text('Crazy Goal'),
-            children: <Widget>[
-              GoalTile(Goal(content: 'win the olympics', date: '19/10/2021')),
-            ],
+          DragTarget(
+            builder: (context, accepted, rejected){
+              return ExpansionTile(
+              title: Text('Crazy Goal'),
+              children: crazyGoalsTiles,
 
+            );},
+            onAccept: (List data){
+              deleteFromPreviousList(data[1]);
+              crazyGoalsTiles.add(GoalTile(data[0], key: UniqueKey(),));
+            },
           ),
-          ExpansionTile(
+          DragTarget(
+            builder: (context, accepted, rejected){
 
-            title: Text('Medium Goals'),
-            children: <Widget>[
-              GoalTile(Goal(content: 'eat more chocolate', date: '18/10/2021')),
-              GoalTile(Goal(content: 'fight Tyson Fury', date: '15/10/2021')),
-              GoalTile(Goal(content: 'Get swole', date: '12/10/2021')),
-            ],
+              return ExpansionTile(
+
+              title: Text('Medium Goals'),
+              children: mediumTermGoalsTiles,
+            );},
+            onAccept: (List data){
+              deleteFromPreviousList(data[1]);
+              mediumTermGoalsTiles.add(GoalTile(data[0], key: UniqueKey(),));
+            },
           ),
-          DragTarget(builder: (context, accepted, rejected){
-            return ExpansionTile(
-              title: Text('Test Expansion title'),
-              children: testExpansionTiles,
-            );
-          },
-          onAccept: (Goal data){
-            testExpansionTiles.add(GoalTile(data));
-          },),
-          ExpansionTile(
-            title: Text('Daily Goals'),
-            children: <Widget>[
-              GoalTile(Goal(content: 'stand up', date: '19/10/2021')),
-              GoalTile(Goal(content: 'breathe', date: '19/10/2021')),
-              GoalTile(Goal(content: 'think', date: '19/10/2021')),
-            ],
+
+          DragTarget(
+            builder: (context, accepted, rejected){
+              return ExpansionTile(
+              title: Text('Daily Goals'),
+              children: dailyGoalsTiles,
+            );},
+            onAccept: (List data){
+              deleteFromPreviousList(data[1]);
+              dailyGoalsTiles.add(GoalTile(data[0], key: UniqueKey(),));
+            },
           ),
           DragTarget(builder: (context, accepted, rejected){
             return ExpansionTile(
@@ -251,13 +262,48 @@ class _GoalsState extends State<Goals> {
               children: finishedGoalsTiles,
             );
           },
-            onAccept: (Goal data){
-              finishedGoalsTiles.add(GoalTile(data));
+            onAccept: (List data){
+            deleteFromPreviousList(data[1]);
+              finishedGoalsTiles.add(GoalTile(data[0], key: UniqueKey(),));
             },),
 
         ],
       ),
     );
+  }
+  void deleteFromPreviousList(UniqueKey key){
+    bool indaily = false;
+    bool inmedium = false;
+    bool incrazy = false;
+    bool infinished = false;
+    for(GoalTile goalTile in dailyGoalsTiles){
+      if(goalTile.key == key){
+        indaily = true;
+
+      }
+    }
+    for(GoalTile goalTile in mediumTermGoalsTiles){
+      if(goalTile.key == key){
+        inmedium = true;
+      }
+    }
+    for(GoalTile goalTile in crazyGoalsTiles){
+      if(goalTile.key == key){
+        incrazy = true;
+      }
+    }
+    for(GoalTile goalTile in finishedGoalsTiles){
+      if(goalTile.key == key){
+        infinished = true;
+      }
+    }
+    if(indaily == true) dailyGoalsTiles.removeWhere((element) => element.key == key);
+    if(inmedium == true) mediumTermGoalsTiles.removeWhere((element) => element.key == key);
+    if(incrazy == true) crazyGoalsTiles.removeWhere((element) => element.key == key);
+    if(infinished == true) finishedGoalsTiles.removeWhere((element) => element.key == key);
+    setState(() {
+
+    });
   }
 }
 
@@ -265,9 +311,11 @@ class _GoalsState extends State<Goals> {
 
 class GoalTile extends StatefulWidget {
   final Goal goal;
+  final String goalType;
+  final Key key;
 
 
-  GoalTile(this.goal);
+  GoalTile(this.goal, {this.goalType, this.key});
 
   @override
   _GoalTileState createState() => _GoalTileState();
@@ -276,24 +324,11 @@ class GoalTile extends StatefulWidget {
 class _GoalTileState extends State<GoalTile> {
   @override
   Widget build(BuildContext context) {
+    Color tickColor = Colors.grey;
     return LongPressDraggable(
-      onDragStarted: (){
 
-      },
-      data: widget.goal,
-//      childWhenDragging: Container(
-//        height: 70,
-//        child: Padding(
-//          padding: const EdgeInsets.all(8.0),
-//          child: Row(
-//            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//            children: <Widget>[
-//              Text(widget.goal.content),
-//              Text(widget.goal.date)
-//            ],
-//          ),
-//        ),
-//      ),
+      data: [widget.goal, widget.key],
+
       feedback: Container(
         height: 70,
         color: Colors.white,
@@ -320,7 +355,20 @@ class _GoalTileState extends State<GoalTile> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Text(widget.goal.content),
-              Text(widget.goal.date)
+              Row(
+                children: <Widget>[
+                  Text(widget.goal.date),
+                  GestureDetector(
+                    onTap: (){
+                      tickColor = Colors.green;
+                      setState(() {
+
+                      });
+
+                    },
+                      child: Icon(Icons.check_circle, color:tickColor,))
+                ],
+              )
             ],
           ),
         ),

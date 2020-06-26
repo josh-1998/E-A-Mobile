@@ -200,53 +200,10 @@ class _HomePageContentState extends State<HomePageContent> {
                     )),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    color: Colors.white,
-                    elevation: 10,
-                    child: Container(
-                      height: 88,
-                      width: MediaQuery.of(context).size.width * 0.95,
-                      child: Row(
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              'images/test_export.png',
-                              height: 80,
-                            ),
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: <Widget>[
-                                      Text(
-                                        widget.userRepository.user
-                                                    .longTermGoal !=
-                                                null
-                                            ? widget.userRepository.user
-                                                .longTermGoal
-                                            : 'No long term goal has been set',
-                                        style:
-                                            TextStyle(color: Color(0xff828289)),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+//                Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: GoalCard(widget: widget),
+//                ),
 
 //                Padding(
 //                  padding: const EdgeInsets.all(14.0),
@@ -804,6 +761,8 @@ class _HomePageContentState extends State<HomePageContent> {
     });
   }
 }
+
+
 
 ///Button displayed under status updater, to be used with intensity, performance
 ///and hours worked
