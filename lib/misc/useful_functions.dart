@@ -1,6 +1,9 @@
 import 'dart:io';
 
-///adds a 0 infront of any number less than 10
+import 'package:eathlete/misc/user_repository.dart';
+import 'package:eathlete/models/diary_model.dart';
+
+///adds a 0 in front of any number less than 10
 String timeToString(int time) {
   if (time > 9) {
     return '$time';
@@ -49,5 +52,20 @@ Future<bool> hasInternetConnection()async{
     }
   } on SocketException catch (_) {
     return false;
+  }
+}
+
+///sends out items in the queue. need to make sure that all items send correctly
+void processDiaryItems(UserRepository _userRepository)async {
+  if(_userRepository.diaryItemsToSend.length > 0){
+    int successfulPointer = 0;
+    for(DiaryModel item in _userRepository.diaryItemsToSend){
+      await item.upload(_userRepository);
+      successfulPointer +=1;
+
+      //need to make sure that the items are sent off correctly, and then
+      //remove them from the list
+    }
+    _userRepository.diaryItemsToSend.removeRange(0, successfulPointer-1);
   }
 }

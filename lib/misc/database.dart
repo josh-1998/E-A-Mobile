@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' as io;
 
+import 'package:eathlete/models/goals.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,7 +9,6 @@ import 'package:path_provider/path_provider.dart';
 import '../models/diary_model.dart';
 import '../models/user_model.dart';
 
-// TODO: make base DB class that is then extended by userDB class and DiaryDB class
 
 class DBHelper {
   static Database _db;
@@ -35,6 +35,7 @@ class DBHelper {
     await dbClient.execute("DROP TABLE IF EXISTS GeneralDays");
     await dbClient.execute("DROP TABLE IF EXISTS Competitions");
     await dbClient.execute("DROP TABLE IF EXISTS Results");
+    await dbClient.execute("DROP TABLE IF EXISTS Goals");
   }
 
   
@@ -398,4 +399,62 @@ class DBHelper {
       });
     }
   }
+
+  static void createGoalsTable() async {
+    var dbClient = await db;
+
+    await dbClient.execute(
+        "CREATE TABLE Goals(id INTEGER PRIMARY KEY, content TEXT, " +
+            "setOnDate TEXT, deadlineDate TEXT, goalType TEXT)");
+    print("Created Goals table");
+  }
+
+  static Future<List<Goal>> getShortTermGoals() async {
+    var dbClient = await db;
+    List<Map> list = await dbClient.rawQuery('SELECT * FROM Goals WHERE goalType = \'Short Term\'');
+    List<Goal> goalList = [];
+    for (var goal in list) {
+      Goal newGoal = Goal();
+      newGoal.id = goal['id'];
+      newGoal.date = goal['date'];
+      newGoal.content = goal['content'];
+      newGoal.setOnDate = goal['setOnDate'];
+      newGoal.goalType = goal['goalType'];
+      goalList.add(newGoal);
+    }
+    return goalList;
+  }
+
+  static Future<List<Goal>> getMediumTermGoals() async {
+    var dbClient = await db;
+    List<Map> list = await dbClient.rawQuery('SELECT * FROM Goals WHERE goalType = \'Medium Term\'');
+    List<Goal> goalList = [];
+    for (var goal in list) {
+      Goal newGoal = Goal();
+      newGoal.id = goal['id'];
+      newGoal.date = goal['date'];
+      newGoal.content = goal['content'];
+      newGoal.setOnDate = goal['setOnDate'];
+      newGoal.goalType = goal['goalType'];
+      goalList.add(newGoal);
+    }
+    return goalList;
+  }
+
+  static Future<List<Goal>> getLongTermGoals() async {
+    var dbClient = await db;
+    List<Map> list = await dbClient.rawQuery('SELECT * FROM Goals WHERE goalType = \'Long Term\'');
+    List<Goal> goalList = [];
+    for (var goal in list) {
+      Goal newGoal = Goal();
+      newGoal.id = goal['id'];
+      newGoal.date = goal['date'];
+      newGoal.content = goal['content'];
+      newGoal.setOnDate = goal['setOnDate'];
+      newGoal.goalType = goal['goalType'];
+      goalList.add(newGoal);
+    }
+    return goalList;
+  }
+
 }

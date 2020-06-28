@@ -24,6 +24,8 @@ class UserRepository extends ChangeNotifier{
   Diary diary;
   List<DiaryModel> diaryItemsToSend = [];
   List<DiaryModel> diaryItemsToDelete = [];
+  
+
 
 
 

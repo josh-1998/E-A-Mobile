@@ -19,6 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 import 'blocs/authentification/authentification_bloc.dart';
+import 'blocs/goals/goals_bloc.dart';
 import 'models/class_definitions.dart';
 import 'misc/simple_bloc_delegate.dart';
 
@@ -72,7 +73,9 @@ class MyApp extends StatelessWidget {
             Settings.id: (context) => Settings(),
           },
           home:
-          Goals()
+          BlocProvider(
+              create: (context) => GoalsBloc(userRepository: Provider.of<UserRepository>(context, listen: false)),
+              child: Goals())
 //        NewGraphTest()
 //          BlocBuilder<AuthenticationBloc, AuthenticationState>(
 //              builder: (context, state) {
