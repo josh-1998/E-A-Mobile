@@ -4,12 +4,13 @@ import 'package:eathlete/misc/user_repository.dart';
 import 'package:eathlete/models/diary_model.dart';
 
 
+
 class Goal extends DiaryModel{
   String content;
   String date;
   String setOnDate;
   String goalType;
-  int id;
+  String id;
 
   Goal({this.content, this.date, this.setOnDate, this.id, this.goalType});
 
@@ -40,5 +41,12 @@ class Goal extends DiaryModel{
     }
   }
 
+  Future<String> delete(UserRepository _userRepository){}
+}
+
+
+class Objective extends DiaryModel{
+
+  Future<DiaryModel> upload(UserRepository _userRepository){}
   Future<String> delete(UserRepository _userRepository){}
 }

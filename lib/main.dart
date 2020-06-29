@@ -73,29 +73,30 @@ class MyApp extends StatelessWidget {
             Settings.id: (context) => Settings(),
           },
           home:
-          BlocProvider(
-              create: (context) => GoalsBloc(userRepository: Provider.of<UserRepository>(context, listen: false)),
-              child: Goals())
+//          BlocProvider(
+//              create: (context) => GoalsBloc(userRepository: Provider.of<UserRepository>(context, listen: false)),
+//              child:
+//              Goals())
 //        NewGraphTest()
-//          BlocBuilder<AuthenticationBloc, AuthenticationState>(
-//              builder: (context, state) {
-//                if (state is Loading) {
-//                  return LoadingScreen();
-//                }
-//                if (state is Uninitialized) {
-//                  return LoginPage();
-//                }
-//                if (state is Authenticated) {
-//                  return MainPage(
-//                    pageNumber: Provider.of<PageNumber>(context).pageNumber,
-//                  );
-//                }
-//                if (state is Unauthenticated) {
-//                  return LoginPage();
-//                }
-//                return Container();
-//              },
-//            ),
+          BlocBuilder<AuthenticationBloc, AuthenticationState>(
+              builder: (context, state) {
+                if (state is Loading) {
+                  return LoadingScreen();
+                }
+                if (state is Uninitialized) {
+                  return LoginPage();
+                }
+                if (state is Authenticated) {
+                  return MainPage(
+                    pageNumber: Provider.of<PageNumber>(context).pageNumber,
+                  );
+                }
+                if (state is Unauthenticated) {
+                  return LoginPage();
+                }
+                return Container();
+              },
+            ),
         ),
       ),
     );

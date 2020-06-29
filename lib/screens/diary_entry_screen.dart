@@ -85,9 +85,9 @@ class _DiaryEntryPageState extends State<DiaryEntryPage>
           ),
         ),
         body: TabBarView(
-          children: _children,
-          controller: tabController,
-        ));
+      children: _children,
+      controller: tabController,
+    ));
   }
 }
 

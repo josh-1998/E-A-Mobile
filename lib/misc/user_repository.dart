@@ -87,6 +87,7 @@ class UserRepository extends ChangeNotifier{
     DBHelper.createGeneralDayTable();
     DBHelper.createCompetitionTable();
     DBHelper.createResultsTable();
+    DBHelper.createGoalsTable();
     DBHelper.saveUser(user);
     // fetch data from server and add it to user model
     diary.sessionList = await getSessionList(user.jwt);

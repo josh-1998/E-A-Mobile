@@ -165,7 +165,7 @@ class DBHelper {
     var dbClient = await db;
 
     await dbClient.execute(
-        "CREATE TABLE Sessions (id INTEGER PRIMARY KEY, title TEXT, " +
+        "CREATE TABLE Sessions (id TEXT PRIMARY KEY, title TEXT, " +
             "date TEXT, lengthOfSession INTEGER, intensity INTEGER, performance INTEGER, " +
             "feeling TEXT, target TEXT, reflections TEXT" +
             ")");
@@ -215,7 +215,7 @@ class DBHelper {
   static void createGeneralDayTable() async {
     var dbClient = await db;
 
-    await dbClient.execute("CREATE TABLE GeneralDays (id INTEGER PRIMARY KEY, " +
+    await dbClient.execute("CREATE TABLE GeneralDays (id TEXT PRIMARY KEY, " +
         "date TEXT, rested INTEGER, nutrition INTEGER, concentration INTEGER, " +
         "reflections TEXT" +
         ")");
@@ -280,7 +280,7 @@ class DBHelper {
     var dbClient = await db;
 
     await dbClient.execute(
-        "CREATE TABLE Competitions(id INTEGER PRIMARY KEY, name TEXT, " +
+        "CREATE TABLE Competitions(id TEXT PRIMARY KEY, name TEXT, " +
             "date TEXT, startTime TEXT, address TEXT)");
     print("Created Competitions table");
   }
@@ -342,7 +342,7 @@ class DBHelper {
     var dbClient = await db;
 
     await dbClient.execute(
-        "CREATE TABLE Results(id INTEGER PRIMARY KEY, name TEXT, " +
+        "CREATE TABLE Results(id TEXT PRIMARY KEY, name TEXT, " +
             "date TEXT, position INTEGER, reflections TEXT)");
     print("Created Results table");
   }
@@ -404,7 +404,7 @@ class DBHelper {
     var dbClient = await db;
 
     await dbClient.execute(
-        "CREATE TABLE Goals(id INTEGER PRIMARY KEY, content TEXT, " +
+        "CREATE TABLE Goals(id TEXT PRIMARY KEY, content TEXT, " +
             "setOnDate TEXT, deadlineDate TEXT, goalType TEXT)");
     print("Created Goals table");
   }
@@ -455,6 +455,41 @@ class DBHelper {
       goalList.add(newGoal);
     }
     return goalList;
+  }
+
+  static void updateGoalsList(List<Goal> goals) async {
+    var dbClient = await db;
+    for (Goal goal in goals) {
+      await dbClient.transaction((txn) async {
+        return await txn.rawInsert('INSERT INTO  Goals' +
+            "(id, date, setOnDate, content, goalType" +
+            ") VALUES(" +
+            "?, ?, ?, ?, ?)",
+            [goal.id, goal.date, goal.setOnDate, goal.content, goal.goalType]);
+      });
+    }
+  }
+
+  static void deleteGoal(List<Goal> goals) async{
+    var dbClient = await db;
+    for (Goal goal in goals){
+      await dbClient.transaction((txn) async {
+        return await txn.rawDelete('DELETE FROM Goals WHERE id = ?',
+            [goal.id]);
+      });
+    }
+  }
+
+  static void updateGoalValue(List<Goal> goals) async {
+    var dbClient = await db;
+    for (Goal goal in goals){
+      await dbClient.transaction((txn) async{
+        return await txn.rawUpdate('UPDATE Goals' +
+            ' SET date = ?, setOnDate = ?, content = ?, goalType = ?' +
+            ' WHERE id = ?',
+            [goal.date, goal.setOnDate, goal.content, goal.goalType, goal.id]);
+      });
+    }
   }
 
 }

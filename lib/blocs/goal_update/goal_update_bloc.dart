@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:bloc/bloc.dart';
+import 'package:eathlete/misc/database.dart';
 import 'package:eathlete/misc/user_repository.dart';
 import 'package:eathlete/misc/validators.dart';
 import 'package:eathlete/models/goals.dart';
@@ -18,7 +19,7 @@ class GoalUpdateBloc extends Bloc<GoalUpdateEvent, GoalUpdateState> {
 
   GoalUpdateBloc(this.userRepository,
       {this.goalType = 'not working', Goal goal})
-      : _goal = goal ?? Goal();
+      : _goal = goal ?? Goal(setOnDate: DateTime.now().toIso8601String(), date: DateTime.now().toString(), id: 'x${DateTime.now().millisecondsSinceEpoch}', goalType: goalType);
 
   @override
   GoalUpdateState get initialState => InitialGoalUpdateState(goalType);
@@ -34,9 +35,9 @@ class GoalUpdateBloc extends Bloc<GoalUpdateEvent, GoalUpdateState> {
       yield(InitialGoalUpdateState(goalType));
     }
     if(event is Submit){
-      _goal.setOnDate = DateTime.now().toString();
+//      userRepository.diaryItemsToSend.add(_goal);
       addGoalToList();
-      print(userRepository.diary.crazyGoal[0].content);
+      yield(InformationSubmitted());
     }
   }
   /// checks all input fields against validators, returns true if all pass.
@@ -48,11 +49,12 @@ class GoalUpdateBloc extends Bloc<GoalUpdateEvent, GoalUpdateState> {
   ///list provided when the BLoC is created
   void addGoalToList(){
     if(goalType == 'Short Term'){
-      userRepository.diary.dailyGoals.add(_goal);
+      userRepository.diary.shortTermGoals.add(_goal);
     }else if(goalType == 'Medium Term'){
-      userRepository.diary.mediumGoals.add(_goal);
+      userRepository.diary.mediumTermGoals.add(_goal);
     }else if(goalType == 'Long Term'){
-      userRepository.diary.crazyGoal.add(_goal);
+      userRepository.diary.longTermGoal.add(_goal);
     }
+    DBHelper.updateGoalsList([_goal]);
   }
 }

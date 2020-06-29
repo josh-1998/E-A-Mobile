@@ -1,4 +1,6 @@
+import 'package:eathlete/blocs/goals/goals_bloc.dart';
 import 'package:eathlete/screens/competition_entry.dart';
+import 'package:eathlete/screens/goals.dart';
 import 'package:eathlete/screens/log_in_screen.dart';
 import 'package:eathlete/screens/main_page.dart';
 import 'package:eathlete/screens/notifications.dart';
@@ -441,24 +443,22 @@ class _EAthleteDrawerState extends State<EAthleteDrawer> {
           EAthleteDrawerTile(
             name: 'Goals',
             selected:
-            Provider.of<PageNumber>(context, listen: false).pageNumber == 0
+            Provider.of<PageNumber>(context, listen: false).pageNumber == 6
                 ? true
                 : false,
             onPressed: () {
               Navigator.pop(context);
               setState(() {
-                Provider.of<PageNumber>(context, listen: false).pageNumber = 0;
+                Provider.of<PageNumber>(context, listen: false).pageNumber = 6;
                 print(
                     Provider.of<PageNumber>(context, listen: false).pageNumber);
               });
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => MainPage(
-                        pageNumber:
-                        Provider.of<PageNumber>(context, listen: false)
-                            .pageNumber,
-                      )),
+                      builder: (context) => BlocProvider(
+                          create: (context) => GoalsBloc(userRepository: Provider.of<UserRepository>(context, listen: false)),
+                          child: Goals())),
                       (route) => false);
             },
           ),

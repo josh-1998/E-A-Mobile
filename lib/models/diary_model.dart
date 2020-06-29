@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:eathlete/blocs/goals/goals_bloc.dart';
 import 'package:eathlete/misc/useful_functions.dart';
 import 'package:eathlete/models/user_model.dart';
 import '../misc/constants.dart';
@@ -24,7 +25,7 @@ class Session extends DiaryModel{
   String feeling;
   String target;
   String reflections;
-  int id;
+  String id;
 
   Session({
     this.date,
@@ -80,7 +81,7 @@ class Session extends DiaryModel{
         ..feeling = responseBody['feeling']
         ..target = responseBody['target']
         ..reflections = responseBody['reflections']
-        ..id = responseBody['id'];
+        ..id = responseBody['id'].toString();
       if (response.statusCode == 201) {
         DBHelper.updateSessionsList([_newSession]);
       } else if (response.statusCode == 200) {
@@ -148,7 +149,7 @@ class Session extends DiaryModel{
       ..feeling = responseBody['feeling']
       ..target = responseBody['target']
       ..reflections = responseBody['reflections']
-      ..id = responseBody['id'];
+      ..id = responseBody['id'].toString();
     if (response.statusCode == 201) {
       DBHelper.updateSessionsList([_newSession]);
     } else if (response.statusCode == 200) {
@@ -158,7 +159,6 @@ class Session extends DiaryModel{
   }
 
   Future<String> delete(UserRepository _userRepository)async {
-    int id = this.id;
     var response = await http.delete(kAPIAddress + '/api/session/$id/',
         headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
     DBHelper.deleteSession([Session(id: this.id)]);
@@ -168,7 +168,7 @@ class Session extends DiaryModel{
 
 
 Future<void> deleteSession(String jwt, Session session) async {
-  int id = session.id;
+  String id = session.id;
   var response = await http.delete(kAPIAddress + '/api/session/$id/',
       headers: {'Authorization': 'JWT ' + jwt});
   DBHelper.deleteSession([session]);
@@ -190,7 +190,7 @@ Future<List<Session>> getSessionList(String jwt) async {
       ..feeling = session['feeling']
       ..target = session['target']
       ..reflections = session['reflections']
-      ..id = session['id'];
+      ..id = session['id'].toString();
 
     sessions.add(newSession);
   }
@@ -203,7 +203,7 @@ class GeneralDay extends DiaryModel{
   int nutrition;
   int concentration;
   String reflections;
-  int id;
+  String id;
 
   GeneralDay(
       {this.date,
@@ -250,7 +250,7 @@ class GeneralDay extends DiaryModel{
       }
       //uploads the new general day to the DB
       GeneralDay _newGeneralDay = GeneralDay()
-        ..id = responseBody['id']
+        ..id = responseBody['id'].toString()
         ..date = responseBody['date']
         ..rested = responseBody['rested']
         ..nutrition = responseBody['nutrition']
@@ -294,7 +294,7 @@ class GeneralDay extends DiaryModel{
 }
 
 Future<void> deleteGeneralDayItem(String jwt, GeneralDay generalDay) async {
-  int id = generalDay.id;
+  String id = generalDay.id;
   var response = await http.delete(kAPIAddress + '/api/general-day/$id/',
       headers: {'Authorization': 'JWT ' + jwt});
 
@@ -313,7 +313,7 @@ Future<List<GeneralDay>> getGeneralDayList(String jwt) async {
       ..nutrition = day['nutrition']
       ..concentration = day['concentration']
       ..reflections = day['reflections']
-      ..id = day['id'];
+      ..id = day['id'].toString();
     generalDays.add(newDay);
   }
 
@@ -325,7 +325,7 @@ class Competition extends DiaryModel{
   String name;
   String address;
   String startTime;
-  int id;
+  String id;
 
   Competition({this.date, this.name, this.address, this.startTime, this.id});
 
@@ -361,7 +361,7 @@ class Competition extends DiaryModel{
         ..date = responseBody['date']
         ..address = responseBody['address']
         ..startTime = responseBody['start_time']
-        ..id = responseBody['id'];
+        ..id = responseBody['id'].toString();
       if (response.statusCode == 201) {
         DBHelper.updateCompetitionsList([_newCompetition]);
       } else if (response.statusCode == 200) {
@@ -406,7 +406,7 @@ Future<List<Competition>> getCompetitionList(String jwt) async {
       ..name = competition['name']
       ..address = competition['address']
       ..startTime = competition['start_time']
-      ..id = competition['id'];
+      ..id = competition['id'].toString();
 
     competitions.add(newComp);
   }
@@ -414,14 +414,14 @@ Future<List<Competition>> getCompetitionList(String jwt) async {
 }
 
 Future<void> deleteCompetition(String jwt, Competition competition) async {
-  int id = competition.id;
+  String id = competition.id;
   var response = await http.delete(kAPIAddress + '/api/competition/$id/',
       headers: {'Authorization': 'JWT ' + jwt});
   DBHelper.deleteCompetition([competition]);
 }
 
 class Result extends DiaryModel{
-  int id;
+  String id;
   String date;
   String name;
   int position;
@@ -464,7 +464,7 @@ class Result extends DiaryModel{
         ..date = responseBody['date']
         ..position = responseBody['position']
         ..reflections = responseBody['reflections']
-        ..id = responseBody['id'];
+        ..id = responseBody['id'].toString();
       if (response.statusCode == 201) {
         DBHelper.updateResultList([_newResult]);
       } else if (response.statusCode == 200) {
@@ -515,7 +515,7 @@ Future<List<Result>> getResultList(String jwt) async {
       ..name = result['name']
       ..position = result['position']
       ..reflections = result['reflections']
-      ..id = result['id'];
+      ..id = result['id'].toString();
 
     results.add(newResult);
   }
@@ -524,7 +524,7 @@ Future<List<Result>> getResultList(String jwt) async {
 }
 
 Future<void> deleteResult(String jwt, Result result) async {
-  int id = result.id;
+  String id = result.id;
   var response = await http.delete(kAPIAddress + '/api/result/$id/',
       headers: {'Authorization': 'JWT ' + jwt});
   DBHelper.deleteResult([result]);
@@ -536,6 +536,9 @@ class Diary {
   List<GeneralDay> generalDayList = [];
   List<Result> resultList = [];
   List<Goal> crazyGoal = [];
-  List<Goal> mediumGoals = [];
-  List<Goal> dailyGoals = [];
+  List<Goal> longTermGoal = [];
+  List<Goal> mediumTermGoals = [Goal(content: 'This is content', id: '1', date: 'hehe', setOnDate: 'haha')];
+  List<Goal> shortTermGoals = [];
+  List<Goal> finishedGoals = [Goal(content: 'This is content', id: '1', date: 'hehe', setOnDate: 'haha')];
+  List<Objective> finishedObjectives = [];
 }

@@ -1,7 +1,6 @@
 import 'package:eathlete/blocs/goal_update/goal_update_bloc.dart';
 import 'package:eathlete/blocs/goals/goals_bloc.dart';
 import 'package:eathlete/common_widgets/common_widgets.dart';
-import 'package:eathlete/common_widgets/fancy_fab.dart';
 import 'package:eathlete/common_widgets/goal_widgets.dart';
 import 'package:eathlete/misc/user_repository.dart';
 import 'package:eathlete/models/goals.dart';
@@ -9,6 +8,7 @@ import 'package:eathlete/screens/goal_update_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 
 import 'finished_goals.dart';
@@ -21,27 +21,10 @@ class Goals extends StatefulWidget {
 }
 
 class _GoalsState extends State<Goals> {
-  List<Widget> mediumTermGoalsTiles = [
-    GoalCard(Goal(content: 'stand up', date: '19/10/2021'), key: UniqueKey()),
-  ];
-  List<Widget> dailyGoalsTiles = [
-    GoalCard(
-      Goal(content: 'stand up', date: '19/10/2021'),
-      key: UniqueKey(),
-    ),
-  ];
-  List<Widget> crazyGoalsTiles = [
-    GoalCard(
-      Goal(content: 'stand up', date: '19/10/2021'),
-      key: UniqueKey(),
-    ),
-  ];
-  List<Widget> finishedGoalsTiles = [
-    GoalCard(
-      Goal(content: 'stand up', date: '19/10/2021'),
-      key: UniqueKey(),
-    ),
-  ];
+  List<Widget> mediumTermGoalsTiles;
+  List<Widget> dailyGoalsTiles;
+  List<Widget> crazyGoalsTiles;
+  List<Widget> finishedGoalsTiles;
   @override
   Widget build(BuildContext context) {
     UserRepository _userRepository =
@@ -75,11 +58,20 @@ class _GoalsState extends State<Goals> {
           ],
         ),
       ),
-      floatingActionButton: FancyFab(
-//        backgroundColor: Colors.blue,
-        topButtonOnPressed: () {
+      floatingActionButton: SpeedDial(
+        backgroundColor: Colors.blue,
+
+        animatedIcon: AnimatedIcons.menu_close,
+        shape: CircleBorder(),
+        children: <SpeedDialChild>[
+          SpeedDialChild(
+          child: Icon(Icons.calendar_today),
+          backgroundColor: Colors.blue[500],
+          label: 'Long Term Goal',
+          onTap: () {
           print('Top Button Pressed');
           showModalBottomSheet(
+            backgroundColor: Colors.transparent,
               isScrollControlled: true,
               context: context,
               builder: (BuildContext context) {
@@ -91,35 +83,47 @@ class _GoalsState extends State<Goals> {
                 );
               });
         },
-        middleButtonOnPressed: () {
-          print('Top Button Pressed');
-          showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (BuildContext context) {
-                return BlocProvider(
-                  create: (context) => GoalUpdateBloc(
-                      Provider.of<UserRepository>(context, listen: false),
-                      goalType: 'Medium Term'),
-                  child: GoalUpdateBody(),
-                );
-              });
-        },
-        bottomButtonOnPressed: () {
-          print('Top Button Pressed');
-          showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (BuildContext context) {
-                return BlocProvider(
-                  create: (context) => GoalUpdateBloc(
-                      Provider.of<UserRepository>(context, listen: false),
-                      goalType: 'Short Term'),
-                  child: GoalUpdateBody(),
-                );
-              });
-        },
-//        child: Icon(Icons.add, color: Colors.white,),
+        ),
+          SpeedDialChild(
+            child: Icon(Icons.calendar_today),
+            backgroundColor: Colors.blue[300],
+            label: 'Medium Term Goal',
+            onTap: () {
+              print('Top Button Pressed');
+              showModalBottomSheet(
+                backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return BlocProvider(
+                      create: (context) => GoalUpdateBloc(
+                          Provider.of<UserRepository>(context, listen: false),
+                          goalType: 'Medium Term'),
+                      child: GoalUpdateBody(),
+                    );
+                  });
+            },
+          ),
+          SpeedDialChild(
+            child: Icon(Icons.calendar_today),
+            backgroundColor: Colors.blue[200],
+            label: 'Short Term Goal',
+            onTap: () {
+              print('Top Button Pressed');
+              showModalBottomSheet(
+                backgroundColor: Colors.transparent,
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return BlocProvider(
+                      create: (context) => GoalUpdateBloc(
+                          Provider.of<UserRepository>(context, listen: false),
+                          goalType: 'Short Term'),
+                      child: GoalUpdateBody(),
+                    );
+                  });
+            },
+          )],
       ),
       body: BlocBuilder<GoalsBloc, GoalsState>(
           builder: (BuildContext context, GoalsState state) {
@@ -329,11 +333,15 @@ class _GoalsState extends State<Goals> {
                 );
               },
               onAccept: (List data) {
-                deleteFromPreviousList(data[1]);
-                crazyGoalsTiles.add(GoalCard(
-                  data[0],
-                  key: UniqueKey(),
-                ));
+//                deleteFromPreviousList(data[1]);
+//                crazyGoalsTiles.add(GoalCard(
+//                  data[0],
+//                  key: UniqueKey(),
+//                ));
+                BlocProvider.of<GoalsBloc>(context).add(ChangeGoalsList(data[0], 'Long Term'));
+                setState(() {
+
+                });
               },
             ),
             DragTarget(
@@ -344,11 +352,15 @@ class _GoalsState extends State<Goals> {
                 );
               },
               onAccept: (List data) {
-                deleteFromPreviousList(data[1]);
-                mediumTermGoalsTiles.add(GoalCard(
-                  data[0],
-                  key: UniqueKey(),
-                ));
+//                deleteFromPreviousList(data[1]);
+//                mediumTermGoalsTiles.add(GoalCard(
+//                  data[0],
+//                  key: UniqueKey(),
+//                ));
+                BlocProvider.of<GoalsBloc>(context).add(ChangeGoalsList(data[0], 'Medium Term'));
+                setState(() {
+
+                });
               },
             ),
             DragTarget(
@@ -359,11 +371,15 @@ class _GoalsState extends State<Goals> {
                 );
               },
               onAccept: (List data) {
-                deleteFromPreviousList(data[1]);
-                dailyGoalsTiles.add(GoalCard(
-                  data[0],
-                  key: UniqueKey(),
-                ));
+//                deleteFromPreviousList(data[1]);
+//                dailyGoalsTiles.add(GoalCard(
+//                  data[0],
+//                  key: UniqueKey(),
+//                ));
+                BlocProvider.of<GoalsBloc>(context).add(ChangeGoalsList(data[0], 'Short Term'));
+                setState(() {
+
+                });
               },
             ),
             SizedBox(
@@ -382,11 +398,12 @@ class _GoalsState extends State<Goals> {
                 );
               },
               onAccept: (List data) {
-                deleteFromPreviousList(data[1]);
-                finishedGoalsTiles.add(GoalCard(
-                  data[0],
-                  key: UniqueKey(),
-                ));
+//                deleteFromPreviousList(data[1]);
+//                finishedGoalsTiles.add(GoalCard(
+//                  data[0],
+//                  key: UniqueKey(),
+//                ));
+//              BlocProvider.of<GoalsBloc>(context).add(ChangeGoalsList(data[0]), 'Lo')
               },
             ),
           ],
@@ -395,39 +412,5 @@ class _GoalsState extends State<Goals> {
     );
   }
 
-  void deleteFromPreviousList(UniqueKey key) {
-    bool indaily = false;
-    bool inmedium = false;
-    bool incrazy = false;
-    bool infinished = false;
-    for (GoalCard goalCard in dailyGoalsTiles) {
-      if (goalCard.key == key) {
-        indaily = true;
-      }
-    }
-    for (GoalCard goalCard in mediumTermGoalsTiles) {
-      if (goalCard.key == key) {
-        inmedium = true;
-      }
-    }
-    for (GoalCard goalCard in crazyGoalsTiles) {
-      if (goalCard.key == key) {
-        incrazy = true;
-      }
-    }
-    for (GoalCard goalCard in finishedGoalsTiles) {
-      if (goalCard.key == key) {
-        infinished = true;
-      }
-    }
-    if (indaily == true)
-      dailyGoalsTiles.removeWhere((element) => element.key == key);
-    if (inmedium == true)
-      mediumTermGoalsTiles.removeWhere((element) => element.key == key);
-    if (incrazy == true)
-      crazyGoalsTiles.removeWhere((element) => element.key == key);
-    if (infinished == true)
-      finishedGoalsTiles.removeWhere((element) => element.key == key);
-    setState(() {});
-  }
+
 }

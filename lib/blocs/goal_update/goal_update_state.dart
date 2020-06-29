@@ -15,3 +15,7 @@ class InitialGoalUpdateState extends GoalUpdateState {
   @override
   List<Object> get props => [goalType];
 }
+
+class IncompleteInformation extends GoalUpdateState{}
+
+class InformationSubmitted extends GoalUpdateState{}
