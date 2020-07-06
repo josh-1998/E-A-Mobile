@@ -104,7 +104,7 @@ class UserRepository extends ChangeNotifier{
   Future<void> signInWithCredentials (String email, String password)async {
 
     await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
+      email: email.trim(),
       password: password,
     );
     final FirebaseUser currentUser = await _firebaseAuth.currentUser();

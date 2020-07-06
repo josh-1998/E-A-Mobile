@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:eathlete/misc/useful_functions.dart';
+import 'package:eathlete/models/diary_model.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 import '../../misc/database.dart';
@@ -41,14 +42,26 @@ class AuthenticationBloc
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     final isSignedIn = await _userRepository.isSignedIn();
     if (isSignedIn) {
-
+      print(DBHelper.getSessions());
+      for(Session item in await DBHelper.getSessions()){
+        print(item.id);
+        if(item.id[0] == "e" || item.id[0] == "x"){
+          _userRepository.diaryItemsToSend.add(item);
+        }
+        if(item.id[0] == "d"){
+          _userRepository.diaryItemsToDelete.add(item);
+        }
+      }
 
       if(await hasInternetConnection()){
+
       try {
         await _userRepository.getUser();
 
+
         ///update user profile from server if internet connection exists
         await DBHelper.getUser(_userRepository.user);
+
         try {
           await _userRepository.user
               .getUserInfo(await _userRepository.refreshIdToken());
@@ -67,10 +80,12 @@ class AuthenticationBloc
         _userRepository.signOut();
         yield Unauthenticated();
         print(e);
-      }}
+      }
+      processDiaryItems(_userRepository);
+      }
       ///login without checking user info and just loading sessions from internal
       ///DB
-      else{
+      else {
         await DBHelper.getUser(_userRepository.user);
         _userRepository.diary.sessionList = await DBHelper.getSessions();
         _userRepository.diary.generalDayList = await DBHelper.getGeneralDay();

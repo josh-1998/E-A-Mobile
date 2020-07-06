@@ -57,15 +57,26 @@ Future<bool> hasInternetConnection()async{
 
 ///sends out items in the queue. need to make sure that all items send correctly
 void processDiaryItems(UserRepository _userRepository)async {
-  if(_userRepository.diaryItemsToSend.length > 0){
+  if (_userRepository.diaryItemsToSend.length > 0) {
     int successfulPointer = 0;
-    for(DiaryModel item in _userRepository.diaryItemsToSend){
+    for (DiaryModel item in _userRepository.diaryItemsToSend) {
       await item.upload(_userRepository);
+      successfulPointer += 1;
+
+      //need to make sure that the items are sent off correctly, and then
+      //remove them from the list
+    }
+    _userRepository.diaryItemsToSend.removeRange(0, successfulPointer - 1);
+  }
+  if(_userRepository.diaryItemsToDelete.length > 0){
+    int successfulPointer = 0;
+    for(DiaryModel item in _userRepository.diaryItemsToDelete){
+      await item.delete(_userRepository);
       successfulPointer +=1;
 
       //need to make sure that the items are sent off correctly, and then
       //remove them from the list
     }
-    _userRepository.diaryItemsToSend.removeRange(0, successfulPointer-1);
+    _userRepository.diaryItemsToDelete.removeRange(0, successfulPointer-1);
   }
 }

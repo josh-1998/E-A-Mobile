@@ -23,10 +23,15 @@ class _NetworkHandlerState extends State<NetworkHandler> {
     connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result)async {
       if(result == ConnectivityResult.wifi || result == ConnectivityResult.mobile ){
         List<DiaryModel> diaryItemsToSend = Provider.of<UserRepository>(context, listen: false).diaryItemsToSend;
+        List<DiaryModel> diaryItemsToDelete = Provider.of<UserRepository>(context, listen: false).diaryItemsToDelete;
         for(DiaryModel diaryItem in diaryItemsToSend){
           await diaryItem.upload(Provider.of<UserRepository>(context, listen: false));
         }
+        for(DiaryModel diaryItem in diaryItemsToDelete){
+          await diaryItem.upload(Provider.of<UserRepository>(context, listen: false));
+        }
         Provider.of<UserRepository>(context, listen: false).diaryItemsToSend = [];
+        Provider.of<UserRepository>(context, listen: false).diaryItemsToDelete = [];
       }
       });
   }
