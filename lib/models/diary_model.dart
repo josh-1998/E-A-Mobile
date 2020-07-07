@@ -16,7 +16,7 @@ abstract class DiaryModel{
   Future<String> delete(UserRepository userRepository);
 }
 
-class Session extends DiaryModel{
+class Session extends DiaryModel {
   String date;
   int lengthOfSession;
   String title;
@@ -38,72 +38,75 @@ class Session extends DiaryModel{
     this.reflections,
     this.id,
   });
+
   /// Uploads current instance of session to server.
   /// If there is no internet connection then save it to a list ready to be
   /// uploaded when internet connection comes back
   Future<Session> upload(UserRepository _userRepository) async {
-      Map body ={};
-      if (this.lengthOfSession != null)
-        body['time'] = this.lengthOfSession.toString();
-      if (this.title != null) body['title'] = this.title;
-      if (this.intensity != null) body['intensity'] = this.intensity.toString();
-      if (this.performance != null)
-        body['performance'] = this.performance.toString();
-      if (this.feeling != null) body['feeling'] = this.feeling;
-      if (this.target != null) body['target'] = this.target;
-      if (this.reflections != null) body['reflections'] = this.reflections;
-      if (this.date != null) body['date'] = this.date.substring(0, 10);
-      var response;
-      String tempid = this.id.substring(1);
-      if (this.id[0] == "e") {
-        response = await http.patch(kAPIAddress + '/api/session/$tempid/', headers: {
-          'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
-        },
-        body:body);
-      } else {
-        response = await http.post(kAPIAddress + '/api/session/',
-            headers: {
-              'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
-            },
-            body: body);
-      }
-      Map responseBody = jsonDecode(response.body);
-      print(responseBody);
-      if ((response.statusCode / 100).floor() != 2) {
-        throw ServerErrorException;
-      }
-      Session _newSession = Session()
-        ..title = responseBody['title']
-        ..date = responseBody['date']
-        ..lengthOfSession = responseBody['time']
-        ..intensity = responseBody['intensity']
-        ..performance = responseBody['performance']
-        ..feeling = responseBody['feeling']
-        ..target = responseBody['target']
-        ..reflections = responseBody['reflections']
-        ..id = responseBody['id'].toString();
-      var toRemove = [];
-      if (response.statusCode == 201) {
-        for(Session item in _userRepository.diaryItemsToSend){
-          if (this.id == item.id){
-            toRemove.add(item);
-          }
+    Map body = {};
+    if (this.lengthOfSession != null)
+      body['time'] = this.lengthOfSession.toString();
+    if (this.title != null) body['title'] = this.title;
+    if (this.intensity != null) body['intensity'] = this.intensity.toString();
+    if (this.performance != null)
+      body['performance'] = this.performance.toString();
+    if (this.feeling != null) body['feeling'] = this.feeling;
+    if (this.target != null) body['target'] = this.target;
+    if (this.reflections != null) body['reflections'] = this.reflections;
+    if (this.date != null) body['date'] = this.date.substring(0, 10);
+    var response;
+    String tempid = this.id.substring(1);
+    if (this.id[0] == "e") {
+      response =
+      await http.patch(kAPIAddress + '/api/session/$tempid/', headers: {
+        'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+      },
+          body: body);
+    } else {
+      response = await http.post(kAPIAddress + '/api/session/',
+          headers: {
+            'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+          },
+          body: body);
+    }
+    Map responseBody = jsonDecode(response.body);
+    print(responseBody);
+    if ((response.statusCode / 100).floor() != 2) {
+      throw ServerErrorException;
+    }
+    Session _newSession = Session()
+      ..title = responseBody['title']
+      ..date = responseBody['date']
+      ..lengthOfSession = responseBody['time']
+      ..intensity = responseBody['intensity']
+      ..performance = responseBody['performance']
+      ..feeling = responseBody['feeling']
+      ..target = responseBody['target']
+      ..reflections = responseBody['reflections']
+      ..id = responseBody['id'].toString();
+    var toRemove = [];
+    if (response.statusCode == 201) {
+      for (Session item in _userRepository.diaryItemsToSend) {
+        if (this.id == item.id) {
+          toRemove.add(item);
         }
-        _userRepository.diaryItemsToSend.removeWhere( (e) => toRemove.contains(e));
-        DBHelper.deleteSession([this]);
-        DBHelper.updateSessionsList([_newSession]);
-      } else if (response.statusCode == 200) {
-        for(Session item in _userRepository.diaryItemsToSend){
-          if (this.id == item.id){
-            toRemove.add(item);
-          }
-        }
-        _userRepository.diaryItemsToSend.removeWhere( (e) => toRemove.contains(e));
-        DBHelper.deleteSession([this]);
-        DBHelper.deleteSession([_newSession]);
-        DBHelper.updateSessionsList([_newSession]);
       }
-      return _newSession;
+      _userRepository.diaryItemsToSend.removeWhere((e) => toRemove.contains(e));
+      DBHelper.deleteSession([this]);
+      DBHelper.updateSessionsList([_newSession]);
+    } else if (response.statusCode == 200) {
+      for (Session item in _userRepository.diaryItemsToSend) {
+        if (this.id == item.id) {
+          toRemove.add(item);
+        }
+      }
+      _userRepository.diaryItemsToSend.removeWhere((item) =>
+          toRemove.contains(item));
+      DBHelper.deleteSession([this]);
+      DBHelper.deleteSession([_newSession]);
+      DBHelper.updateSessionsList([_newSession]);
+    }
+    return _newSession;
   }
 
   Future<Session> uploadSession(UserRepository _userRepository) async {
@@ -119,7 +122,7 @@ class Session extends DiaryModel{
     if (this.reflections != null) body['reflections'] = this.reflections;
     if (this.date != null) body['date'] = this.date.substring(0, 10);
     Session _newSession = Session(
-        title: title??'Session',
+        title: title ?? 'Session',
         date: date,
         lengthOfSession: lengthOfSession,
         intensity: intensity,
@@ -129,13 +132,13 @@ class Session extends DiaryModel{
         reflections: reflections,
         id: id
     );
-    if(this.id == null || this.id == "x"){
+    if (this.id == null || this.id == "x") {
       this.id = "x";
       DBHelper.updateSessionsList([_newSession]);
     }
     String temp_id = "";
-    if(this.id != null){
-      if(this.id[0] != 'e' && this.id[0] != 'x'){
+    if (this.id != null) {
+      if (this.id[0] != 'e' && this.id[0] != 'x') {
         DBHelper.deleteSession([this]);
         temp_id = "e" + this.id;
         this.id = temp_id;
@@ -144,48 +147,66 @@ class Session extends DiaryModel{
     }
     _userRepository.diaryItemsToSend.add(this);
 
-    if(await hasInternetConnection()){
+    if (await hasInternetConnection()) {
       upload(_userRepository);
     }
     return _newSession;
   }
 
-  Future<String> delete(UserRepository _userRepository)async {
-    Session session = Session(id:this.id);
+  Future<String> delete(UserRepository _userRepository) async {
+    Session session = this;
+    //store id without 'd' in temp_id string to interact with the server
+    String temp_id = "";
+    if (session.id[0] == "d") {
+      temp_id = session.id.substring(1);
+    }else{
+      temp_id = this.id;
+    }
+    //delete from server
+    var response = await http.delete(kAPIAddress + '/api/session/$temp_id/',
+        headers: {
+          'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+        });
+    //if status code correct, delete from local db and delete list
+    if (response.statusCode == 200) {
+      //delete from local db
+      DBHelper.deleteSession([session]);
+      //delete from to delete list
+      var toRemove = [];
+      for (Session item in _userRepository.diaryItemsToDelete) {
+        if (item.id == session.id) {
+          toRemove.add(item);
+        }
+      } //for
+      _userRepository.diaryItemsToSend.removeWhere((e) => toRemove.contains(e));
+    } //status code
+  } //deleteSession
 
-    session.id = "d" + session.id;
+
+  Future<Session> deleteSession(UserRepository _userRepository) async {
+    print("ditd:" + _userRepository.diaryItemsToDelete.toString());
+    print("dits:" + _userRepository.diaryItemsToSend.toString());
+    Session session = Session(id: this.id);
+    if (session.id[0] != 'd') {
+      session.id = "d" + session.id;
+    }
     //add to delete list
-    _userRepository.diaryItemsToDelete.add(session);
-
-    if(await hasInternetConnection()){
-      deleteSession(session, _userRepository);
+    int found = 0;
+    for (Session item in _userRepository.diaryItemsToDelete) {
+      print("itemid: " + item.id.toString());
+      print("sessionid: " + session.id.toString());
+      if (item.id == session.id) {
+        found = 1;
+      }
+    }
+    if (found == 0) {
+      _userRepository.diaryItemsToDelete.add(session);
+    }
+    if (await hasInternetConnection()) {
+      this.delete(_userRepository);
     }
   }
 }
-
-
-
-Future<void> deleteSession(Session session, UserRepository _userRepository) async {
-  //store id without 'd' in temp_id string to interact with the server
-  String temp_id = "";
-  if(session.id[0] == "d"){
-    temp_id = session.id.substring(1);
-  }
-  //delete from server
-  var response = await http.delete(kAPIAddress + '/api/session/$temp_id/',
-      headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
-  //if status code correct, delete from local db and delete list
-  if(response.statusCode == 200){
-    //delete from local db
-    DBHelper.deleteSession([session]);
-    //delete from to delete list
-    for(Session item in _userRepository.diaryItemsToDelete){
-      if(item.id == session.id){
-        _userRepository.diaryItemsToDelete.remove(item);
-      }
-    }//for
-  }//status code
-}//deleteSession
 
 Future<List<Session>> getSessionList(String jwt) async {
   var response = await http.get(kAPIAddress + '/api/session/',

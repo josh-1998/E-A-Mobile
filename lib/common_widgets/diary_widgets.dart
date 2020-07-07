@@ -498,7 +498,7 @@ class _SessionEntryState extends State<SessionEntry> {
                                                   child: SessionUpdateScreen())));
                                     });
                               }else if(value =='Delete'){
-                                widget.session.delete(Provider.of<UserRepository>(context, listen: false));
+                                widget.session.deleteSession(Provider.of<UserRepository>(context, listen: false));
                               }
                             },
                             child: Icon(Icons.more_vert, color: Colors.white,),

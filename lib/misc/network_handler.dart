@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:eathlete/misc/useful_functions.dart';
 import 'package:eathlete/misc/user_repository.dart';
 import 'package:eathlete/models/diary_model.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +25,7 @@ class _NetworkHandlerState extends State<NetworkHandler> {
       if(result == ConnectivityResult.wifi || result == ConnectivityResult.mobile ){
         List<DiaryModel> diaryItemsToSend = Provider.of<UserRepository>(context, listen: false).diaryItemsToSend;
         List<DiaryModel> diaryItemsToDelete = Provider.of<UserRepository>(context, listen: false).diaryItemsToDelete;
-        for(DiaryModel diaryItem in diaryItemsToSend){
-          await diaryItem.upload(Provider.of<UserRepository>(context, listen: false));
-        }
-        for(DiaryModel diaryItem in diaryItemsToDelete){
-          await diaryItem.upload(Provider.of<UserRepository>(context, listen: false));
-        }
+        processDiaryItems(Provider.of<UserRepository>(context, listen: false));
         Provider.of<UserRepository>(context, listen: false).diaryItemsToSend = [];
         Provider.of<UserRepository>(context, listen: false).diaryItemsToDelete = [];
       }
