@@ -82,20 +82,26 @@ class Session extends DiaryModel{
         ..target = responseBody['target']
         ..reflections = responseBody['reflections']
         ..id = responseBody['id'].toString();
+      var toRemove = [];
       if (response.statusCode == 201) {
         for(Session item in _userRepository.diaryItemsToSend){
           if (this.id == item.id){
-            _userRepository.diaryItemsToSend.remove(item);
+            toRemove.add(item);
           }
         }
+        _userRepository.diaryItemsToSend.removeWhere( (e) => toRemove.contains(e));
+        DBHelper.deleteSession([this]);
         DBHelper.updateSessionsList([_newSession]);
       } else if (response.statusCode == 200) {
         for(Session item in _userRepository.diaryItemsToSend){
           if (this.id == item.id){
-            _userRepository.diaryItemsToSend.remove(item);
+            toRemove.add(item);
           }
         }
-        DBHelper.updateSessionValue([_newSession]);
+        _userRepository.diaryItemsToSend.removeWhere( (e) => toRemove.contains(e));
+        DBHelper.deleteSession([this]);
+        DBHelper.deleteSession([_newSession]);
+        DBHelper.updateSessionsList([_newSession]);
       }
       return _newSession;
   }
@@ -123,7 +129,6 @@ class Session extends DiaryModel{
         reflections: reflections,
         id: id
     );
-    _userRepository.diaryItemsToSend.add(this);
     if(this.id == null || this.id == "x"){
       this.id = "x";
       DBHelper.updateSessionsList([_newSession]);
@@ -131,12 +136,14 @@ class Session extends DiaryModel{
     String temp_id = "";
     if(this.id != null){
       if(this.id[0] != 'e' && this.id[0] != 'x'){
+        DBHelper.deleteSession([this]);
         temp_id = "e" + this.id;
         this.id = temp_id;
-        DBHelper.updateSessionValue([_newSession]);
+        DBHelper.updateSessionsList([_newSession]);
       }
     }
-    
+    _userRepository.diaryItemsToSend.add(this);
+
     if(await hasInternetConnection()){
       upload(_userRepository);
     }
@@ -145,6 +152,7 @@ class Session extends DiaryModel{
 
   Future<String> delete(UserRepository _userRepository)async {
     Session session = Session(id:this.id);
+
     session.id = "d" + session.id;
     //add to delete list
     _userRepository.diaryItemsToDelete.add(session);
