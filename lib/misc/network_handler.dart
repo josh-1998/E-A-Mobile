@@ -23,9 +23,9 @@ class _NetworkHandlerState extends State<NetworkHandler> {
     super.initState();
     connectivityListener = Connectivity().onConnectivityChanged.listen((ConnectivityResult result)async {
       if(result == ConnectivityResult.wifi || result == ConnectivityResult.mobile ){
-        List<DiaryModel> diaryItemsToSend = Provider.of<UserRepository>(context, listen: false).diaryItemsToSend;
-        List<DiaryModel> diaryItemsToDelete = Provider.of<UserRepository>(context, listen: false).diaryItemsToDelete;
-        processDiaryItems(Provider.of<UserRepository>(context, listen: false));
+        if(await hasInternetConnection()){
+          processDiaryItems(Provider.of<UserRepository>(context, listen: false));
+        }
         Provider.of<UserRepository>(context, listen: false).diaryItemsToSend = [];
         Provider.of<UserRepository>(context, listen: false).diaryItemsToDelete = [];
       }

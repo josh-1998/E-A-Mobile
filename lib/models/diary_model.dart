@@ -95,13 +95,12 @@ class Session extends DiaryModel {
       DBHelper.deleteSession([this]);
       DBHelper.updateSessionsList([_newSession]);
     } else if (response.statusCode == 200) {
-      for (Session item in _userRepository.diaryItemsToSend) {
-        if (this.id == item.id) {
-          toRemove.add(item);
+      for (DiaryModel item in _userRepository.diaryItemsToSend) {
+        if (this == item) {
+          break;
         }
       }
-      _userRepository.diaryItemsToSend.removeWhere((item) =>
-          toRemove.contains(item));
+      _userRepository.diaryItemsToSend.remove(this);
       DBHelper.deleteSession([this]);
       DBHelper.deleteSession([_newSession]);
       DBHelper.updateSessionsList([_newSession]);
@@ -168,39 +167,37 @@ class Session extends DiaryModel {
           'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
         });
     //if status code correct, delete from local db and delete list
-    if (response.statusCode == 200) {
+    if (response.statusCode == 204) {
       //delete from local db
       DBHelper.deleteSession([session]);
       //delete from to delete list
       var toRemove = [];
-      for (Session item in _userRepository.diaryItemsToDelete) {
-        if (item.id == session.id) {
-          toRemove.add(item);
+      int found = 0;
+      for (DiaryModel item in _userRepository.diaryItemsToDelete) {
+        if (this == item) {
+          found = 1;
         }
       } //for
-      _userRepository.diaryItemsToSend.removeWhere((e) => toRemove.contains(e));
+      if(found == 1) {
+        _userRepository.diaryItemsToDelete.remove(this);
+      }
     } //status code
   } //deleteSession
 
 
   Future<Session> deleteSession(UserRepository _userRepository) async {
-    print("ditd:" + _userRepository.diaryItemsToDelete.toString());
-    print("dits:" + _userRepository.diaryItemsToSend.toString());
-    Session session = Session(id: this.id);
-    if (session.id[0] != 'd') {
-      session.id = "d" + session.id;
+    if (this.id[0] != 'd') {
+      this.id = "d" + this.id;
     }
     //add to delete list
     int found = 0;
     for (Session item in _userRepository.diaryItemsToDelete) {
-      print("itemid: " + item.id.toString());
-      print("sessionid: " + session.id.toString());
-      if (item.id == session.id) {
+      if (item.id == this.id) {
         found = 1;
       }
     }
     if (found == 0) {
-      _userRepository.diaryItemsToDelete.add(session);
+      _userRepository.diaryItemsToDelete.add(this);
     }
     if (await hasInternetConnection()) {
       this.delete(_userRepository);
