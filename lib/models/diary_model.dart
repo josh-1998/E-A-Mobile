@@ -102,7 +102,6 @@ class Session extends DiaryModel {
       }
       _userRepository.diaryItemsToSend.remove(this);
       DBHelper.deleteSession([this]);
-      DBHelper.deleteSession([_newSession]);
       DBHelper.updateSessionsList([_newSession]);
     }
     return _newSession;
@@ -228,7 +227,7 @@ Future<List<Session>> getSessionList(String jwt) async {
   return sessions;
 }
 
-class GeneralDay extends DiaryModel{
+class GeneralDay extends DiaryModel {
   String date;
   int rested;
   int nutrition;
@@ -236,18 +235,16 @@ class GeneralDay extends DiaryModel{
   String reflections;
   String id;
 
-  GeneralDay(
-      {this.date,
-        this.rested,
-        this.nutrition,
-        this.concentration,
-        this.reflections,
-        this.id});
+  GeneralDay({this.date,
+    this.rested,
+    this.nutrition,
+    this.concentration,
+    this.reflections,
+    this.id});
 
   /// Updates the server with a new general day and then adds this to the onboard
   /// sql table*
   Future<GeneralDay> upload(UserRepository _userRepository) async {
-    if(await hasInternetConnection()) {
       Map body = {};
       if (this.date != null) body['date'] = this.date;
       if (this.rested != null) body['rested'] = this.rested.toString();
@@ -257,13 +254,13 @@ class GeneralDay extends DiaryModel{
       if (this.reflections != null) body['reflections'] = this.reflections;
       if (this.date != null) body['date'] = this.date.substring(0, 10);
 
-      http.Response response;
-      //sends new general day off to the server
-      if (this.id != null) {
-        response = await http.patch(kAPIAddress + '/api/general-day/$id/',
-            headers: {
-              'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
-            },
+      var response;
+      String tempid = this.id.substring(1);
+      if (this.id[0] == "e") {
+        response =
+        await http.patch(kAPIAddress + '/api/general-day/$tempid/', headers: {
+          'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+        },
             body: body);
       } else {
         response = await http.post(kAPIAddress + '/api/general-day/',
@@ -274,6 +271,7 @@ class GeneralDay extends DiaryModel{
       }
 
       Map responseBody = jsonDecode(response.body);
+      print(responseBody.toString());
       //checks that the upload has been successful
       if ((response.statusCode / 100).floor() != 2) {
         print(response.statusCode / 100);
@@ -286,50 +284,92 @@ class GeneralDay extends DiaryModel{
         ..rested = responseBody['rested']
         ..nutrition = responseBody['nutrition']
         ..concentration = responseBody['concentration']
-        ..reflections = responseBody['reflections'];
+        ..reflections = responseBody['reflections']
+        ..id = responseBody['id'].toString();
+
       if (response.statusCode == 201) {
+        _userRepository.diaryItemsToSend.remove(this);
+        DBHelper.deleteGeneralDayItem([this]);
         DBHelper.updateGeneralDayList([_newGeneralDay]);
       } else if (response.statusCode == 200) {
-        DBHelper.updateGeneralDayValue([_newGeneralDay]);
-      }
-      //returns the new general day object
-      return _newGeneralDay;
-    }else{
-      GeneralDay _newGeneralDay = GeneralDay(
-          id: id,
-          date: date,
-          rested: rested,
-          nutrition: nutrition,
-          concentration: concentration,
-          reflections: reflections
-      );
-      print(id);
-      _userRepository.diaryItemsToSend.add(_newGeneralDay);
-      if(_newGeneralDay.id != null){
-        DBHelper.updateGeneralDayValue([_newGeneralDay]);
-      }else{
+        _userRepository.diaryItemsToSend.remove(this);
+        DBHelper.deleteGeneralDayItem([this]);
         DBHelper.updateGeneralDayList([_newGeneralDay]);
       }
 
       return _newGeneralDay;
+
+  }
+
+  Future<GeneralDay> uploadGeneralDay(UserRepository _userRepository) async {
+    Map body = {};
+    if (this.date != null) body['date'] = this.date;
+    if (this.rested != null) body['rested'] = this.rested.toString();
+    if (this.nutrition != null) body['nutrition'] = this.nutrition.toString();
+    if (this.concentration != null)
+      body['concentration'] = this.concentration.toString();
+    if (this.reflections != null) body['reflections'] = this.reflections;
+    if (this.date != null) body['date'] = this.date.substring(0, 10);
+
+    if(this.id == null){
+      this.id = 'x';
+      DBHelper.updateGeneralDayList([this]);
+    }
+    if(this.id != null){
+      if(this.id != 'e' && this.id != 'x'){
+        DBHelper.deleteGeneralDayItem([this]);
+        this.id = 'e' + this.id;
+        DBHelper.updateGeneralDayList([this]);
+      }
+    }
+
+    _userRepository.diaryItemsToSend.add(this);
+
+    if(await hasInternetConnection()) {
+      upload(_userRepository);
     }
   }
 
   Future<String> delete(UserRepository _userRepository) async {
-    var response = await http.delete(kAPIAddress + '/api/general-day/$id/',
-        headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
-
-    DBHelper.deleteGeneralDayItem([GeneralDay(id: id)]);
+    String tempid = "";
+    if(this.id[0] == "d"){
+      tempid = this.id.substring(1);
+    }else{
+      tempid = this.id;
+    }
+    //delete from server
+    var response = await http.delete(kAPIAddress + '/api/general-day/$tempid/',
+        headers: {
+          'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+        });
+    //if status correct, delete from to delete list
+    if(response.statusCode == 204){
+      _userRepository.diaryItemsToDelete.remove(this);
+    }
   }
 
-}
+  Future<void> deleteGeneralDayItem(UserRepository _userRepository) async {
+   if(this.id[0] != 'd'){
+     this.id = 'd' + this.id;
+   }
 
-Future<void> deleteGeneralDayItem(String jwt, GeneralDay generalDay) async {
-  String id = generalDay.id;
-  var response = await http.delete(kAPIAddress + '/api/general-day/$id/',
-      headers: {'Authorization': 'JWT ' + jwt});
+   //delete from local db
+   DBHelper.deleteGeneralDayItem([this]);
 
-  DBHelper.deleteGeneralDayItem([generalDay]);
+   //add to delete list
+    int found = 0;
+   for(GeneralDay item in _userRepository.diaryItemsToDelete){
+     if(item.id == this.id){
+       found = 1;
+     }
+   }
+   if(found == 0){
+     _userRepository.diaryItemsToDelete.add(this);
+   }
+   if(await hasInternetConnection()){
+     this.delete(_userRepository);
+   }
+  }
 }
 
 Future<List<GeneralDay>> getGeneralDayList(String jwt) async {
@@ -361,22 +401,22 @@ class Competition extends DiaryModel{
   Competition({this.date, this.name, this.address, this.startTime, this.id});
 
   Future<Competition> upload(UserRepository _userRepository) async {
-    if(await hasInternetConnection()) {
       Map body = {};
       if (this.date != null) body['date'] = this.date;
       if (this.name != null) body['name'] = this.name;
       if (this.address != null) body['address'] = this.address;
       if (this.startTime != null) body['start_time'] = this.startTime;
-
       var response;
-      if (id == null) {
-        response = await http.post(kAPIAddress + '/api/competition/',
-            headers: {
-              'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
-            },
+
+      String tempid = this.id.substring(1);
+      if (this.id[0] == "e") {
+        response =
+        await http.patch(kAPIAddress + '/api/competition/$tempid/', headers: {
+          'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+        },
             body: body);
       } else {
-        response = await http.patch(kAPIAddress + '/api/competition/$id/',
+        response = await http.post(kAPIAddress + '/api/competition/',
             headers: {
               'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
             },
@@ -393,37 +433,90 @@ class Competition extends DiaryModel{
         ..address = responseBody['address']
         ..startTime = responseBody['start_time']
         ..id = responseBody['id'].toString();
+
+
       if (response.statusCode == 201) {
+        _userRepository.diaryItemsToSend.remove(this);
+        DBHelper.deleteCompetition([this]);
         DBHelper.updateCompetitionsList([_newCompetition]);
       } else if (response.statusCode == 200) {
-        DBHelper.updateCompetitionValue([_newCompetition]);
-      }
-      return _newCompetition;
-    }else{
-      Competition _newCompetition = Competition(
-          name: name,
-          date: date,
-          address: address,
-          startTime: startTime,
-          id: id
-      );
-      _userRepository.diaryItemsToSend.add(_newCompetition);
-      if(id != null){
-        DBHelper.updateCompetitionValue([_newCompetition]);
-      }else{
+        _userRepository.diaryItemsToSend.remove(this);
+        DBHelper.deleteCompetition([this]);
         DBHelper.updateCompetitionsList([_newCompetition]);
       }
 
       return _newCompetition;
+
+  }
+
+  Future<Competition> uploadCompetition(UserRepository _userRepository) async {
+    if(this.id == null){
+      this.id = 'x';
+      DBHelper.updateCompetitionsList([this]);
+    }
+    if(this.id != null){
+      if(this.id != 'e' && this.id != 'x'){
+        DBHelper.deleteCompetition([this]);
+        this.id = 'e' + this.id;
+        DBHelper.updateCompetitionsList([this]);
+      }
+    }
+    _userRepository.diaryItemsToSend.add(this);
+    if(await hasInternetConnection()) {
+    upload(_userRepository);
     }
   }
 
   Future<String> delete(UserRepository _userRepository)async{
-
-    var response = await http.delete(kAPIAddress + '/api/competition/$id/',
-        headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
-    DBHelper.deleteCompetition([Competition(id: id)]);
+    String tempid = "";
+    if(this.id[0] == "d"){
+      tempid = this.id.substring(1);
+    }else{
+      tempid = this.id;
+    }
+    //delete from server
+    var response = await http.delete(kAPIAddress + '/api/competition/$tempid/',
+        headers: {
+          'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+        });
+    //if status correct, delete from to delete list
+    if(response.statusCode == 204){
+      _userRepository.diaryItemsToDelete.remove(this);
+    }
   }
+
+  Future<void> deleteComp(UserRepository _userRepository) async {
+    if(this.id[0] != 'd'){
+      this.id = "d" + this.id;
+    }
+
+    //delete from local db
+    DBHelper.deleteCompetition([this]);
+
+    //add to delete list
+    int found = 0;
+    for(Competition item in _userRepository.diaryItemsToDelete){
+      if(item.id == this.id){
+        found = 1;
+      }
+    }
+
+    if(found == 0){
+      _userRepository.diaryItemsToDelete.add(this);
+    }
+
+    if(await hasInternetConnection()){
+      this.delete(_userRepository);
+    }
+  }
+
+}
+
+Future<void> deleteCompetition(String jwt, Competition competition) async {
+  String id = competition.id;
+  var response = await http.delete(kAPIAddress + '/api/competition/$id/',
+      headers: {'Authorization': 'JWT ' + jwt});
+  DBHelper.deleteCompetition([competition]);
 }
 
 Future<List<Competition>> getCompetitionList(String jwt) async {
@@ -444,12 +537,6 @@ Future<List<Competition>> getCompetitionList(String jwt) async {
   return competitions;
 }
 
-Future<void> deleteCompetition(String jwt, Competition competition) async {
-  String id = competition.id;
-  var response = await http.delete(kAPIAddress + '/api/competition/$id/',
-      headers: {'Authorization': 'JWT ' + jwt});
-  DBHelper.deleteCompetition([competition]);
-}
 
 class Result extends DiaryModel{
   String id;
@@ -463,30 +550,27 @@ class Result extends DiaryModel{
 //photo?
 
   Future<Result> upload(UserRepository _userRepository) async {
-    if(await hasInternetConnection()) {
       Map body = {};
       if (this.date != null) body['date'] = this.date;
       if (this.name != null) body['name'] = this.name;
       if (this.position != null) body['position'] = this.position.toString();
       if (this.reflections != null) body['reflections'] = this.reflections;
-
       var response;
-      if (id == null) {
+      String tempid = this.id.substring(1);
+      if (this.id[0] == "e") {
+        response =
+        await http.patch(kAPIAddress + '/api/result/$tempid/', headers: {
+          'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+        },
+            body: body);
+      } else {
         response = await http.post(kAPIAddress + '/api/result/',
             headers: {
               'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
             },
             body: body);
-      } else {
-        response = await http.patch(kAPIAddress + '/api/result/$id/',
-            headers: {
-              'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
-            },
-            body: body);
       }
-
       Map responseBody = jsonDecode(response.body);
-      print(responseBody);
       if ((response.statusCode / 100).floor() != 2) {
         throw ServerErrorException;
       }
@@ -496,41 +580,75 @@ class Result extends DiaryModel{
         ..position = responseBody['position']
         ..reflections = responseBody['reflections']
         ..id = responseBody['id'].toString();
+
       if (response.statusCode == 201) {
+        _userRepository.diaryItemsToSend.remove(this);
+        DBHelper.deleteResult([this]);
         DBHelper.updateResultList([_newResult]);
       } else if (response.statusCode == 200) {
-        DBHelper.updateResultValue([_newResult]);
-      }
-      return _newResult;
-    }else{
-      Result _newResult = Result(
-          name: name,
-          date: date,
-          position: position,
-          reflections: reflections,
-          id: id
-      );
-      _userRepository.diaryItemsToSend.add(_newResult);
-      if(id !=null){
-        DBHelper.updateResultValue([_newResult]);
-      }else{
+        _userRepository.diaryItemsToSend.remove(this);
+        DBHelper.deleteResult([this]);
         DBHelper.updateResultList([_newResult]);
       }
 
       return _newResult;
+
+  }
+
+  Future<Result> uploadResult(UserRepository _userRepository) async {
+    if(this.id == null){
+      this.id = 'x';
+      DBHelper.updateResultList([this]);
+    }
+    if(this.id != null){
+      if(this.id != 'e' && this.id != 'x'){
+        DBHelper.deleteResult([this]);
+        this.id = 'e' + this.id;
+        DBHelper.updateResultList([this]);
+      }
+    }
+    _userRepository.diaryItemsToSend.add(this);
+    if(await hasInternetConnection()) {
+      upload(_userRepository);
     }
   }
 
   Future<String> delete(UserRepository _userRepository) async{
-    if(await hasInternetConnection()){
-      var response = await http.delete(kAPIAddress + '/api/result/$id/',
-          headers: {'Authorization': 'JWT ' + await _userRepository.refreshIdToken()});
-      _userRepository.diary.resultList.removeWhere((item) => item.id == this.id);
-      DBHelper.deleteResult([Result(id: id)]);
+    String tempid = "";
+    if(this.id[0] == "d"){
+      tempid = this.id.substring(1);
     }else{
-      _userRepository.diaryItemsToDelete.add(Result(id: id));
-      _userRepository.diary.resultList.removeWhere((item) => item.id == this.id);
-      DBHelper.deleteResult([Result(id:id)]);
+      tempid = this.id;
+    }
+    //delete from server
+    var response = await http.delete(kAPIAddress + '/api/result/$tempid/',
+        headers: {
+          'Authorization': 'JWT ' + await _userRepository.refreshIdToken()
+        });
+    //if status correct, delete from to delete list
+    if(response.statusCode == 204){
+      _userRepository.diaryItemsToDelete.remove(this);
+    }
+  }
+
+  Future<String> deleteRes(UserRepository _userRepository) async {
+    if(this.id[0] != 'd'){
+      this.id = "d" + this.id;
+    }
+    //delete from local db
+    DBHelper.deleteResult([this]);
+    //add to delete list
+    int found = 0;
+    for(Result item in _userRepository.diaryItemsToDelete){
+      if(item.id == this.id){
+        found = 1;
+      }
+    }
+    if(found == 0){
+      _userRepository.diaryItemsToDelete.add(this);
+    }
+    if(await hasInternetConnection()){
+      this.delete(_userRepository);
     }
   }
 }

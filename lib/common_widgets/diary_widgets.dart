@@ -120,7 +120,7 @@ class _GeneralDayEntryState extends State<GeneralDayEntry> {
                                               child: GeneralDayUpdateBody())));
                                 });
                           }else if(value =='Delete'){
-                            widget.generalDay.delete(Provider.of<UserRepository>(context, listen: false));
+                            widget.generalDay.deleteGeneralDayItem(Provider.of<UserRepository>(context, listen: false));
                             print(widget.index);
                             AnimatedList.of(context).removeItem(widget.index, (context, animation) => Container());
                           }
@@ -307,7 +307,7 @@ class _CompetitionDiaryEntryState extends State<CompetitionDiaryEntry> {
                                               child: CompetitionEntry())));
                                 });
                           }else if(value =='Delete'){
-                            widget._competition.delete(Provider.of<UserRepository>(context, listen: false));
+                            widget._competition.deleteComp(Provider.of<UserRepository>(context, listen: false));
                             AnimatedList.of(context).removeItem(0, (context, animation) => null);
                           }
                         },
@@ -708,7 +708,7 @@ class _ResultEntryState extends State<ResultEntry> {
                                               child: ResultUpdateBody())));
                                 });
                           }else if(value =='Delete'){
-                            widget.result.delete(Provider.of<UserRepository>(context, listen: false));
+                            widget.result.deleteRes(Provider.of<UserRepository>(context, listen: false));
                           }
                         },
                         child: Icon(Icons.more_vert),

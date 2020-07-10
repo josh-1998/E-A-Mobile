@@ -60,7 +60,7 @@ class ResultBloc extends Bloc<ResultEvent, ResultState> {
       }
 //      if(numberOfFalse == 0) {
         try {
-          Result _newResult = await _result.upload(
+          Result _newResult = await _result.uploadResult(
               _userRepository);
           if(_isCompetitionConverter) {
             await deleteCompetition(await _userRepository.refreshIdToken(), competition);
